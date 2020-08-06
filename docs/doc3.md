@@ -3,10 +3,10 @@ id: doc3
 title: Part 3 - Deeper into CLVM
 ---
 
-This guide directly continues on from [part 1](./part1_basics.md) so if you haven't read that, please do so before reading this.
+This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover how ChiaLisp relates to transactions and coins on the Chia network.
-If there are any terms that you aren't sure of, be sure to check the [glossary](./glossary.md).
+If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/doc5).
 
 
 ## Lazy Evaluation in ChiaLisp
@@ -36,11 +36,11 @@ $ brun '((c (i (q 1) (q (q 100)) (q (x (q "still being evaluated")))) (a)))'
 
 It is worth keeping this in mind whenever you write an `(i A B C)`.
 
-If you're wondering how this works (and how the standard transaction from [part 2](./part2_transactions.md) worked), then allow me to introduce Eval.
+If you're wondering how this works (and how the standard transaction from [part 2](/docs/doc2) worked), then allow me to introduce Eval.
 
 ## Introduction to Eval
 
-In [Part 1](part1_basics.md) we mentioned that a program is usually a list where the first element is an operator, and every subsequent element is a valid program.
+In [Part 1](/docs/) we mentioned that a program is usually a list where the first element is an operator, and every subsequent element is a valid program.
 However a Program can also have a program as the first element. This will cause that program to be evaluated as a new puzzle.
 The solution is then every element after the first in this list.
 

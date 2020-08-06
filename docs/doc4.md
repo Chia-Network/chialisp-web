@@ -188,6 +188,6 @@ $ brun '((c (q ((c (f (a)) (c (f (a)) (c (r (a)) (q ())))))) (c (q ((c (i (f (r 
 # Conclusion
 
 You should now have the context and knoweldge needed to write your own smart contracts.
-Remember from [part 2](/docs/doc2.md) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
+Remember from [part 2](/docs/doc2/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
 
 If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).

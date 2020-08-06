@@ -3,10 +3,10 @@ id: doc2
 title: Part 2 - Coins, Spends and Wallets
 ---
 
-This guide directly continues on from [part 1](./part1_basics.md) so if you haven't read that, please do so before reading this.
+This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
-If there are any terms that you aren't sure of, be sure to check the [glossary](./glossary.md).
+If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/doc5).
 
 
 ## Coins
@@ -57,7 +57,7 @@ By the end of the next section of the guide, hopefully it should be clear.
 
 ## Puzzles and Solutions in Practice
 
-So far in [part 1](./part1_basics.md) we have covered ChiaLisp programs that will evaluate to some result.
+So far in [part 1](/docs/) we have covered ChiaLisp programs that will evaluate to some result.
 Remember the first part represents a puzzle which is committed to locking up a coin, and the second part is a solution anybody can submit:
 
 ```
@@ -134,7 +134,7 @@ Otherwise you just have a valid spend that isn't returning any OpCodes, and that
 So we need to change the fail condition to be `(x (q "wrong password"))` which means the transaction fails and the coin is not spent.
 
 If we're doing this then we should also change the `(i A B C)` pattern to `((c (i A (q B) (q C)) (a)))`.
-The reason for this is explained in [part 3](./part3_deeperintoCLVM.md). For now don't worry about why.
+The reason for this is explained in [part 3](/docs/doc3/). For now don't worry about why.
 
 Here is our completed password protected coin:
 ```
@@ -274,7 +274,7 @@ This is because instead of the solution for this puzzle being a list of OpCondit
 This means that the recipient can run their own program as part of the solution generation, or sign a puzzle and let somebody else provide the solution.
 
 The new program and solution inside the solution are evaluated and the result of that is added to the OpCode output.
-We will cover in more detail how this works in the [next part](part3_deeperintoCLVM.md) of this guide.
+We will cover in more detail how this works in the [next part](/docs/doc3/) of this guide.
 
 A basic solution for this standard transaction might look like:
 
