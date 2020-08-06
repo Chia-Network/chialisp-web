@@ -1,6 +1,6 @@
 ---
 id: doc3
-title: Part 3 - Deeper into CLVM
+title: 3 - Deeper into CLVM
 ---
 
 This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.

@@ -1,6 +1,6 @@
 ---
 id: doc2
-title: Part 2 - Coins, Spends and Wallets
+title: 2 - Coins, Spends and Wallets
 ---
 
 This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
