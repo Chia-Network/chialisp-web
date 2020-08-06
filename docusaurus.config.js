@@ -22,8 +22,8 @@ module.exports = {
           position: 'left',
         },
   //      {to: 'blog', label: 'Blog', position: 'left'},
-        {href: 'https://chia.net', label: 'Chia.net', position: 'left'},
         {href: 'https://chia.net/blog', label: 'Blog', position: 'left'},
+        {href: 'https://chia.net', label: 'Chia.net', position: 'left'},
         {
           href: 'https://github.com/Chia-Network/chialisp-web',
           label: 'GitHub',
