@@ -1,202 +1,252 @@
 ---
 id: doc1
-title: Style Guide
-sidebar_label: Style Guide
+title: Part 1 - CLVM Basics
+sidebar_label: Part 1 - CLVM Basics
 ---
 
-You can write content using [GitHub-flavored Markdown syntax](https://github.github.com/gfm/).
+CLVM is the compiled, minimal version of ChiaLisp that is used by the Chia network.
+The full set of operators is documented [here](https://github.com/Chia-Network/clvm/blob/master/docs/clvm.org)
 
-## Markdown Syntax
+This guide will cover the basics of the language and act as an introduction to the structure of programs.
+You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).
 
-To serve as an example page when styling markdown based Docusaurus sites.
 
-## Headers
+## Types
 
-# H1 - Create the best documentation
+In ChiaLisp everything is either a list or an atom.
+Lists take the form of parentheses and each entry in the list is single spaced.
 
-## H2 - Create the best documentation
+Atoms are either literal binary blobs or variables.
+**A program is actually just a list in [polish notation](https://en.wikipedia.org/wiki/Polish_notation).**
 
-### H3 - Create the best documentation
+There is no distinguishing of variable types in ChiaLisp.
+This means that `(100 0x65 0x68656c6c6f)` and `(0x64 101 'hello')` are equivalent lists.
+Internally however the blobs can be interpreted in a number of different ways, which we will cover later.
 
-#### H4 - Create the best documentation
+## Math
 
-##### H5 - Create the best documentation
+There are no support for floating point numbers in ChiaLisp, only integers.
+Internally integers are interpreted as 256 bit signed integers.
 
-###### H6 - Create the best documentation
-
----
-
-## Emphasis
-
-Emphasis, aka italics, with *asterisks* or _underscores_.
-
-Strong emphasis, aka bold, with **asterisks** or __underscores__.
-
-Combined emphasis with **asterisks and _underscores_**.
-
-Strikethrough uses two tildes. ~~Scratch this.~~
-
----
-
-## Lists
-
-1. First ordered list item
-1. Another item
-   - Unordered sub-list.
-1. Actual numbers don't matter, just that it's a number
-   1. Ordered sub-list
-1. And another item.
-
-* Unordered list can use asterisks
-
-- Or minuses
-
-+ Or pluses
-
----
-
-## Links
-
-[I'm an inline-style link](https://www.google.com/)
-
-[I'm an inline-style link with title](https://www.google.com/ "Google's Homepage")
-
-[I'm a reference-style link][arbitrary case-insensitive reference text]
-
-[You can use numbers for reference-style link definitions][1]
-
-Or leave it empty and use the [link text itself].
-
-URLs and URLs in angle brackets will automatically get turned into links. http://www.example.com/ or <http://www.example.com/> and sometimes example.com (but not on GitHub, for example).
-
-Some text to show that the reference links can follow later.
-
-[arbitrary case-insensitive reference text]: https://www.mozilla.org/
-[1]: http://slashdot.org/
-[link text itself]: http://www.reddit.com/
-
----
-
-## Images
-
-Here's our logo (hover to see the title text):
-
-Inline-style: ![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png 'Logo Title Text 1')
-
-Reference-style: ![alt text][logo]
-
-[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png 'Logo Title Text 2'
-
-Images from any folder can be used by providing path to file. Path should be relative to markdown file.
-
-![img](../static/img/logo.svg)
-
----
-
-## Code
-
-```javascript
-var s = 'JavaScript syntax highlighting';
-alert(s);
-```
-
-```python
-s = "Python syntax highlighting"
-print(s)
-```
+The math operators are `*`, `+`, and `-`.
 
 ```
-No language indicated, so no syntax highlighting.
-But let's throw in a <b>tag</b>.
+$ brun '(- (q 6) (q 5))' '()'
+1
+
+$ brun '(* (q 2) (q 4) (q 5))' '()'
+40
+
+$ brun '(+ (q 10) (q 20) (q 30) (q 40))' '()'
+100
 ```
 
-```js {2}
-function highlightMe() {
-  console.log('This line can be highlighted!');
-}
+You may have noticed that the multiplication example above takes more than two parameters in the list.
+This is because many operators can take variable amounts of parameters.
+`+` and `-` are commutative so the order of parameters does not matter.
+For non-commutative operations, `(- (q 100) (q 30) (q 20) (q 5))` is equivalent to `(- (q 100) (+ (q 30) (q 20) (q 5)))`.
+Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
+
+There is also internal support for negatives.
+
+```
+$ brun '(- (q 5) (q 7))' '()'
+-2
+
+
+$ brun '(+ (q 3) (q -8))' '()'
+-5
 ```
 
----
+To use hexadecimal numbers, simply prefix them with `0x`.
 
-## Tables
+```
+$ brun '(+ (q 0x000a) (q 0x000b))' '()'
+21
+```
 
-Colons can be used to align columns.
+The final mathematical operator is equal which acts similarly to == in other languages.
+```
+$ brun '(= (q 5) (q 6))' '()'
+()
 
-| Tables        |      Are      |   Cool |
-| ------------- | :-----------: | -----: |
-| col 3 is      | right-aligned | \$1600 |
-| col 2 is      |   centered    |   \$12 |
-| zebra stripes |   are neat    |    \$1 |
+$ brun '(= (q 5) (q 5))' '()'
+1
+```
 
-There must be at least 3 dashes separating each header cell. The outer pipes (|) are optional, and you don't need to make the raw Markdown line up prettily. You can also use inline Markdown.
+As you can see above this language interprets some data as boolean values.
 
-| Markdown | Less      | Pretty     |
-| -------- | --------- | ---------- |
-| _Still_  | `renders` | **nicely** |
-| 1        | 2         | 3          |
+## Booleans
 
----
+In this language an empty list `()` evaluate to `False`.
+Any other value evaluates to `True`, though internally `True` is represented with `1`.
 
-## Blockquotes
 
-> Blockquotes are very handy in email to emulate reply text. This line is part of the same quote.
+```
+$ brun '(= (q 100) (q 90))'
+()
 
-Quote break.
+$ brun '(= (q 100) (q 100))'
+1
+```
 
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can _put_ **Markdown** into a blockquote.
+The exception to this rule is `0` because `0` is  exactly the same as `()`.
 
----
+```
+$ brun '(= (q 0) (q ()))' '()'
+1
 
-## Inline HTML
+$ brun '(+ (q 70) (q ()))' '()'
+70
+```
 
-<dl>
-  <dt>Definition list</dt>
-  <dd>Is something people use sometimes.</dd>
+## Flow Control
 
-  <dt>Markdown in HTML</dt>
-  <dd>Does *not* work **very** well. Use HTML <em>tags</em>.</dd>
-</dl>
+The `i` operator takes the form `(i A B C)` and acts as an `if` statement where `(if A is True then do B, else do C)`.
 
----
+```
+$ brun '(i (q 0) (q 70) (q 80))' '()'
+80
 
-## Line Breaks
+$ brun '(i (q 1) (q 70) (q 80))' '()'
+70
 
-Here's a line for us to start with.
+$ brun '(i (q 12) (q 70) (q 80))' '()'
+70
 
-This line is separated from the one above by two newlines, so it will be a _separate paragraph_.
+$ brun '(i (q ()) (q 70) (q 80))' '()'
+80
+```
 
-This line is also a separate paragraph, but... This line is only separated by a single newline, so it's a separate line in the _same paragraph_.
+Now seems like a good time to clarify further about lists and programs.
 
----
 
-## Admonitions
+## Lists and Programs
 
-:::note
+A list is any space-separated, ordered group of one or more elements inside brackets.
+For example: `(70 80 90 100)`, `(0xf00dbabe 48 "hello")`, and `(90)` are all valid lists.
 
-This is a note
+Lists can even contain other lists, such as `("list" "list" ("sublist" "sublist" ("sub-sublist")) "list")`.
 
-:::
+Programs are a subset of lists which can be evaluated using CLVM.
 
-:::tip
+**In order for a list to be a valid program:**
 
-This is a tip
+**1. The first item in the list must be a valid operator**
 
-:::
+**2. Every item after the first must be a valid program**
 
-:::important
+This is why literal values and non-program lists *must* be quoted using `q`.
 
-This is important
+*Note: There is a special case where the first item in a program is also a program, which we will cover in more detail later.*
 
-:::
+Programs can contain non-program lists, but they also must be quoted, for example:
 
-:::caution
+```
+$ brun '(q (80 90 100))' '()'
+(80 90 100)
+```
 
-This is a caution
+And now that we know we can have programs inside programs we can create programs such as:
 
-:::
+```
+$ brun '(i (= (q 50) (q 50)) (+ (q 40) (q 30)) (q 20))' '()'
+70
+```
 
-:::warning
+Programs in ChiaLisp tend to get built in this fashion.
+Smaller programs are assembled together to create a larger program.
+It is recommended that you create your programs in an editor with brackets matching!
 
-This is a warning
 
-:::
+## List Operators
+
+`f` returns the first element in a passed list.
+
+```
+$ brun '(f (q (80 90 100)))' '()'
+80
+```
+
+`r` returns every element in a list except for the first.
+
+```
+$ brun '(r (q (80 90 100)))' '()'
+(90 100)
+```
+
+`c` prepends an element to a list
+
+```
+$ brun '(c (q 70) (q (80 90 100)))' '()'
+(70 80 90 100)
+```
+
+And we can use combinations of these to access or replace any element we want from a list:
+
+```
+$ brun '(c (q 100) (r (q (60 110 120))))' '()'
+(100 110 120)
+
+$ brun '(f (r (r (q (100 110 120 130 140)))))' '()'
+120
+```
+
+
+## Solutions and Environment Variables
+
+Up until now our programs have not had any input or variables, however ChiaLisp does have support for a kind of variable which is passed in through a solution.
+
+It's important to remember that the context for ChiaLisp is for use in locking up coins with a puzzle program.
+This means that we need to be able to pass some information to the puzzle.
+
+A solution is a list passed to the puzzle, and can be referenced with `a`.
+
+```
+$ brun '(a)' '("this" "is the" "solution")'
+("this" "is the" "solution")
+
+$ brun '(f (a))' '(80 90 100 110)'
+80
+
+$ brun '(r (a))' '(80 90 100 110)'
+(90 100 110)
+```
+
+And remember lists can be nested too.
+
+```
+$ brun '(f (f (r (a))))' '((70 80) (90 100) (110 120))'
+90
+
+$ brun '(f (f (r (a))))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+(91 92 93 94 95)
+```
+
+These environment variables can be used in combination with all other operators.
+
+```
+$ brun '(+ (f (a)) (q 5))' '(10)'
+15
+
+$ brun '(* (f (a)) (f (a)))' '(10)'
+100
+```
+
+This program checks that the second variable is equal to the square of the first variable.
+
+```
+$ brun '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 25)'
+1
+
+$ brun '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 30)'
+()
+```
+
+## End of Part 1
+
+This marks the end of this section of the guide.
+In this section we have covered many of the basics of using ChiaLisp.
+It is recommended you play with using the information presented here for a bit before moving on.
+
+This guide has not covered all of the operators available in ChiaLisp - try using some of the other ones listed [here](https://github.com/Chia-Network/clvm/blob/master/docs/clvm.org).

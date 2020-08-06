@@ -11,7 +11,7 @@ module.exports = {
     navbar: {
       title: 'Chialisp',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Chialisp Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -36,11 +36,11 @@ module.exports = {
           title: 'Docs',
           items: [
             {
-              label: 'Style Guide',
+              label: 'CLVM Basics',
               to: 'docs/',
             },
             {
-              label: 'Second Doc',
+              label: 'Coins, Spends and Wallets',
               to: 'docs/doc2/',
             },
           ],
@@ -63,11 +63,11 @@ module.exports = {
           items: [
             {
               label: 'Blog',
-              to: 'blog',
+              href: 'https://www.chia.net/blog/',
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/Chia-Network/clvm',
             },
           ],
         },
