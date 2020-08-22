@@ -279,15 +279,15 @@ We will cover in more detail how this works in the [next part](/docs/doc3/) of t
 A basic solution for this standard transaction might look like:
 
 ```
-((q ((0x51 0xmynewpuzzlehash 50) (0x51 0xanothernewpuzzlehash 50))) (q ()))
+((q ((51 0xmynewpuzzlehash 50) (51 0xanothernewpuzzlehash 50))) (q ()))
 ```
 
 Running that in the clvm_tools looks like this:
 
 ```
-$ brun '(c (c (q 50) (c (q 0xfadeddab) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))' '((q ((0x51 0xdeadbeef 50) (0x51 0xf00dbabe 50))) (q ()))'
+$ brun '(c (c (q 50) (c (q 0xfadeddab) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))' '((q ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) (q ()))'
 
-((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (81 0xdeadbeef 50) (81 0xf00dbabe 50))
+((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (51 0xdeadbeef 50) (51 0xf00dbabe 50))
 ```
 
 ## Conclusions
