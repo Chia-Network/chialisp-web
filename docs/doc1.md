@@ -200,47 +200,72 @@ Up until now our programs have not had any input or variables, however ChiaLisp 
 It's important to remember that the context for ChiaLisp is for use in locking up coins with a puzzle program.
 This means that we need to be able to pass some information to the puzzle.
 
-A solution is a list passed to the puzzle, and can be referenced with `a`.
+A solution is a list of values passed to the puzzle. 
+In the higher level language the solution can be referenced with `a`.
+Note the use of `run` below:
 
 ```
-$ brun '(a)' '("this" "is the" "solution")'
+$ run '(a)' '("this" "is the" "solution")'
 ("this" "is the" "solution")
 
-$ brun '(f (a))' '(80 90 100 110)'
+$ run '(f (a))' '(80 90 100 110)'
 80
 
-$ brun '(r (a))' '(80 90 100 110)'
+$ run '(r (a))' '(80 90 100 110)'
 (90 100 110)
 ```
 
 And remember lists can be nested too.
 
 ```
-$ brun '(f (f (r (a))))' '((70 80) (90 100) (110 120))'
+$ run '(f (f (r (a))))' '((70 80) (90 100) (110 120))'
 90
 
-$ brun '(f (f (r (a))))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+$ run '(f (f (r (a))))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 (91 92 93 94 95)
 ```
 
 These environment variables can be used in combination with all other operators.
 
 ```
-$ brun '(+ (f (a)) (q 5))' '(10)'
+$ run '(+ (f (a)) (q 5))' '(10)'
 15
 
-$ brun '(* (f (a)) (f (a)))' '(10)'
+$ run '(* (f (a)) (f (a)))' '(10)'
 100
 ```
 
 This program checks that the second variable is equal to the square of the first variable.
 
 ```
-$ brun '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 25)'
+$ run '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 25)'
 1
 
-$ brun '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 30)'
+$ run '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 30)'
 ()
+```
+
+## Accessing Environmental Variables Through Integers
+
+In the above examples we were using `run`, calling the higher level language, instead of `brun` for the lower level language.
+This is because for the sake of minimalism in the lower level CLVM language, we address the solution with evaluated integers.
+
+Calling `1` accesses the root of the tree and returns the entire solution list.
+
+```
+$ brun '1' '("this" "is" "a" "test")'
+("this" 26995 97 "test")
+```
+After that, you can imagine a binary tree of `f` and `r`, where each node is numbered.
+```
+$ brun '2' '("this" "is" "a" "test")'
+"this"
+
+$ brun '3' '("this" "is" "a" "test")'
+(26995 97 "test")
+
+$ brun '4' '((800 900) "is" "a" "test")'
+800
 ```
 
 ## End of Part 1
