@@ -77,13 +77,14 @@ The OpCodes are split into two categories: *"this spend is only valid if X"* and
 
 Here is the complete list of OpCodes along with their format and behaviour.
 
-* **AGG_SIG - [50] - (50 0xpubkey 0xdatahash)**: This spend is only valid if the aggregated signature in this block contains a signature from the given public key of the given value hash.
+* **AGG_SIG - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message.
 * **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid then create a new coin with the given puzzlehash and amount.
 * **ASSERT_COIN_CONSUMED - [52] - (52 0xcoinID)**: This spend is only valid if the given Coin ID has also been spent in this block. This allows you to use the consumed coins value as part of your own output.
 * **ASSERT_MY_COIN_ID - [53] - (53 0xcoinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
 * **ASSERT_MIN_TIME - [54] - (54 time)**: This spend is only valid if the given time has passed.
 * **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
 * **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the given block_age has surpassed the age of the coin being spent.
+* **AGG_SIG_ME - [56] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
 
 These are returned as a list of lists in the form:
 ```
@@ -103,27 +104,27 @@ For the following example the password is "hello" which has the hash value 0x2cf
 The implementation for the above coin would be thus:
 
 ```
-(i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c (f (r (a))) (c (q 100) (q ())))) (q "wrong password"))
+(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c (f (r (a))) (c (q 100) (q ())))) (q "wrong password"))
 ```
 
-This program takes `(sha256 (f (a)))` the hash of the first element in the solution and compares that value with the already committed.
-If the password is correct it will return `(c (q 51) (c (f (r (a))) (c (q 100) (q ())))` which evaluates to `(51 0xmynewpuzzlehash 100)`.
-Remember, `51` is the OpCode to create a new coin using the puzzlehash presented in the solution.
+This program takes the hash, with `(sha256 )`, of the first element in the solution, with `2`, and compares that value with the already committed.
+If the password is correct it will return `(c (q 51) (c 5 (c (q 100) (q ())))` which evaluates to `(51 0xmynewpuzzlehash 100)`.
+Remember, `51` is the OpCode to create a new coin using the puzzlehash presented in the solution, and 5 is equivalent to `(f (r (a)))`.
 
 If the password is incorrect it will return the string "wrong password".
 
 The format for a solution to this is expected to be formatted as `(password newpuzzlehash)`.
-Remember, anybody can attempt to spend this coin as long as they know its ID and the puzzle code.
+Remember, anybody can attempt to spend this coin as long as they know the coin's ID and the full puzzle code.
 
 Let's test it out using clvm_tools.
 ```
-$ brun '(i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c (f (r (a))) (c (q 100) (q ())))) (q "wrong password"))' '("let_me_in" 0xdeadbeef)'
+$ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("let_me_in" 0xdeadbeef)'
 "wrong password"
 
-$ brun '(i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c (f (r (a))) (c (q 100) (q ())))) (q "wrong password"))' '("incorrect" 0xdeadbeef)'
+$ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("incorrect" 0xdeadbeef)'
 "wrong password"
 
-$ brun '(i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c (f (r (a))) (c (q 100) (q ())))) (q "wrong password"))' '("hello" 0xdeadbeef)'
+$ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("hello" 0xdeadbeef)'
 (51 0xdeadbeef 100)
 ```
 
@@ -138,16 +139,16 @@ The reason for this is explained in [part 3](/docs/doc3/). For now don't worry a
 
 Here is our completed password protected coin:
 ```
-((c (i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c (f (r (a))) (c (q 100) (q ()))))) (q (x (q "wrong password")))) (a)))
+((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))
 ```
 
 Let's test it out using clvm_tools:
 
 ```
-$ brun '((c (i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c (f (r (a))) (c (q 100) (q ()))))) (q (x (q "wrong password")))) (a)))' '("let_me_in" 0xdeadbeef)'
+$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))' '("let_me_in" 0xdeadbeef)'
 FAIL: clvm raise ("wrong password")
 
-$ brun '((c (i (= (sha256 (f (a))) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c (f (r (a))) (c (q 100) (q ()))))) (q (x (q "wrong password")))) (a)))' '("hello" 0xdeadbeef)'
+$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))' '("hello" 0xdeadbeef)'
 (51 0xdeadbeef 100)
 ```
 
@@ -176,15 +177,15 @@ Even though anybody could initiate the spend of the coin, the person that locked
 
 Conversely lets consider a coin locked up with the following puzzle:
 ```
-(a)
+1
 ```
 In this example the person that locked the coin up as delegated all of the control to the solution.
 The result of the spend is entirely dependent on the solution.
 ```
-$ brun '(a)' '((51 0xf00dbabe 50) (51 0xfadeddab 50))'
+$ brun '1' '((51 0xf00dbabe 50) (51 0xfadeddab 50))'
 ((51 0xf00dbabe 50) (51 0xfadeddab 50))
 
-$ brun '(a)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
+$ brun '1' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
 ```
 In this situation, not only can anybody can spend the coin, they can spend it however they like!
@@ -202,7 +203,7 @@ This means that the coin cannot be spent by anybody else, but the outputs are en
 
 We can construct the following smart transaction where AGGSIG is 50 and the recipient's pubkey is 0xpubkey.
 ```
-(c (c (q 50) (c (q 0xpubkey) (c (sha256tree (a)) (q ())))) (a))
+(c (c (q 50) (c (q 0xpubkey) (c (sha256tree 1) (q ())))) 1)
 ```
 
 The `sha256tree` operator simply takes a program as a parameter and then creates a hash of that program (compared to `sha256` which would take a hash of the result of the program).
@@ -212,7 +213,7 @@ This puzzle forces the resultant evaluation to contain `(50 0xpubkey *hash_of_so
 Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
 The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadeddab.
 ```
-$ brun '(c (c (q 50) (c (q 0xdeadbeef) (c (sha256tree (a)) (q ())))) (a))' '((51 0xfadeddab 100))'
+$ brun '(c (c (q 50) (c (q 0xdeadbeef) (c (sha256tree 1) (q ())))) 1)' '((51 0xfadeddab 100))'
 ((50 0xdeadbeef 0x34b88c869130fc1d50aafd392d8fa6797de4370b1969e5216bb076850ed3beae) (51 0xfadeddab 100))
 ```
 
@@ -265,7 +266,7 @@ The coupling inside the SpendBundle and the 80 value asserting its relationship 
 We can construct an even more powerful version of the signature locked coin to use as our standard transaction.
 
 ```
-(c (c (q 50) (c (q 0xpubkey) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))
+(c (c (q 50) (c (q 0xpubkey) (c (sha256tree 2) (q ())))) ((c 2 5)))
 ```
 
 The first part is mostly the same, the puzzle always returns an AGGSIG check for the recipients public key.
@@ -285,7 +286,7 @@ A basic solution for this standard transaction might look like:
 Running that in the clvm_tools looks like this:
 
 ```
-$ brun '(c (c (q 50) (c (q 0xfadeddab) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))' '((q ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) (q ()))'
+$ brun '(c (c (q 50) (c (q 0xfadeddab) (c (sha256tree 2) (q ())))) ((c 2 5)))' '((q ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) (q ()))'
 
 ((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (51 0xdeadbeef 50) (51 0xf00dbabe 50))
 ```
