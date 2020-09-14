@@ -1,6 +1,6 @@
 ---
 id: doc4
-title: 4 - The Compiler and Other Useful Information
+title: 4 - The Compiler
 ---
 
 This guide assumes that you have already read the previous parts.
