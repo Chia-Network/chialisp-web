@@ -61,10 +61,10 @@ So far in [part 1](/docs/) we have covered ChiaLisp programs that will evaluate 
 Remember the first part represents a puzzle which is committed to locking up a coin, and the second part is a solution anybody can submit:
 
 ```
-$ brun '(+ (f (a)) (f (r (a))))' '(40 50)'
+$ brun '(+ 2 5)' '(40 50)'
 90
 
-$ brun '(c (q 800) (a))' '("some data" 0xdeadbeef)'
+$ brun '(c (q 800) 1)' '("some data" 0xdeadbeef)'
 (800 "some data" 0xdeadbeef)
 ```
 
@@ -104,7 +104,7 @@ For the following example the password is "hello" which has the hash value 0x2cf
 The implementation for the above coin would be thus:
 
 ```
-(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c (f (r (a))) (c (q 100) (q ())))) (q "wrong password"))
+(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))
 ```
 
 This program takes the hash, with `(sha256 )`, of the first element in the solution, with `2`, and compares that value with the already committed.
@@ -134,7 +134,7 @@ If you want to invalidate a spend then you need to raise an exception using `x`.
 Otherwise you just have a valid spend that isn't returning any OpCodes, and that would destroy our coin and not create a new one!
 So we need to change the fail condition to be `(x (q "wrong password"))` which means the transaction fails and the coin is not spent.
 
-If we're doing this then we should also change the `(i A B C)` pattern to `((c (i A (q B) (q C)) (a)))`.
+If we're doing this then we should also change the `(i A B C)` pattern to `((c (i A (q B) (q C)) 1))`.
 The reason for this is explained in [part 3](/docs/doc3/). For now don't worry about why.
 
 Here is our completed password protected coin:
