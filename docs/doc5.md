@@ -42,8 +42,7 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 * **ASSERT_MIN_TIME - [54] - (54 time)**: This spend is only valid if the given time has passed.
 * **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
 * **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the block has existed for the given amount of time.
-* **AGG_SIG_ME - [57] - (57 0xpubkey 0xdatahash)**:  The spend is only valid if the pubkey signs a message in the form (message concatenated with coin ID).
-* **ASSERT_FEE - [58] - (58 )**: TODO: how does assert fee work?
+* **AGG_SIG_ME - [57] - (57 0xpubkey 0xmessage)**:  The spend is only valid if the pubkey signs a message in the form (message concatenated with coin ID).
 
 * **Wallet** - Software written to interact with transactions. Chia uses Hierarchical Deterministic Wallets (HD Wallets). This means that they can generate many different public keys that are all valid and verifiable as unique to that wallet. A wallet contains a coin if it possesses the information necessary to unlock that coin and create a transaction which spends it.
 
