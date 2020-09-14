@@ -1,6 +1,6 @@
 ---
 id: doc4
-title: 4 - The Compiler
+title: 4 - The High Level Languange, Compiler, and Functions
 ---
 
 This guide assumes that you have already read the previous parts.
@@ -86,11 +86,11 @@ This is where `mod` comes in.
 
 ```
 $ run '(mod (arg_one arg_two) (list arg_one))'
-(c (f (a)) (q ()))
+(c 2 (q ()))
 ```
 As you can see it returns our program in compiled lower level form.
 ```
-$ brun '(c (f (a)) (q ()))' '(100 200 300)'
+$ brun '(c 2 (q ()))' '(100 200 300)'
 (100)
 ```
 
@@ -98,7 +98,6 @@ You may be wondering what other parameters `mod` takes, between variable names a
 
 ## Functions, Macros and Constants
 
-In the lower level language functions were created by passing a copy of the source code to an eval so that it could call itself again.
 In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defmacro` and `defconstant`.
 
 We can define as many of these as we like before the main source code.
@@ -141,9 +140,9 @@ We can save these files to .clvm files which can be run from the commandline.
 Saving the above example as `factorial.clvm` allows us to do the following.
 ```
 $ run factorial.clvm
-((c (q ((c (f (a)) (c (f (a)) (c (f (r (a))) (q ())))))) (c (q ((c (i (= (f (r (a))) (q 1)) (q (q 1)) (q (* ((c (f (a)) (c (f (a)) (c (- (f (r (a))) (q 1)) (q ()))))) (f (r (a)))))) (a)))) (a))))
+((c (q ((c 2 (c 2 (c 5 (q ())))))) (c (q ((c (i (= 5 (q 1)) (q (q 1)) (q (* ((c 2 (c 2 (c (- 5 (q 1)) (q ()))))) 5))) 1))) 1)))
 
-$ brun '((c (q ((c (f (a)) (c (f (a)) (c (f (r (a))) (q ())))))) (c (q ((c (i (= (f (r (a))) (q 1)) (q (q 1)) (q (* ((c (f (a)) (c (f (a)) (c (- (f (r (a))) (q 1)) (q ()))))) (f (r (a)))))) (a)))) (a))))' '(5)'
+$ brun '((c (q ((c 2 (c 2 (c 5 (q ())))))) (c (q ((c (i (= 5 (q 1)) (q (q 1)) (q (* ((c 2 (c 2 (c (- 5 (q 1)) (q ()))))) 5))) 1))) 1)))' '(5)'
 120
 ```
 
@@ -179,9 +178,9 @@ Here we define a macro to square a parameter and then a function to square a lis
 Compiling and running this code results in this:
 ```
 $ run square_list.clvm
-((c (q ((c (f (a)) (c (f (a)) (c (r (a)) (q ())))))) (c (q ((c (i (f (r (a))) (q (c (* (f (f (r (a)))) (f (f (r (a))))) ((c (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (q (f (r (a))))) (a)))) (a))))
+((c (q ((c 2 (c 2 (c 3 (q ())))))) (c (q ((c (i 5 (q (c (* 9 9) ((c 2 (c 2 (c 13 (q ()))))))) (q 5)) 1))) 1)))
 
-$ brun '((c (q ((c (f (a)) (c (f (a)) (c (r (a)) (q ())))))) (c (q ((c (i (f (r (a))) (q (c (* (f (f (r (a)))) (f (f (r (a))))) ((c (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (q (f (r (a))))) (a)))) (a))))' '(10 9 8 7)'
+$ brun '((c (q ((c 2 (c 2 (c 3 (q ())))))) (c (q ((c (i 5 (q (c (* 9 9) ((c 2 (c 2 (c 13 (q ()))))))) (q 5)) 1))) 1)))' '(10 9 8 7)'
 (100 81 64 49)
 ```
 
