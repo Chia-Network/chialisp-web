@@ -14,7 +14,8 @@ This lets the runtime know that it should be including higher level features.
 The first higher level feature you should be aware of is that it is no longer necessary to quote atoms.
 
 Compare `brun` and `run` here:
-```
+
+```lisp
 $ brun '(+ 200 200)'
 FAIL: first of non-cons ()
 $ run '(+ 200 200)'
@@ -23,21 +24,21 @@ $ run '(+ 200 200)'
 
 Run also gives us access to a number of convenient high level operators, which we will cover now.
 
-### list
+## list
 
 `list` takes any number of parameters and returns them put inside a list.
 This saves us from having to manually create nested `(c (A) (c (B) (q ())))` calls, which can get messy quickly.
 
-```
+```lisp
 $ run '(list 100 "test" 0xdeadbeef)'
 (100 "test" 0xdeadbeef)
 ```
 
-# if
+## if
 
 `if` automatically puts our `i` statement into the lazy evaluation form so we do not need to worry about the unused code path being evaluated.
 
-```
+```lisp
 $ run '(if (= (f (a)) 100) (q "success") (x))' '(100)'
 "success"
 
@@ -45,7 +46,7 @@ $ run '(if (= (f (a)) 100) (q "success") (x))' '(101)'
 FAIL: clvm raise ()
 ```
 
-### qq unquote
+## qq unquote
 
 `qq` allows us to quote something with selected portions being evaluated inside by using `unquote`.
 The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute out sections of predetermined code.
@@ -54,17 +55,17 @@ Suppose we are writing a program that returns another coin's puzzle.
 We know that a puzzle takes the form: `(c (c (q 50) (c (q 0xpubkey) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))`
 However we will want to change 0xpubkey to a value passed to us through our solution.
 
-```
+```lisp
 $ run '(qq (c (c (q 50) (c (q (unquote (f (a)))) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a)))))))' '(0xdeadbeef)'
 
 (c (c (q 50) (c (q 0xdeadbeef) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))
 ```
 
-### and
+## and
 
 `and` takes two boolean values and returns true if both values are true
 
-```
+```lisp
 $ run '(and (= (f (a)) 10) (= (f (r (a))) 20))' '(10 20)'
 1
 
@@ -84,12 +85,14 @@ This is where `mod` comes in.
 
 `(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the last is the higher level script which is to be compiled.
 
-```
+```lisp
 $ run '(mod (arg_one arg_two) (list arg_one))'
 (c 2 (q ()))
 ```
+
 As you can see it returns our program in compiled lower level form.
-```
+
+```lisp
 $ brun '(c 2 (q ()))' '(100 200 300)'
 (100)
 ```
@@ -103,7 +106,7 @@ In the higher level language we can define functions, macros, and constants befo
 We can define as many of these as we like before the main source code.
 Usually a program will be structured like this:
 
-```
+```lisp
 (mod (arg_one arg_two)
   (defconstant const_name value)
   (defun function_name (parameter_one parameter_two) (*function_code*))
@@ -115,6 +118,7 @@ Usually a program will be structured like this:
 ```
 
 A few things to note:
+
 - Functions can reference themselves in their code but macros cannot as they are inserted at compile time, similar to inline functions.
 - Both functions and macros can reference other functions, macros and constants.
 - Macros that refer to their parameters must be quasiquoted with the parameters unquoted
@@ -123,9 +127,9 @@ A few things to note:
 
 Now lets look at some example programs using functions.
 
-### Factorial
+## Factorial
 
-```
+```lisp
 (mod (arg_one)
   ; function definitions
   (defun factorial (input)
@@ -136,9 +140,11 @@ Now lets look at some example programs using functions.
   (factorial arg_one)
 )
 ```
-We can save these files to .clvm files which can be run from the commandline.
+
+We can save these files to .clvm files which can be run from the command line.
 Saving the above example as `factorial.clvm` allows us to do the following.
-```
+
+```lisp
 $ run factorial.clvm
 ((c (q ((c 2 (c 2 (c 5 (q ())))))) (c (q ((c (i (= 5 (q 1)) (q (q 1)) (q (* ((c 2 (c 2 (c (- 5 (q 1)) (q ()))))) 5))) 1))) 1)))
 
@@ -146,7 +152,7 @@ $ brun '((c (q ((c 2 (c 2 (c 5 (q ())))))) (c (q ((c (i (= 5 (q 1)) (q (q 1)) (q
 120
 ```
 
-### Squaring a List
+## Squaring a List
 
 Now lets do an example which uses macros as well.
 When writing a macro it must be quasiquoted with the parameters being unquoted.
@@ -157,7 +163,7 @@ This works at any place where you name parameters, and allows you to handle list
 
 Here we define a macro to square a parameter and then a function to square a list.
 
-```
+```lisp
 (mod args
 
   (defmacro square (input)
@@ -176,7 +182,8 @@ Here we define a macro to square a parameter and then a function to square a lis
 ```
 
 Compiling and running this code results in this:
-```
+
+```lisp
 $ run square_list.clvm
 ((c (q ((c 2 (c 2 (c 3 (q ())))))) (c (q ((c (i 5 (q (c (* 9 9) ((c 2 (c 2 (c 13 (q ()))))))) (q 5)) 1))) 1)))
 
@@ -184,7 +191,7 @@ $ brun '((c (q ((c 2 (c 2 (c 3 (q ())))))) (c (q ((c (i 5 (q (c (* 9 9) ((c 2 (c
 (100 81 64 49)
 ```
 
-# Conclusion
+## Conclusion
 
 You should now have the context and knoweldge needed to write your own smart contracts.
 Remember from [part 2](/docs/doc2/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
