@@ -8,17 +8,17 @@ This guide directly continues on from [part 1](/docs/) so if you haven't read th
 This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/doc5).
 
-
 ## Coins
 
 A coin's ID is constructed from 3 pieces of information.
+
 1. The ID of its parent
 2. The hash of its puzzle (AKA the puzzlehash)
 3. The amount that it is worth
 
 To construct a coin ID simply take the hash of these 3 pieces of information concatenated in order.
 
-```
+```lisp
 coinID == sha256(parent_ID + puzzlehash + amount)
 ```
 
@@ -41,6 +41,7 @@ When you spend a coin you destroy it.
 Unless the behaviour of a puzzle designates what to do with the coin's value when it is spent, the value of the coin is also destroyed in the spend.
 
 To spend a coin you need 3 pieces of information (and an optional 4th).
+
 1. The coin's ID
 2. The full source of the coin's puzzle
 3. A solution to the coin's puzzle
@@ -54,13 +55,12 @@ It's up to the puzzles to prevent coins from being stolen or spent in unintended
 If anybody can submit a solution for a coin, you maybe wondering how somebody can "own" a coin.
 By the end of the next section of the guide, hopefully it should be clear.
 
-
 ## Puzzles and Solutions in Practice
 
 So far in [part 1](/docs/) we have covered ChiaLisp programs that will evaluate to some result.
 Remember the first part represents a puzzle which is committed to locking up a coin, and the second part is a solution anybody can submit:
 
-```
+```lisp
 $ brun '(+ 2 5)' '(40 50)'
 90
 
@@ -87,13 +87,14 @@ Here is the complete list of OpCodes along with their format and behaviour.
 * **AGG_SIG_ME - [56] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
 
 These are returned as a list of lists in the form:
-```
+
+```lisp
 ((51 0xabcd1234 200) (50 0x1234abcd) (53 0xdeadbeef))
 ```
+
 *Remember: this is what a puzzle should evaluate to when presented with a solution so that a full-node/ledger-sim can understand it.*
 
 Let's create a few examples puzzles and solutions to demonstrate how this is used in practice.
-
 
 ### Example 1: Password Locked Coin
 
@@ -103,7 +104,7 @@ To implement this we would have the hash of the password committed into the puzz
 For the following example the password is "hello" which has the hash value 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824.
 The implementation for the above coin would be thus:
 
-```
+```lisp
 (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))
 ```
 
@@ -117,7 +118,8 @@ The format for a solution to this is expected to be formatted as `(password newp
 Remember, anybody can attempt to spend this coin as long as they know the coin's ID and the full puzzle code.
 
 Let's test it out using clvm_tools.
-```
+
+```lisp
 $ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("let_me_in" 0xdeadbeef)'
 "wrong password"
 
@@ -138,13 +140,14 @@ If we're doing this then we should also change the `(i A B C)` pattern to `((c (
 The reason for this is explained in [part 3](/docs/doc3/). For now don't worry about why.
 
 Here is our completed password protected coin:
-```
+
+```lisp
 ((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))
 ```
 
 Let's test it out using clvm_tools:
 
-```
+```lisp
 $ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))' '("let_me_in" 0xdeadbeef)'
 FAIL: clvm raise ("wrong password")
 
@@ -159,12 +162,13 @@ Another way of phrasing this is "how much control over the output should the sol
 
 Suppose we lock a coin up using the following puzzle:
 
-```
+```lisp
 (q ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))
 ```
+
 Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzlehash 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a and the amount 100.
 
-```
+```lisp
 $ brun '(q ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '(80 90 "hello")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 
@@ -176,18 +180,22 @@ In this example the result of spending the coin is entirely determined from the 
 Even though anybody could initiate the spend of the coin, the person that locked the coin up has all the power in the way that the coin is spent as the solution doesn't matter at all.
 
 Conversely lets consider a coin locked up with the following puzzle:
-```
+
+```lisp
 1
 ```
+
 In this example the person that locked the coin up as delegated all of the control to the solution.
 The result of the spend is entirely dependent on the solution.
-```
+
+```lisp
 $ brun '1' '((51 0xf00dbabe 50) (51 0xfadeddab 50))'
 ((51 0xf00dbabe 50) (51 0xfadeddab 50))
 
 $ brun '1' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
 ```
+
 In this situation, not only can anybody can spend the coin, they can spend it however they like!
 
 This balance of power determines a lot of how puzzles are designed in ChiaLisp.
@@ -195,14 +203,14 @@ This exercise is intended to demonstrate the point that OpCodes can come from bo
 
 In the next exercise we will put everything we know together and create the "standard" transaction in Chia that underpins how wallets are able to send money to each other.
 
-
 ### Example: Signature Locked Coin
 
 To 'send a coin to somebody' you simply create a puzzle that requires the recipients signature, but then allows them to return any other OpCodes that they like.
 This means that the coin cannot be spent by anybody else, but the outputs are entirely decided by the recipient.
 
 We can construct the following smart transaction where AGGSIG is 50 and the recipient's pubkey is 0xpubkey.
-```
+
+```lisp
 (c (c (q 50) (c (q 0xpubkey) (c (sha256tree 1) (q ())))) 1)
 ```
 
@@ -212,7 +220,8 @@ This puzzle forces the resultant evaluation to contain `(50 0xpubkey *hash_of_so
 
 Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
 The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadeddab.
-```
+
+```lisp
 $ brun '(c (c (q 50) (c (q 0xdeadbeef) (c (sha256tree 1) (q ())))) 1)' '((51 0xfadeddab 100))'
 ((50 0xdeadbeef 0x34b88c869130fc1d50aafd392d8fa6797de4370b1969e5216bb076850ed3beae) (51 0xfadeddab 100))
 ```
@@ -248,7 +257,6 @@ You can split a coin up into as many new coins with fractions of the original va
 
 You cannot create two coins of the same value, with the same puzzlehash, from the same parent as this will lead to an ID collision and the spend will be rejected.
 
-
 ### Coin Aggregation and Spend Bundles
 
 You can aggregate a bunch of smaller coins together into one large coin.
@@ -265,7 +273,7 @@ The coupling inside the SpendBundle and the 80 value asserting its relationship 
 
 We can construct an even more powerful version of the signature locked coin to use as our standard transaction.
 
-```
+```lisp
 (c (c (q 50) (c (q 0xpubkey) (c (sha256tree 2) (q ())))) ((c 2 5)))
 ```
 
@@ -279,13 +287,13 @@ We will cover in more detail how this works in the [next part](/docs/doc3/) of t
 
 A basic solution for this standard transaction might look like:
 
-```
+```lisp
 ((q ((51 0xmynewpuzzlehash 50) (51 0xanothernewpuzzlehash 50))) (q ()))
 ```
 
 Running that in the clvm_tools looks like this:
 
-```
+```lisp
 $ brun '(c (c (q 50) (c (q 0xfadeddab) (c (sha256tree 2) (q ())))) ((c 2 5)))' '((q ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) (q ()))'
 
 ((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (51 0xdeadbeef 50) (51 0xf00dbabe 50))

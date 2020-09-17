@@ -10,7 +10,6 @@ The full set of operators is documented [here](https://github.com/Chia-Network/c
 This guide will cover the basics of the language and act as an introduction to the structure of programs.
 You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).
 
-
 ## Types
 
 In ChiaLisp everything is either a list or an atom.
@@ -30,7 +29,7 @@ Internally integers are interpreted as 256 bit signed integers.
 
 The math operators are `*`, `+`, and `-`.
 
-```
+```lisp
 $ brun '(- (q 6) (q 5))' '()'
 1
 
@@ -49,7 +48,7 @@ Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
 
 There is also internal support for negatives.
 
-```
+```lisp
 $ brun '(- (q 5) (q 7))' '()'
 -2
 
@@ -60,13 +59,14 @@ $ brun '(+ (q 3) (q -8))' '()'
 
 To use hexadecimal numbers, simply prefix them with `0x`.
 
-```
+```lisp
 $ brun '(+ (q 0x000a) (q 0x000b))' '()'
 21
 ```
 
 The final mathematical operator is equal which acts similarly to == in other languages.
-```
+
+```lisp
 $ brun '(= (q 5) (q 6))' '()'
 ()
 
@@ -81,8 +81,7 @@ As you can see above this language interprets some data as boolean values.
 In this language an empty list `()` evaluate to `False`.
 Any other value evaluates to `True`, though internally `True` is represented with `1`.
 
-
-```
+```lisp
 $ brun '(= (q 100) (q 90))'
 ()
 
@@ -92,7 +91,7 @@ $ brun '(= (q 100) (q 100))'
 
 The exception to this rule is `0` because `0` is  exactly the same as `()`.
 
-```
+```lisp
 $ brun '(= (q 0) (q ()))' '()'
 1
 
@@ -104,7 +103,7 @@ $ brun '(+ (q 70) (q ()))' '()'
 
 The `i` operator takes the form `(i A B C)` and acts as an `if` statement where `(if A is True then do B, else do C)`.
 
-```
+```lisp
 $ brun '(i (q 0) (q 70) (q 80))' '()'
 80
 
@@ -120,7 +119,6 @@ $ brun '(i (q ()) (q 70) (q 80))' '()'
 
 Now seems like a good time to clarify further about lists and programs.
 
-
 ## Lists and Programs
 
 A list is any space-separated, ordered group of one or more elements inside brackets.
@@ -132,9 +130,8 @@ Programs are a subset of lists which can be evaluated using CLVM.
 
 **In order for a list to be a valid program:**
 
-**1. The first item in the list must be a valid operator**
-
-**2. Every item after the first must be a valid program**
+- **1. The first item in the list must be a valid operator**
+- **2. Every item after the first must be a valid program**
 
 This is why literal values and non-program lists *must* be quoted using `q`.
 
@@ -142,14 +139,14 @@ This is why literal values and non-program lists *must* be quoted using `q`.
 
 Programs can contain non-program lists, but they also must be quoted, for example:
 
-```
+```lisp
 $ brun '(q (80 90 100))' '()'
 (80 90 100)
 ```
 
 And now that we know we can have programs inside programs we can create programs such as:
 
-```
+```lisp
 $ brun '(i (= (q 50) (q 50)) (+ (q 40) (q 30)) (q 20))' '()'
 70
 ```
@@ -158,40 +155,38 @@ Programs in ChiaLisp tend to get built in this fashion.
 Smaller programs are assembled together to create a larger program.
 It is recommended that you create your programs in an editor with brackets matching!
 
-
 ## List Operators
 
 `f` returns the first element in a passed list.
 
-```
+```lisp
 $ brun '(f (q (80 90 100)))' '()'
 80
 ```
 
 `r` returns every element in a list except for the first.
 
-```
+```lisp
 $ brun '(r (q (80 90 100)))' '()'
 (90 100)
 ```
 
 `c` prepends an element to a list
 
-```
+```lisp
 $ brun '(c (q 70) (q (80 90 100)))' '()'
 (70 80 90 100)
 ```
 
 And we can use combinations of these to access or replace any element we want from a list:
 
-```
+```lisp
 $ brun '(c (q 100) (r (q (60 110 120))))' '()'
 (100 110 120)
 
 $ brun '(f (r (r (q (100 110 120 130 140)))))' '()'
 120
 ```
-
 
 ## Solutions and Environment Variables
 
@@ -200,11 +195,11 @@ Up until now our programs have not had any input or variables, however ChiaLisp 
 It's important to remember that the context for ChiaLisp is for use in locking up coins with a puzzle program.
 This means that we need to be able to pass some information to the puzzle.
 
-A solution is a list of values passed to the puzzle. 
+A solution is a list of values passed to the puzzle.
 In the higher level language the solution can be referenced with `a`.
 Note the use of `run` below:
 
-```
+```lisp
 $ run '(a)' '("this" "is the" "solution")'
 ("this" "is the" "solution")
 
@@ -217,7 +212,7 @@ $ run '(r (a))' '(80 90 100 110)'
 
 And remember lists can be nested too.
 
-```
+```lisp
 $ run '(f (f (r (a))))' '((70 80) (90 100) (110 120))'
 90
 
@@ -227,7 +222,7 @@ $ run '(f (f (r (a))))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 
 These environment variables can be used in combination with all other operators.
 
-```
+```lisp
 $ run '(+ (f (a)) (q 5))' '(10)'
 15
 
@@ -237,7 +232,7 @@ $ run '(* (f (a)) (f (a)))' '(10)'
 
 This program checks that the second variable is equal to the square of the first variable.
 
-```
+```lisp
 $ run '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 25)'
 1
 
@@ -252,12 +247,14 @@ This is because for the sake of minimalism in the lower level CLVM language, we 
 
 Calling `1` accesses the root of the tree and returns the entire solution list.
 
-```
+```lisp
 $ brun '1' '("this" "is" "a" "test")'
 ("this" 26995 97 "test")
 ```
+
 After that, you can imagine a binary tree of `f` and `r`, where each node is numbered.
-```
+
+```lisp
 $ brun '2' '("this" "is" "a" "test")'
 "this"
 
