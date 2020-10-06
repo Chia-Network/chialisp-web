@@ -84,7 +84,7 @@ Here is the complete list of OpCodes along with their format and behaviour.
 * **ASSERT_MIN_TIME - [54] - (54 time)**: This spend is only valid if the given time has passed.
 * **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
 * **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the given block_age has surpassed the age of the coin being spent.
-* **AGG_SIG_ME - [56] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
+* **AGG_SIG_ME - [57] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
 
 These are returned as a list of lists in the form:
 
