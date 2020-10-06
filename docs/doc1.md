@@ -248,22 +248,32 @@ This is because for the sake of minimalism in the lower level CLVM language, we 
 Calling `1` accesses the root of the tree and returns the entire solution list.
 
 ```lisp
-$ brun '1' '("this" "is" "a" "test")'
-("this" 26995 97 "test")
+$ brun '1' '("example" "data" "for" "test")'
+("example" "data" "for" "test")
 ```
 
 After that, you can imagine a binary tree of `f` and `r`, where each node is numbered.
 
 ```lisp
-$ brun '2' '("this" "is" "a" "test")'
-"this"
+$ brun '2' '("example" "data" "for" "test")'
+"example"
 
-$ brun '3' '("this" "is" "a" "test")'
-(26995 97 "test")
-
-$ brun '4' '((800 900) "is" "a" "test")'
-800
+$ brun '3' '("example" "data" "for" "test")'
+("data" "for" "test")
 ```
+And this is designed to work when there are lists inside lists too.
+```
+$ brun '4' '(("deeper" "example") "data" "for" "test")'
+"deeper"
+
+$ brun '5' '(("deeper" "example") "data" "for" "test")'
+"data"
+
+$ brun '6' '(("deeper" "example") "data" "for" "test")'
+("example")
+```
+
+And so on.
 
 ## End of Part 1
 
