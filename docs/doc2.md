@@ -120,14 +120,14 @@ Remember, anybody can attempt to spend this coin as long as they know the coin's
 Let's test it out using clvm_tools.
 
 ```lisp
-$ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("let_me_in" 0xdeadbeef)'
+$ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ())) (q "wrong password"))' '("let_me_in" 0xdeadbeef)'
 "wrong password"
 
 $ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("incorrect" 0xdeadbeef)'
 "wrong password"
 
 $ brun '(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))' '("hello" 0xdeadbeef)'
-(51 0xdeadbeef 100)
+((51 0xdeadbeef 100))
 ```
 
 There is one final change we need to make before this is a complete smart transaction.
@@ -142,17 +142,17 @@ The reason for this is explained in [part 3](/docs/doc3/). For now don't worry a
 Here is our completed password protected coin:
 
 ```lisp
-((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))
+((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ()))) (q (x "wrong password"))) 1))
 ```
 
 Let's test it out using clvm_tools:
 
 ```lisp
-$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))' '("let_me_in" 0xdeadbeef)'
+$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ()))) (q (x "wrong password"))) 1))' '("let_me_in" 0xdeadbeef)'
 FAIL: clvm raise ("wrong password")
 
-$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (q 51) (c 5 (c (q 100) (q ()))))) (q (x (q "wrong password")))) 1))' '("hello" 0xdeadbeef)'
-(51 0xdeadbeef 100)
+$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ()))) (q (x "wrong password"))) 1))' '("hello" 0xdeadbeef)'
+((51 0xdeadbeef 100))
 ```
 
 ### Generating OpCodes from the Puzzle vs. from the Solution
