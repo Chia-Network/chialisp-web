@@ -185,8 +185,10 @@ Conversely lets consider a coin locked up with the following puzzle:
 1
 ```
 
-In this example the person that locked the coin up as delegated all of the control to the solution.
-The result of the spend is entirely dependent on the solution.
+This example may look a little weird, because most ChiaLisp programs are lists, and this is just an atom, but it is still a valid program.
+This puzzle simply returns the entire solution to the blockchain.
+You can think about this in terms of power and control.
+The person that locked the coin up has given all the power to the person who provides the solution.
 
 ```lisp
 $ brun '1' '((51 0xf00dbabe 50) (51 0xfadeddab 50))'
@@ -197,9 +199,21 @@ $ brun '1' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ```
 
 In this situation, not only can anybody can spend the coin, they can spend it however they like!
-
 This balance of power determines a lot of how puzzles are designed in ChiaLisp.
-This exercise is intended to demonstrate the point that OpCodes can come from both the recipient's solution and from the sender's puzzle, and how that represents trust and the balance of power.
+
+For example, let's create a puzzle that lets the spender choose the output, but with one stipulation.
+
+```lisp
+  (c (q (51 0xcafef00d 200)) 1)
+```
+This will let the spender return any conditions and OpCodes they want via the solution but will always add the condition to create a coin with the puzzlehash 0xcafef00d and value 200.
+
+```
+$ brun '(c (q (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
+((51 0xcafef00d 200) (51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
+```
+
+This section is intended to demonstrate the point that OpCodes can come from both the recipient's solution and from the sender's puzzle, and how that represents trust and the balance of power.
 
 In the next exercise we will put everything we know together and create the "standard" transaction in Chia that underpins how wallets are able to send money to each other.
 
