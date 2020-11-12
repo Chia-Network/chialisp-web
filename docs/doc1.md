@@ -204,47 +204,47 @@ It's important to remember that the context for ChiaLisp is for use in locking u
 This means that we need to be able to pass some information to the puzzle.
 
 A solution is a list of values passed to the puzzle.
-In the higher level language the solution can be referenced with `a`.
+In the higher level language the solution can be referenced with `1`.
 Note the use of `run` below:
 
 ```lisp
-$ run '(a)' '("this" "is the" "solution")'
+$ run '(1)' '("this" "is the" "solution")'
 ("this" "is the" "solution")
 
-$ run '(f (a))' '(80 90 100 110)'
+$ run '(f (1))' '(80 90 100 110)'
 80
 
-$ run '(r (a))' '(80 90 100 110)'
+$ run '(r (1))' '(80 90 100 110)'
 (90 100 110)
 ```
 
-And remember lists can be nested too.
+And remember that lists can be nested too.
 
 ```lisp
-$ run '(f (f (r (a))))' '((70 80) (90 100) (110 120))'
+$ run '(f (f (r (1))))' '((70 80) (90 100) (110 120))'
 90
 
-$ run '(f (f (r (a))))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+$ run '(f (f (r (1))))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 (91 92 93 94 95)
 ```
 
 These environment variables can be used in combination with all other operators.
 
 ```lisp
-$ run '(+ (f (a)) (q 5))' '(10)'
+$ run '(+ (f (1)) (q 5))' '(10)'
 15
 
-$ run '(* (f (a)) (f (a)))' '(10)'
+$ run '(* (f (1)) (f (a)))' '(10)'
 100
 ```
 
 This program checks that the second variable is equal to the square of the first variable.
 
 ```lisp
-$ run '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 25)'
+$ run '(= (f (r (1))) (* (f (1)) (f (1))))' '(5 25)'
 1
 
-$ run '(= (f (r (a))) (* (f (a)) (f (a))))' '(5 30)'
+$ run '(= (f (r (1))) (* (f (1)) (f (1))))' '(5 30)'
 ()
 ```
 
