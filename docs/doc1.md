@@ -41,12 +41,12 @@ $ brun '(+ (q 10) (q 20) (q 30) (q 40))' '()'
 ```
 
 You may have noticed that the multiplication example above takes more than two parameters in the list.
-This is because many operators can take variable amounts of parameters.
-`+` and `-` are commutative so the order of parameters does not matter.
+This is because many operators can take a variable number of parameters.
+`+` and `*` are commutative so the order of parameters does not matter.
 For non-commutative operations, `(- (q 100) (q 30) (q 20) (q 5))` is equivalent to `(- (q 100) (+ (q 30) (q 20) (q 5)))`.
 Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
 
-There is also internal support for negatives.
+There is also support for negative values.
 
 ```lisp
 $ brun '(- (q 5) (q 7))' '()'
@@ -101,8 +101,8 @@ $ brun '(+ (q 70) (q ()))' '()'
 
 ## Flow Control
 
-The `i` operator takes the form `(i A B C)` and acts as an `if` statement where `(if A is True then do B, else do C)`.
-
+The `i` operator takes the form `(i A B C)` and acts as an if-statement that
+evaluates to `B` if `A` is True and `C` otherwise.
 ```lisp
 $ brun '(i (q 0) (q 70) (q 80))' '()'
 80
@@ -115,6 +115,14 @@ $ brun '(i (q 12) (q 70) (q 80))' '()'
 
 $ brun '(i (q ()) (q 70) (q 80))' '()'
 80
+```
+
+ Note that both `B` and `C` are evaluated eagerly, just like all subexpressions.
+To defer evaluation until after the condition, `B` and `C` must be quoted (with
+`q`), and then evaluated with double parentheses, e.g. `((B))`.
+
+```lisp
+$ brun '((i (q 0) (q (x (q 1337) )) (q 1)))'
 ```
 
 Now seems like a good time to clarify further about lists and programs.
