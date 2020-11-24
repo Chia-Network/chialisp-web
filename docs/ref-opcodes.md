@@ -209,7 +209,7 @@ pubkey_for_exp|0x13|op_pubkey_for_exp|(pubkey_for_exp E)|1|Get pubkey for E|E is
 concat|0x14|op_concat|(concat A B ...)|>=0|Concatenate args|2 * (len(A) + len(B) + ...)| Atom(map(sum, arg_lens))
 sha256tree|0x15|op_sha256tree|(sha256tree L)|1|Recursive sha256 of all leaf nodes of L|| (len_of_all_atoms*10) + (Number of CLVM Objects * 10) TODO: Check|Atom(32)
 `>`|0x16|op_gr|(> A B)|2|if A > B then 1 else nil. Int conversion via Python's [int.from_bytes](https://docs.python.org/3/library/stdtypes.html#int.from_bytes)|A and B are atoms|<p style="color:red">10 * max(A,B)</p>|None
->s|0x17|op_gr_bytes|(>s A B)|2|Unsigned greater than|A and B are atoms|<p style="color:red">max(A,B)</p>|None
+`>s`|0x17|op_gr_bytes|(>s A B)|2|Unsigned greater than|A and B are atoms|<p style="color:red">max(A,B)</p>|None
 logand|0x18|op_logand|(logand A B ...)|>=0|Bitwise AND of args|All args are atoms|max_arg_strlen * 2|Atom(max(arg_lens))
 logior|0x19|op_logior|(logior A B ...)|>=0|Bitwise OR of args|All args are atoms|max_arg_strlen * 2|Atom(max(arg_lens))
 logxor|0x1a|op_logxor|(logxor A B)|2|Bitwise XOR of args. The bit is 1 if that bit is 1 in an odd number of the arguments|All args are atoms|max_arg_strlen * 2|Atom(max(arg_lens))
@@ -260,8 +260,8 @@ Some operators have a special value that is returned when they are called with z
 
 Operator | Identity
 ---|---
-+| 0
-*| 1
+`+`| 0
+`*`| 1
 AND| all 1's
 OR| all zeros
 XOR| all zeros
@@ -278,11 +278,11 @@ f|0x06|op_first
 r|0x07|op_rest
 l|0x08|op_listp
 x|0x09|op_raise
-=|0x0a|op_eq
+`=`|0x0a|op_eq
 sha256|0x0b|op_sha256
-+|0x0c|op_add
--|0x0d|op_subtract
-*|0x0e|op_multiply
+`+`|0x0c|op_add
+`-`|0x0d|op_subtract
+`*`|0x0e|op_multiply
 divmod|0x0f|op_divmod
 substr|0x10|op_substr
 strlen|0x11|op_strlen
@@ -290,8 +290,8 @@ point_add|0x12|op_point_add
 pubkey_for_exp|0x13|op_pubkey_for_exp
 concat|0x14|op_concat
 sha256tree|0x15|op_sha256tree
->|0x16|op_gr
->s|0x17|op_gr_bytes
+`>`|0x16|op_gr
+`>s`|0x17|op_gr_bytes
 logand|0x18|op_logand
 logior|0x19|op_logior
 logxor|0x1a|op_logxor
@@ -311,9 +311,9 @@ l | FAIL: first of non-cons () | 255
 x | FAIL: clvm raise () | 255
 = | FAIL: first of non-cons () | 255
 sha256 | 0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 | 0
-+ | () | 0
-- | cannot unpack non-iterable SExp object | 1
-* | 1 | 0
+`+` | () | 0
+`-` | cannot unpack non-iterable SExp object | 1
+`*` | 1 | 0
 divmod | FAIL: divmod requires 2 args () | 255
 substr | FAIL: first of non-cons () | 255
 strlen | FAIL: first of non-cons () | 255
@@ -321,8 +321,8 @@ point_add | 0xc00000000000000000000000000000000000000000000000000000000000000000
 pubkey_for_exp | FAIL: pubkey_for_exp requires 1 arg () | 255
 concat | () | 0
 sha256tree | FAIL: op_sha256tree expects exactly one argument () | 255
-> | FAIL: > requires 2 args () | 255
->s | FAIL: >s requires 2 args () | 255
+`>` | FAIL: > requires 2 args () | 255
+`>s` | FAIL: >s requires 2 args () | 255
 logand | -1 | 0
 logior | () | 0
 logxor | () | 0
