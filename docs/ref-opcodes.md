@@ -7,19 +7,24 @@ sidebar_label: 2 - Opcodes
 
 The clvm is a small, tightly defined VM that defines the semantics of CLVM programs run during Chia blockchain validation. It serves as a target language for higher level languages targeting CLVM, especially ChiaLisp.
 
+
 ## Definitions
 
-* **Value** - Any CLVM Object other than a cons box. These atoms can represent any value allowed by the syntax, including nil
-* **Atom** - A synonym for Value
-* **nil** - nil is a special built in value. The syntax for nil is `()`. It is used in the right cell of the last cons box of a list to signal the end of the list. nil is also used in all contexts where the boolean `false` might be used in other languages. For example, as the first argument of the `if` opcode.
-* **cons box** - A special CLVM Object that contains an ordered pair of CLVM Objects
-* **List** - A linked list of cons boxes, each containing a CLVM Object in the left cons cell, and the next cons box in the right cell. The final cell contains nil in its right cell. When All of the left cons cells hold a value, the list is a "flat list". When some of the cons cells hold cons boxes in their left cells, the "list" becomes a binary tree.
+* **Value** - We use value to mean an abstract value like `1` (an integer), `0xCAFE` (a byte string), or `"hello"` (a string). Values are represented by atoms in the CLVM.
+* **Atom** - The internal representation of a Value in the CLVM. Atoms are immutable and have two properties: a sequence of bytes, and a length, in bytes. Atoms are untyped. Any value allowed by the syntax of CLVM Code is representable by an atom, including nil.
+* **nil** - nil is a special built in value. The syntax for nil is `()`. It is used in the right cell of the last cons pair of a list to signal the end of the list. nil is also used in all contexts where the boolean `false` might be used in other languages. For example, as the first argument of the `if` opcode.
+* **cons pair** - This type of CLVM Object contains an ordered pair of CLVM Objects.
+* **CLVM Object** - The internal representation of values, programs, lists and trees in the CLVM. A CLVM Object can be a cons pair, or an atom.
+* **List** - A linked list of cons pair, each containing a CLVM Object in the left cons pair, and the next cons pair in the right cell. The final cell contains nil in its right cell. When all of the left cons pairs in a list hold an atom, the list is called a "flat list". When some of the left cells
+xxx
+in the list hold cons boxes in their left cells, the "list" becomes a binary tree.
 * **Function** - A program that can be evaluated, and a name. The name of a function is used to look up the function definition, which is its compiled program. The name is an atom that is assigned at the time of definition. This part of the documentation is concerned only with predefined, builtin functions: Opcodes.
-* **Operator** - Function.
-* **Program** - The textual representation of a clvm program can be referred to as a program, but what is usually meant in the context of the Chia blockchain is the compiled, in-memory representation of the program, which is a  binary tree whose Internal nodes are cons boxes, and whose leaf nodes are atoms.
-* **Opcodes** - These are builtin functions
+* **Operator** - Opcode.
+* **Program** - In the context of the Chia blockchain is the compiled, the in-memory representation of the program, which is a binary tree whose internal nodes are cons boxes, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
 
-Nil does not name a function, and cannot be evaluated as a function.
+* **Opcodes** - These are built-in functions
+
+Nil does not name a function, and it is an error to evaluate nil as a function.
 
 A CLVM program must have an unambigious definition and meaning, so that Chia blockchain consensus is deterministic with respect to block validation.
 Programs are treated as Merkle trees, and they are uniquely identified by the hash at their root. This program hash can be used to verify that two programs are the same.
