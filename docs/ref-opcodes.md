@@ -17,10 +17,10 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 * **CLVM Object** - The internal representation of values, programs, lists and trees in the CLVM. A CLVM Object can be a cons pair, or an atom.
 * **List** - A linked list of cons pair, each containing a CLVM Object in the left cons pair, and the next cons pair in the right cell. The final cell contains nil in its right cell. When all of the left cons pairs in a list hold an atom, the list is called a "flat list". When some of the left cells
 xxx
-in the list hold cons boxes in their left cells, the "list" becomes a binary tree.
+in the list hold cons pairs in their left cells, the "list" becomes a binary tree.
 * **Function** - A program that can be evaluated, and a name. The name of a function is used to look up the function definition, which is its compiled program. The name is an atom that is assigned at the time of definition. This part of the documentation is concerned only with predefined, builtin functions: Opcodes.
 * **Operator** - Opcode.
-* **Program** - In the context of the Chia blockchain is the compiled, the in-memory representation of the program, which is a binary tree whose internal nodes are cons boxes, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
+* **Program** - In the context of the Chia blockchain is the compiled, the in-memory representation of the program, which is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
 
 * **Opcodes** - These are built-in functions
 
@@ -92,13 +92,13 @@ Opcodes are functions built in to the CLVM. They are available to any running pr
 
 ## List Operators
 
-**c** *cons* `(c A B)` takes exactly two operands and returns a cons box with the two objects in it (A in the left, B in the right)
+**c** *cons* `(c A B)` takes exactly two operands and returns a cons pair with the two objects in it (A in the left, B in the right)
 
 Example: `'(c (q "A") (q ()))'` => `(65)`
 
-**f** *first* `(f X)` takes exactly one operand which must be a cons box, and returns the left half
+**f** *first* `(f X)` takes exactly one operand which must be a cons pair, and returns the left half
 
-**r** *rest* `(r X)` takes exactly one operand which must be a cons box, and returns the right half
+**r** *rest* `(r X)` takes exactly one operand which must be a cons pair, and returns the right half
 
 **l** *listp* `(l X)` takes exactly one operand and returns `()` if it is an atom or `1` if it is a list. In contrast to most other lisps, nil is not a list in CLVM.
 
@@ -196,9 +196,9 @@ Conventions used in the Operator Table
 keyword|opcode|impl|funcall|args|return|preconditions|cost|Allocations
 -------|------|-------------|---|---|---|---|---|---
 i|0x04|op_if|(i C A B)|3|if C==nil then B else A||10|None
-c|0x05|op_cons|(c A B)|2|cons box containing [A,B]||10|1 cons
-f|0x06|op_first|(f L)|1|left cell of cons box L|L is not atom|10|None
-r|0x07|op_rest|(r L)|1|right cell of cons box L|L is not atom|10|None
+c|0x05|op_cons|(c A B)|2|cons pair containing [A,B]||10|1 cons
+f|0x06|op_first|(f L)|1|left cell of cons pair L|L is not atom|10|None
+r|0x07|op_rest|(r L)|1|right cell of cons pair L|L is not atom|10|None
 l|0x08|op_listp|(l A)|1|return 1 if A is a list, else nil||20|None
 x|0x09|op_raise|(x ...)|>=0|stop program execution||N/A|None
 =|0x0a|op_eq|(= A B)|2|if A == B then 1 else nil|A and B are atoms|len(A) + len(B)|None
