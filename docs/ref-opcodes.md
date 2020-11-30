@@ -20,7 +20,7 @@ xxx
 in the list hold cons pairs in their left cells, the "list" becomes a binary tree.
 * **Function** - A program that can be evaluated, and a name. The name of a function is used to look up the function definition, which is its compiled program. The name is an atom that is assigned at the time of definition. This part of the documentation is concerned only with predefined, builtin functions: Opcodes.
 * **Operator** - Opcode.
-* **Program** - In the context of the Chia blockchain is the compiled, the in-memory representation of the program, which is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
+* **Program** - In the context of the Chia blockchain a program is the compiled, in-memory representation of the program text, which is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
 
 * **Opcodes** - These are built-in functions
 
