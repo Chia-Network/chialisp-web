@@ -102,10 +102,6 @@ Example: `'(c (q "A") (q ()))'` => `(65)`
 
 **l** *listp* `(l X)` takes exactly one operand and returns `()` if it is an atom or `1` if it is a list. In contrast to most other lisps, nil is not a list in CLVM.
 
-Errors:
-Allocations: None
-Cost:
-
 ## Control Flow
 **i** *if* `(i A B C)` takes exactly three operands `A`, `B`, `C`. If `A` is `()` (which means "false"), return `C`. Otherwise, return `B`. Note that B and C are evaluated before *if* is evaluated.
 
