@@ -198,15 +198,15 @@ r|0x07|op_rest|(r L)|1|right cell of cons pair L|L is not atom|10|None
 l|0x08|op_listp|(l A)|1|return 1 if A is a list, else nil||20|None
 x|0x09|op_raise|(x ...)|>=0|stop program execution||N/A|None
 =|0x0a|op_eq|(= A B)|2|if A == B then 1 else nil|A and B are atoms|len(A) + len(B)|None
-sha256|0x0b|op_sha256|(sha256 ...)|>=0|return sha256 of *concat* of args|All args are atoms|2 * len(args)|1 Atom(32)
-+|0x0c|op_add|(+ A B ...)|>=0|A + B + ...|All args are atoms|strlen(concat A B ...)) * 10|1 Atom(max(map(strlen, args)) + 1)
--|0x0d|op_subtract|(- A B ...)|>=0|A + B + ...|All args are atoms|strlen(concat A B ...)) * 10|1 Atom(max(map(strlen, args)))
+sha256|0x0b|op_sha256|(sha256 ...)|>=0|return sha256 of *concat* of args|All args are atoms|2 * len(args)|Atom(32)
++|0x0c|op_add|(+ A B ...)|>=0|A + B + ...|All args are atoms|strlen(concat A B ...)) * 10|Atom(max(map(strlen, args)) + 1)
+-|0x0d|op_subtract|(- A B ...)|>=0|A + B + ...|All args are atoms|strlen(concat A B ...)) * 10|Atom(max(map(strlen, args)))
 `*`|0x0e|op_multiply|(* A B ...)|>=0|A * B * ...|All args are atoms|strlen(A) * strlen(B) * ... * 10
-divmod|0x0f|op_divmod|(divmod A B)|2|((div A B) . (mod A B))|A and B are atoms|strlen(concat A B ...)) * 10|1 Atom(len(A) * len(B) * ...)
-substr|0x10|op_substr|(substr S start end)|3|new atom with bytes from|S is atom<br> start <= end<br>start>=0<br>end>=0<br>end<=len(S)|1|1 Atom(len(S))
+divmod|0x0f|op_divmod|(divmod A B)|2|((div A B) . (mod A B))|A and B are atoms|strlen(concat A B ...)) * 10|Atom(len(A) * len(B) * ...)
+substr|0x10|op_substr|(substr S start end)|3|new atom with bytes from|S is atom<br> start <= end<br>start>=0<br>end>=0<br>end<=len(S)|1|Atom(len(S))
 strlen|0x11|op_strlen|(strlen S)|1|length of atom S|S is atom|len(S)|None
-point_add|0x12|op_point_add|(point_add P1 P2 ...)|>=0|Sum any number, N, of G1 Elements|P[n] are 48 bytes in length|N * 32|1 Atom(96)
-pubkey_for_exp|0x13|op_pubkey_for_exp|(pubkey_for_exp E)|1|Get pubkey for E|E is an atom|900|1 Atom(96)
+point_add|0x12|op_point_add|(point_add P1 P2 ...)|>=0|Sum any number, N, of G1 Elements|P[n] are 48 bytes in length|N * 32|Atom(96)
+pubkey_for_exp|0x13|op_pubkey_for_exp|(pubkey_for_exp E)|1|Get pubkey for E|E is an atom|900|Atom(96)
 concat|0x14|op_concat|(concat A B ...)|>=0|Concatenate args|2 * (len(A) + len(B) + ...)| Atom(map(sum, arg_lens))
 sha256tree|0x15|op_sha256tree|(sha256tree L)|1|Recursive sha256 of all leaf nodes of L|| (len_of_all_atoms*10) + (Number of CLVM Objects * 10) TODO: Check|Atom(32)
 `>`|0x16|op_gr|(> A B)|2|if A > B then 1 else nil. Int conversion via Python's [int.from_bytes](https://docs.python.org/3/library/stdtypes.html#int.from_bytes)|A and B are atoms|<p style="color:red">10 * max(A,B)</p>|None
