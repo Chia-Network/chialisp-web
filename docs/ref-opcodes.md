@@ -100,7 +100,7 @@ Example: `'(c (q "A") (q ()))'` => `(65)`
 
 **r** *rest* `(r X)` takes exactly one operand which must be a cons pair, and returns the right half
 
-**l** *listp* `(l X)` takes exactly one operand and returns `()` if it is an atom or `1` if it is a list. In contrast to most other lisps, nil is not a list in CLVM.
+**l** *listp* `(l X)` takes exactly one operand and returns `()` if it is an atom or `1` if it is a cons pair. In contrast to most other lisps, nil is not a list in CLVM.
 
 ## Control Flow
 **i** *if* `(i A B C)` takes exactly three operands `A`, `B`, `C`. If `A` is `()` (which means "false"), return `C`. Otherwise, return `B`. Note that B and C are evaluated before *if* is evaluated.
@@ -195,7 +195,7 @@ i|0x04|op_if|(i C A B)|3|if C==nil then B else A||10|None
 c|0x05|op_cons|(c A B)|2|cons pair containing [A,B]||10|1 cons
 f|0x06|op_first|(f L)|1|left cell of cons pair L|L is not atom|10|None
 r|0x07|op_rest|(r L)|1|right cell of cons pair L|L is not atom|10|None
-l|0x08|op_listp|(l A)|1|return 1 if A is a list, else nil||20|None
+l|0x08|op_listp|(l A)|1|return 1 if A is a cons pair, else nil||20|None
 x|0x09|op_raise|(x ...)|>=0|stop program execution||N/A|None
 =|0x0a|op_eq|(= A B)|2|if A == B then 1 else nil|A and B are atoms|len(A) + len(B)|None
 sha256|0x0b|op_sha256|(sha256 ...)|>=0|return sha256 of *concat* of args|All args are atoms|2 * len(args)|Atom(32)
