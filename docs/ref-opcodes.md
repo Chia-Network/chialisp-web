@@ -214,7 +214,7 @@ sha256tree|0x15|op_sha256tree|(sha256tree L)|1|Recursive sha256 of all leaf node
 logand|0x18|op_logand|(logand A B ...)|>=0|Bitwise AND of args|All args are atoms|max_arg_strlen * 2|Atom(max(arg_lens))
 logior|0x19|op_logior|(logior A B ...)|>=0|Bitwise OR of args|All args are atoms|max_arg_strlen * 2|Atom(max(arg_lens))
 logxor|0x1a|op_logxor|(logxor A B)|2|Bitwise XOR of args. The bit is 1 if that bit is 1 in an odd number of the arguments|All args are atoms|max_arg_strlen * 2|Atom(max(arg_lens))
-lognot|0x1b|op_lognot|(lognot A)|1|Flip every bit in A|A is an atom|COST|Atom(len(A))
+lognot|0x1b|op_lognot|(lognot A)|1|Flip every bit in A|A is an atom|strlen(A)*2|Atom(len(A))
 ash|0x1c|op_ash|(ash A B)|2|Arithmetic shift. if B >= 0, A << B. Else A >> abs(B). Shift in 1's if right shifting a negative number|A and B are atoms|2 * (strlen(A) + strlen(result)) |Atom(len(result))
 lsh|0x1d|op_lsh|(lsh A B)|2|Unsigned shift. if B >= 0, A << B. Else A >> abs(B). Shift in 0's in all cases|A and B are atoms|2 * (strlen(A) + strlen(result)) | Atom(len(result))
 softfork|0x1e|op_softfork|(softfork COST)|1|See [Blockchain & Consensus]()|COST>=1||None
