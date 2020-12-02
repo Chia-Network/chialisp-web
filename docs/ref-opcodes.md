@@ -10,19 +10,25 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 
 ## Definitions
 
-* **Value** - We use value to mean an abstract value like `1` (an integer), `0xCAFE` (a byte string), or `"hello"` (a string). Values are represented by atoms in the CLVM.
-* **Atom** - The internal representation of a Value in the CLVM. Atoms are immutable and have two properties: a sequence of bytes, and a length, in bytes. Atoms are untyped. Any value allowed by the syntax of CLVM Code is representable by an atom, including nil.
-* **nil** - nil is a special built in value. The syntax for nil is `()`. It is used in the right cell of the last cons pair of a list to signal the end of the list. nil is also used in all contexts where the boolean `false` might be used in other languages. For example, as the first argument of the `if` opcode.
+* **Value** - We use value to mean an abstract value like `1` (an integer), `0xCAFE` (a byte string), `"hello"` (a string) or `(sha256 (q "hello"))` (a program). Values are represented by CLVM Objects.
+* **CLVM Object** - The internal representation of atomic values, programs, lists and trees in the CLVM. A CLVM Object can be a cons pair, or an atom.
+* **Atom** - The internal representation of any value in the CLVM that is not a cons pair. Atoms are immutable and have two properties: a sequence of bytes, and a length, in bytes. Atoms are untyped. Any value allowed by the syntax of CLVM Code is representable by an atom, including nil.
+* **nil** - nil is a special built in value. The syntax for nil is `()`. Nil is used in the right cell of the last cons pair of a list to signal the end of the list. nil is also used in all contexts where the boolean `false` might be used in other languages. For example, as the first argument of the `if` opcode.
 * **cons pair** - This type of CLVM Object contains an ordered pair of CLVM Objects.
-* **CLVM Object** - The internal representation of values, programs, lists and trees in the CLVM. A CLVM Object can be a cons pair, or an atom.
-* **List** - A linked list of cons pair, each containing a CLVM Object in the left cons pair, and the next cons pair in the right cell. The final cell contains nil in its right cell. When all of the left cons pairs in a list hold an atom, the list is called a "flat list". When some of the left cells
-xxx
-in the list hold cons pairs in their left cells, the "list" becomes a binary tree.
-* **Function** - A program that can be evaluated, and a name. The name of a function is used to look up the function definition, which is its compiled program. The name is an atom that is assigned at the time of definition. This part of the documentation is concerned only with predefined, builtin functions: Opcodes.
+* **List** - A singly linked list can be formed of linked cons pairs, each one containing a CLVM Object in its left cell, and the next cons pair in the chain in its right cell. The final cons pair contains nil in its right cell, ending the list. When all of the cons pairs in a list hold an atom in their left cell, the list is called a "flat list". When cons pairs are allowed to hold other cons pairs in their left cells, the "list" becomes a binary tree.
+* **Function** - A function in the CLVM is either a built-in opcode, or a user-defined program.  User defined functions are covered in [User Defined Functions](language.md#user-defined-functions).
 * **Operator** - Opcode.
-* **Program** - In the context of the Chia blockchain a program is the compiled, in-memory representation of the program text, which is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
-
+* **Program** - In the context of the Chia blockchain a program is the compiled, in-memory representation of the program text. A program is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
 * **Opcodes** - These are built-in functions
+* **Tree** - A binary tree can be formed from cons pairs and atoms by allowing the right and left cells of a cons pair to hold either an atom, or a cons pair. Atoms are the leaves of the tree.
+* Function Parameter - In the program `(+ (q 1) (q 2))`, the quoted atoms `1` and `2` are parameters to the operator `+`
+* **Treearg** - These are program arguments passed in from outside the program. They are referenced by integers. See [pathargs](vm.md#pathargs).
+* **Argument** - Outside the context of the CLVM, the term "argument" can mean "program argument" (the "argv" of the C language, for example), or "function argument", among other things. Because of this potential confusion, we avoid using the term "argument" in this document. The context is especially important considering the way in which CLVM programs look up their program arguments. See [pathargs](vm.md#pathargs).
+
+Nil does not name a function. It is an error to evaluate nil as a function.
+
+A CLVM program must have an unambigious definition and meaning, so that Chia block validation and consensus is deterministic.
+Programs are treated as Merkle trees, which are uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
 
 Nil does not name a function, and it is an error to evaluate nil as a function.
 
