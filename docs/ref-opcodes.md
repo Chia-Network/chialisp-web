@@ -90,7 +90,7 @@ Some errors are:
 
 An error will cause the program to abort.
 
-## The builtin opcodes
+## The built-in opcodes
 
 Opcodes are functions built in to the CLVM. They are available to any running program.
 
