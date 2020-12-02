@@ -30,27 +30,135 @@ Nil does not name a function. It is an error to evaluate nil as a function.
 A CLVM program must have an unambigious definition and meaning, so that Chia block validation and consensus is deterministic.
 Programs are treated as Merkle trees, which are uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
 
-Nil does not name a function, and it is an error to evaluate nil as a function.
+# Program Evaluation
+The semantics of the language implemented by the CLVM is similar to Lisp. A program is represented as a tree, and the root of the tree is the outermost value (usually a cons pair). Leaves are evaluated before their parent nodes. This means that parameters are always evaluated before being passed to their function.
 
-A CLVM program must have an unambigious definition and meaning, so that Chia blockchain consensus is deterministic with respect to block validation.
-Programs are treated as Merkle trees, and they are uniquely identified by the hash at their root. This program hash can be used to verify that two programs are the same.
+Evaluating a program means evaluaing all leaf node of the program tree, and then all of their parents, recursively, util the root node is evaluated.
 
-## Evaluation
-The semantics of the language implemented by the CLVM is similar to Lisp.
-Evaluating a program means evaluaing the root of the program tree.
+If the root of the program is an atom, only one evaluation is performed. Please see [treeargs](#treeargs), below.
 
-If the root of the program is an atom, only one evaluation is performed. Please see [Program Arguments](), below.
+If the the root of the program is a list, all parameters are evaluated, then the first element of the list is evaluated. The first element of a list is expected to evaluate to an atom which names a function - otherwise an error occurs.
 
-If the the root of the program is a list, the first element in that list is expected to evaluate to an atom. That atom is used to look up a function, which is passed the rest of the list as its arguments and evaluated. All arguments are evaluated before being passed to functions. This quality, eager evaluation, means that all leaves are evaluated before inner nodes of the program tree.
+A compiled CLVM program can be thought of as a binary tree.
 
-### Program Arguments
+Here is an example of a function invocation ("function call"). `(+ (q 1) (q 2))`. The function is the opcode `+`, a function built in to the clvm runtime.
 
-For a program running on a deterministic machine to have different behaviours, it must be able to take take on different starting states. The starting state for a CLVM program is the argument list.
 
-As an improvement over walking the argument tree via calls to **first** and **rest**, arguments are indexed from the argument list by their argument number. This number is derived by translating the path of left and right nodes through the argument tree into a series of ones and zeros corresponding to the path to the CLVM Object in the argument list. The number of the root of the argument tree is `1`.
+`(+ (q 1) (q 2))`
+
+```
+      [ ]
+     /   \
+    +     [ ]
+         /   \
+      [q, 1]  [ ]
+             /   \
+         [q, 2]  nil
+```
+
+After First Reduction
+
+`(+ 1 2)`
+
+```
+      [ ]
+     /   \
+    +     [ ]
+         /   \
+        1     [ ]
+             /   \
+            2    nil
+```
+
+After Second Reduction, and function application
+
+```3```
+
+Program trees are evaluated by first evaluating the leaf nodes, then their parents, recursively.
+Arguments to functions are always evaluated before the function is called.
+CLVM objects need not be evaluated in a specific order, but all child nodes must be evaluated before their parent.
+
+If the item is a quoted value, the value is returned.
+
+If the item is an atom, the atom is looked up as a Treearg.
+
+If the item to be evaluated is a list, all the items in the list are evaluated.
+
+All arguments of a function are evaluated before being passed to that function.
+
+When a list is evaluated, if the first item in the list is an atom, it is interpreted as a function. Function definitions are covered in [functions](language.md#functions)
+
+## Types
+
+The two types of CLVM Object are *cons pair* and *atom*. They can be distinguished by the **listp** opcode.
+
+Atoms in the CLVM language do not carry other type information. However, similarly to the machine code instructions for a CPU, functions interpret atoms in specific predictible ways. Thus, each function assumes a type for each of its arguments.
+
+The type information is contained in the formal arguments of the applied function.
+
+The value of an atom - its length, and the values of its bytes - are always well defined. Because atoms have no type information, the meaning of an atom is determined when a function is applied to it. For example, an atom may be parsed as an integer, concatenated to another atom, and then treated as a BLS point.
+
+### Byte Array
+
+The atom is treated as an array of bytes, with a length. No specific semantics are assumed, except as specified in the instruction.
+
+### Unsigned Integer
+
+An unsigned integer of arbitrary length. If more bits are needed to performa an operation with atoms of different length, the atom is virtually extended with zero bytes to the left.
+
+### Signed Integer
+
+The byte array behaves as a two's complement signed integer. The most significant bit denotes a negative number. The underlying representation matters, because the individual bytes are viewable through other operations.
+
+This type has the potential for multiple representations to be treated as the same value. For example, 0xFF and 0xFFFF both encode `-1`. Integer arithmetic operations that treat returned atoms as signed integers will return the minimal representation for negative numbers, eg. `0xFF` for `-1`
+
+These integers are byte-aligned. For example, `0xFFF` is interpreted as `4095`.
+
+### BLS Point
+
+This type represents a point on an elliptic curve over finite field described [here](https://electriccoin.co/blog/new-snark-curve/).
+
+
+## Treeargs : Program Arguments, and  Argument Lookup
+
+For a program running on a deterministic machine to have different behaviours, it must be able to take take have different starting states. The starting state for a CLVM program is the program argument list - the treearg.
+
+When an unquoted integer is evaluated, it is replaced with the corresponding value/CLVM Object from the program Treearg.
+
+As an improvement over walking the argument tree via calls to **first** and **rest**, arguments are indexed from the argument list by their argument number. This number is derived by translating the path of left and right nodes through the argument tree into a series of ones and zeros corresponding to the path to the CLVM Object in the argument list. The number of the root of the argument tree is `1` (and also `0`).
+
+We treat an s-expression as a binary tree, where leaf nodes are atoms and pairs
+are nodes with two children. We then number the paths as follows:
+
+              1
+             / \
+            /   \
+           /     \
+          /       \
+         /         \
+        /           \
+       2             3
+      / \           / \
+     /   \         /   \
+    4      6      5     7
+   / \    / \    / \   / \
+  8   12 10  14 9  13 11  15
+
+etc.
+
+You're probably thinking "the first two rows make sense, but why do the numbers
+do that weird thing after?" The reason has to do with making the implementation simple.
+We want a simple loop which starts with the root node, then processes bits starting with
+the least significant, moving either left or right (first or rest). So the LEAST significant
+bit controls the first branch, then the next-least the second, and so on. That leads to this
+ugly-numbered tree.
+
+See the implementation [here](https://github.com/Chia-Network/clvm_tools/blob/master/clvm_tools/NodePath.py)
+
+## Quoting
 
 In most programming languages, evaluating a literal returns the evaluated value itself.
-In CLVM, the meaning of an atom not in function context at evaluation time is a reference to a value in the argument tree.
+In CLVM, the meaning of an atom at evaluation time is a reference to a value in the argument tree.
 
 Therefore, when you intend to write:
 
@@ -59,29 +167,27 @@ Therefore, when you intend to write:
 You must instead write:
 `(+ (q 1) (q 2))` => `3`
 
+nil is self-quoting.
+
 ### Compilation: Atom Syntax
 
 Although there is only one underlying representation of an atom, different syntaxes are recognized during compile time, and those atom syntaxes are interpreted differently during the translation from program text to CLVM Objects.
 
-`()` => `()`
-`0` => `()`
-`0x0` => `()`
+Nil and decimal zero evaluate to the same atom.
 
+`(q ())` => `()`
 
-# Program Evaluation
+`(q 0)` => `()`
 
-If the Object being evaluated is a list, the value of the first list item is interpreted as referring to a function.
-That function is looked up and evaluated, with the rest of the list as arguments.
+which is not the same as a sigle zero byte.
 
-All arguments of a function are evaluated before being passed to that function.
-
-Here is an example of a function invocation ("function call"). This function happens to be the opcode `+`, a function built in to the clvm runtime. `(+ (q 1) (q 2))`
+`(q 0x0)` => `0x00`
 
 ## Errors
 
 While running a clvm program, checks are made to ensure the CLVM does not enter an undefined state. When a program violates one of these runtime checks, it is said to have caused an error.
 
-Some errors are:
+TODO We need the full list of errors.
 
 * First element in an evaluated list is not a valid function. Example: `("hello" (q 1))` => `FAIL: unimplemented operator "hello"`
 * Wrong number of arguments. Example: `(lognot (q 1) (q 2))` => `FAIL: lognot requires 1 arg`
@@ -90,11 +196,11 @@ Some errors are:
 
 An error will cause the program to abort.
 
+# Operator Summary
+
 ## The built-in opcodes
 
 Opcodes are functions built in to the CLVM. They are available to any running program.
-
-# Operator Summary
 
 ## List Operators
 
@@ -109,24 +215,26 @@ Example: `'(c (q "A") (q ()))'` => `(65)`
 **l** *listp* `(l X)` takes exactly one operand and returns `()` if it is an atom or `1` if it is a cons pair. In contrast to most other lisps, nil is not a list in CLVM.
 
 ## Control Flow
-**i** *if* `(i A B C)` takes exactly three operands `A`, `B`, `C`. If `A` is `()` (which means "false"), return `C`. Otherwise, return `B`. Note that B and C are evaluated before *if* is evaluated.
+**i** *if* `(i A B C)` takes exactly three operands `A`, `B`, `C`. If `A` is `()`, return `C`. Otherwise, return `B`. Both B and C are evaluated before *if* is evaluated.
 
 **x** *raise* `(x X Y ...)` takes an arbitrary number of arguments (even zero). Immediately fail, with the argument list passed up into the (python) exception. No other CLVM instructions are run after this instruction is evaluated.
 
-**=** *equal* `(= A B)` returns 1 if `A` and `B` are both atoms and both equal. Otherwise `()`. Do not use this to test if two programs are equal. Use **sha256tree**. Nil tests equal to zero.
+**=** *equal* `(= A B)` returns 1 if `A` and `B` are both atoms and both equal. Otherwise `()`. Do not use this to test if two programs are identical. Use **sha256tree**. Nil tests equal to zero, but nil is not equal to a single zero byte.
 
 **>** *greater than* `(> A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise `()`. `(> A B)` means `A > B` in infix syntax.
 
-**>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array on unsigned bytes. Otherwise `()`.
+**>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array on unsigned bytes. Otherwise `()`. Compare to strcmp.
 `(>s "a" "b")` => `()`
+
 
 ## Constants
 **q** *quote* `(q X)` takes exactly one operand which is *not* evaluated and returns it
+Example: `(q "A")` => `(65)`
 
 ## Integer Operators
 **`+`** `(+ a0 a1 ...)` takes any number of integer operands and sums them. If given no arguments, zero is returned.
 
-**`-`** `(- a0 a1 ...)` takes one or more integer operands and adds a0 to the negative of the rest. Giving zero arguments is an error.
+**`-`** `(- a0 a1 ...)` takes one or more integer operands and adds a0 to the negative of the rest. Giving zero arguments returns 0.
 
 **`*`** `(* a0 a1 ...)` takes any number of integer operands and returns the product.
 
@@ -154,13 +262,28 @@ The shorter atom is considered to be extended with zero bytes until equal in len
 
 ## Strings
 
-**substr** `(substr S I1 I2)` return an atom containing bytes indexed from I1 to I2. The first byte on the left of S (the MSB) is byte zero.
+**substr** `(substr S I1 I2)` return an atom containing bytes indexed from I1 to I2. The MSB of S is byte zero. If I1 == I2, returns nil.
 
-`(substr (q "clvm") (q 0) (q 4))` => `clvm`
+```
+(substr (q "clvm") (q 0) (q 4)) => clvm
+(substr (q "clvm") (q 2) (q 4)) => vm
+(substr (q "clvm") (q 4) (q 4)) => ()
+
+(substr (q "clvm") (q 4) (q 5)) => FAIL
+(substr (q "clvm") (q 1) (q 0)) => FAIL
+(substr (q "clvm") (q -1) (q 4)) => FAIL
+```
 
 **strlen** `(strlen S)` return the number of bytes in S.
 
-`(strlen (q "clvm"))` => `4`
+```
+(strlen (q "clvm")) => 4
+(strlen (q "0x0")) => 1
+(strlen (q "")) => ()
+(strlen (q 0)) => ()
+(strlen (q ())) => ()
+(strlen ()) => ()
+```
 
 **concat** `(concat A ...)` return the concatenation of any number of atoms.
 
