@@ -21,7 +21,7 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 * **Program** - In the context of the Chia blockchain a program is the compiled, in-memory representation of the program text. A program is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
 * **Opcodes** - These are built-in functions
 * **Tree** - A binary tree can be formed from cons pairs and atoms by allowing the right and left cells of a cons pair to hold either an atom, or a cons pair. Atoms are the leaves of the tree.
-* Function Parameter - In the program `(+ (q 1) (q 2))`, the quoted atoms `1` and `2` are parameters to the operator `+`
+* Function Parameter - All of the values in a list except the first. In the program `(+ (q 1) (q 2))`, the quoted atoms `1` and `2` are parameters to the operator `+`
 * **Treearg** - These are program arguments passed in from outside the program. They are referenced by integers. See [pathargs](vm.md#pathargs).
 * **Argument** - Outside the context of the CLVM, the term "argument" can mean "program argument" (the "argv" of the C language, for example), or "function argument", among other things. Because of this potential confusion, we avoid using the term "argument" in this document. The context is especially important considering the way in which CLVM programs look up their program arguments. See [pathargs](vm.md#pathargs).
 
@@ -82,7 +82,7 @@ If the item is a quoted value, the value is returned.
 
 If the item is an atom, the atom is looked up as a Treearg.
 
-If the item to be evaluated is a list, all the items in the list are evaluated.
+If the item to be evaluated is a list, all of the parameters are evaluated and then the evaluatted parameters are passed to the function
 
 All arguments of a function are evaluated before being passed to that function.
 
@@ -90,11 +90,7 @@ When a list is evaluated, if the first item in the list is an atom, it is interp
 
 ## Types
 
-The two types of CLVM Object are *cons pair* and *atom*. They can be distinguished by the **listp** opcode.
-
-Atoms in the CLVM language do not carry other type information. However, similarly to the machine code instructions for a CPU, functions interpret atoms in specific predictible ways. Thus, each function assumes a type for each of its arguments.
-
-The type information is contained in the formal arguments of the applied function.
+The two types of CLVM Object are *cons pair* and *atom*. They can be distinguished by the **listp** opcode. Atoms in the CLVM language do not carry other type information. However, similarly to the machine code instructions for a CPU, functions interpret atoms in specific predictible ways. Thus, each function imposes a type for each of its arguments.
 
 The value of an atom - its length, and the values of its bytes - are always well defined. Because atoms have no type information, the meaning of an atom is determined when a function is applied to it. For example, an atom may be parsed as an integer, concatenated to another atom, and then treated as a BLS point.
 
@@ -104,7 +100,7 @@ The atom is treated as an array of bytes, with a length. No specific semantics a
 
 ### Unsigned Integer
 
-An unsigned integer of arbitrary length. If more bits are needed to performa an operation with atoms of different length, the atom is virtually extended with zero bytes to the left.
+An unsigned integer of arbitrary length. If more bits are required to perform an operation with atoms of different length, the atom is virtually extended with zero bytes to the left.
 
 ### Signed Integer
 
@@ -119,17 +115,18 @@ These integers are byte-aligned. For example, `0xFFF` is interpreted as `4095`.
 This type represents a point on an elliptic curve over finite field described [here](https://electriccoin.co/blog/new-snark-curve/).
 
 
-## Treeargs : Program Arguments, and  Argument Lookup
+## Treeargs : Program Arguments, and Argument Lookup
 
 For a program running on a deterministic machine to have different behaviours, it must be able to take take have different starting states. The starting state for a CLVM program is the program argument list - the treearg.
 
 When an unquoted integer is evaluated, it is replaced with the corresponding value/CLVM Object from the program Treearg.
 
-As an improvement over walking the argument tree via calls to **first** and **rest**, arguments are indexed from the argument list by their argument number. This number is derived by translating the path of left and right nodes through the argument tree into a series of ones and zeros corresponding to the path to the CLVM Object in the argument list. The number of the root of the argument tree is `1` (and also `0`).
+As an improvement over walking the argument tree via calls to **first** and **rest**, arguments are indexed from the argument list by their argument number. This number is derived by translating the path of left and right nodes through the argument tree into a series of ones and zeros corresponding to the path to the CLVM Object in the argument tree, starting at the least significant bit. The number of the root of the argument tree is `1` (`0` will also evaluate to the root of the argtree).
 
-We treat an s-expression as a binary tree, where leaf nodes are atoms and pairs
+We treat an s-expression as a binary tree, where leaf nodes are atoms, and cons pairs
 are nodes with two children. We then number the paths as follows:
 
+```
               1
              / \
             /   \
@@ -145,6 +142,7 @@ are nodes with two children. We then number the paths as follows:
   8   12 10  14 9  13 11  15
 
 etc.
+```
 
 You're probably thinking "the first two rows make sense, but why do the numbers
 do that weird thing after?" The reason has to do with making the implementation simple.
@@ -173,15 +171,37 @@ nil is self-quoting.
 
 Although there is only one underlying representation of an atom, different syntaxes are recognized during compile time, and those atom syntaxes are interpreted differently during the translation from program text to CLVM Objects.
 
-Nil and decimal zero evaluate to the same atom.
+Nil, decimal zero and the empty string all evaluate to the same atom.
 
 `(q ())` => `()`
 
 `(q 0)` => `()`
 
+`(q "")` => `()`
+
 which is not the same as a sigle zero byte.
 
 `(q 0x0)` => `0x00`
+
+#### Equivalence of Strings, symbols, hex strings, and numbers
+
+`"A"` is the same atom as `A`
+
+```
+(q "A") => 65
+(q A) => 65
+(q 65) => 65
+(q 0x41) => 65
+
+```
+
+However, the same is not true for Built-ins.
+`"q"` is not the same as `q`
+```
+(q q) => 1
+(q "q") => 113
+```
+
 
 ## Errors
 
@@ -223,7 +243,7 @@ Example: `'(c (q "A") (q ()))'` => `(65)`
 
 **>** *greater than* `(> A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise `()`. `(> A B)` means `A > B` in infix syntax.
 
-**>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array on unsigned bytes. Otherwise `()`. Compare to strcmp.
+**>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise `()`. Compare to strcmp.
 `(>s "a" "b")` => `()`
 
 
@@ -232,13 +252,16 @@ Example: `'(c (q "A") (q ()))'` => `(65)`
 Example: `(q "A")` => `(65)`
 
 ## Integer Operators
+
+The arithmetic operators `+`, `-`, `*` and `divmod` treat their arguments as signed integers.
+
 **`+`** `(+ a0 a1 ...)` takes any number of integer operands and sums them. If given no arguments, zero is returned.
 
 **`-`** `(- a0 a1 ...)` takes one or more integer operands and adds a0 to the negative of the rest. Giving zero arguments returns 0.
 
 **`*`** `(* a0 a1 ...)` takes any number of integer operands and returns the product.
 
-**divmod** `(divmod A B)` takes two integers and returns a list containing the floored quotient and the mod
+**divmod** `(divmod A B)` takes two integers and returns a list containing the floored quotient and the remainder
 
 ## Bit Operations
 
@@ -291,9 +314,12 @@ Example: `(concat (q "Hello") (q " ") (q "world"))` => `"Hello world"`
 
 ## Streaming Operators
 **sha256**
-  `(sha256 A)` returns the sha256 hash (as a 32-byte blob) of the bytes of A.
+  `(sha256 A ...)` returns the sha256 hash (as a 32-byte blob) of the bytes of its parameters.
 
-Example: `(sha256 (q "clvm"))` => `0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81`
+```
+(sha256 (q "clvm")) => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
+(sha256 (q "cl") (q "vm")) => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
+```
 
 ## ECDSA operators
 **point_add**
@@ -305,6 +331,30 @@ Example: `(point_add (pubkey_for_exp (q 1)) (pubkey_for_exp (q 2)))` => `0x89ece
   `(pubkey_for_exp A)` turns the integer A into a bls12_381 point
 
 `(pubkey_for_exp (q 1))` => `0x97f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb`
+
+## Arithmetic and Bitwise Identities
+
+Some operators have a special value that is returned when they are called with zero arguments. This value is the identity of that function.
+
+Operator | Identity
+---|---
+`+`| 0
+`*`| 1
+AND| all 1's
+OR| all zeros
+XOR| all zeros
+
+
+## Arithmetic
+
+### Behaviour of nil when used as an integer
+
+When used in an integer context, nil behaves as zero.
+
+### Behaviour of zero when used as a value that may be checked for nil
+
+When used as a parameter that may be checked for nil, zero is interpreted as nil.
+
 # Operator specification
 
 All documentation in the Opcode section omits the necessary quote operator around each literal.
@@ -317,6 +367,7 @@ Conventions used in the Operator Table
 * max_arg_strlen: the length of the longest arg atom, in bytes
 * result: the return value of the function
 
+All opcodes below accept arguments as a [flat list](#definitions).
 
 keyword|opcode|impl|funcall|args|return|preconditions|cost|Allocations
 -------|------|-------------|---|---|---|---|---|---
@@ -351,17 +402,28 @@ softfork|0x1e|op_softfork|(softfork COST)|1|See [Blockchain & Consensus]()|COST>
 ## Detailed behaviour Notes
 
 **ash**
-`(ash (q 1) (q 1))` => `2`
-`(ash (q 1) (q -1))` => `0`
+```
+(ash (q 1) (q 1)) => 2
+(ash (q 1) (q -1)) => 0
+```
 
-Right shift of `-1` with **ash** currently does not sign extend: <p style="color:red">`(ash (q -1) (q -1))` => `-1`</p>
+Consecutive right shifts of negative numbers will result in a terminal value of -1.
 
-Right shift of `-1` by any quantity (negative shift count) returns `-1`: <p style="color:red">`(ash (q -1) (q -99))`\
- => `-1`</p>
+```
+(ash -7 -1) ; -7 = . . . 111111111111111111111111111001
+(ash -4 -1) ; -4 = . . . 111111111111111111111111111100
+(ash -2 -1) ; -2 = . . . 111111111111111111111111111110
+(ash -1 -1) ; -1 = . . . 111111111111111111111111111111
+```
+
+That is, a right shift (negative shift count) of `-1` by any amount is `-1`:
+```
+(ash (q -1) (q -99)) => -1
+```
 
 **lsh**
 
-lsh behaviour from [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/elisp.pdf)
+lsh behaviour from the [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/elisp.pdf):
 
 ```
 (ash -7 -1) ; -7 = . . . 111111111111111111111111111001
@@ -377,24 +439,44 @@ lsh behaviour from [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/
    ⇒ 268435454 ; = . . . 001111111111111111111111111110
 ```
 
+A left shift of an atom with the high bit set will extend the atom left, and result in an allocation
+
+```
+(lsh (q -1) (q 1)) => 0x01FE
+(strlen (lsh (q -1) (q 1))) => 2
+
+
+```
+
+
+A left arithmetic shift will only extend the atom length when more bits are needed
+
+```
+(strlen (ash (q -1) (q 7))) => 1
+(strlen (ash (q -1) (q 8))) = >2
+```
+
+
+```
+(strlen (ash (q 255) (q 1)))
+(strlen (ash (q 128) (q 1)))
+(strlen (ash (q 127) (q 1)))
+
+(strlen (lsh (q 255) (q 1)))
+(strlen (lsh (q 128) (q 1)))
+(strlen (lsh (q 127) (q 1)))
+
+```
+
+
 # Costs
 
 The minimum program cost is 40. After each opcode is run, its cost is added to the total program cost. When the cost exceeds a threshold, the program is terminated, and no value is returned.
 
 
-# Argument Checking: Behaviour with fewer or more args than required
+## Argument Checking: Behaviour with fewer or more args than required
 
 Some opcodes have strict argument requirements, and others will work with more arguments than required, ignoring additional arguments (eg. listp). Opcodes taking an unlimited number of arguments have not been checked in the table below.
-
-Some operators have a special value that is returned when they are called with zero arguments. This is the identity value of that function.
-
-Operator | Identity
----|---
-`+`| 0
-`*`| 1
-AND| all 1's
-OR| all zeros
-XOR| all zeros
 
 ### Opcode List
 
