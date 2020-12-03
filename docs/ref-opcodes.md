@@ -10,34 +10,44 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 
 ## Definitions
 
+* **Atom** - The underlying data type in the CLVM. Atoms are immutable byte arrays. Atoms are untyped and are used to encode all strings, integers, and keys. The only things in the CLVM which are not atoms are cons pairs.
+* **cons pair** - An immutable ordered pair of references to other CLVM objects.
+* **nil** - nil is the special value consisting of a string of length zero. The same value represents zero, null string, false, quote, empty list, and nil. Nil can be represented as `()`, `0`, ``''``, or `nil`. The `nil` name refers to its use in the right cell of the last cons pair of a list to signal the end of the list.
 * **Value** - We use value to mean an abstract value like `1` (an integer), `0xCAFE` (a byte string), `"hello"` (a string) or `(sha256 (q "hello"))` (a program). Values are represented by CLVM Objects.
-* **CLVM Object** - The internal representation of atomic values, programs, lists and trees in the CLVM. A CLVM Object can be a cons pair, or an atom.
-* **Atom** - The internal representation of any value in the CLVM that is not a cons pair. Atoms are immutable and have two properties: a sequence of bytes, and a length, in bytes. Atoms are untyped. Any value allowed by the syntax of CLVM Code is representable by an atom, including nil.
-* **nil** - nil is a special built in value. The syntax for nil is `()`. Nil is used in the right cell of the last cons pair of a list to signal the end of the list. nil is also used in all contexts where the boolean `false` might be used in other languages. For example, as the first argument of the `if` opcode.
-* **cons pair** - This type of CLVM Object contains an ordered pair of CLVM Objects.
-* **List** - A singly linked list can be formed of linked cons pairs, each one containing a CLVM Object in its left cell, and the next cons pair in the chain in its right cell. The final cons pair contains nil in its right cell, ending the list. When all of the cons pairs in a list hold an atom in their left cell, the list is called a "flat list". When cons pairs are allowed to hold other cons pairs in their left cells, the "list" becomes a binary tree.
-* **Function** - A function in the CLVM is either a built-in opcode, or a user-defined program.  User defined functions are covered in [User Defined Functions](language.md#user-defined-functions).
-* **Operator** - Opcode.
-* **Program** - In the context of the Chia blockchain a program is the compiled, in-memory representation of the program text. A program is a binary tree whose internal nodes are cons pairs, and whose leaf nodes are atoms. The textual representation of a clvm program can also be referred to as a program.
-* **Opcodes** - These are built-in functions
+* **CLVM Object** - An atom or cons pair and everything recursively pointed to by it. CLVM objects can't have contain circular references although they can contain redundant references into the same underlying object. Although redundant data structures can be created there's no way for the CLVM language to tell whether two objects are the same reference or merely contain the same data (there is no 'is' function) and there's no way to represent them in the current human readable serialization format.
+* **List** - CLVM lists follow the lisp convention of being either a cons pair which contains the first element on the left and the rest of the list on the right or a nil indicating end of the list/empty list. While this is in many cases a higher layer semantic convention it does factor in to how programs are executed.
+* **Function** - A function in the CLVM is either a built-in opcode or a user-defined program.  User defined functions are covered in [User Defined Functions](language.md#user-defined-functions).
+* **Operator** - An opcode/string specifying a built-in function to use.
+* **Program** - A CLVM object which can be executed. When a program is executed it's passed a CLVM object as parameters and returns a CLVM object. On-chain programming involves a lot of usage of self-reference and what's called eval() in other languages, which is safe in this context due to the total lack of side effects.
+* **Opcodes** - The strings used for function lookup by the CLVM. Unknown opcodes either error out or return nil depending on the context, likely error out for mempool checking or local testing and return nil when validating the blockchain for consensus.
 * **Tree** - A binary tree can be formed from cons pairs and atoms by allowing the right and left cells of a cons pair to hold either an atom, or a cons pair. Atoms are the leaves of the tree.
 * Function Parameter - All of the values in a list except the first. In the program `(+ (q 1) (q 2))`, the quoted atoms `1` and `2` are parameters to the operator `+`
 * **Treearg** - These are program arguments passed in from outside the program. They are referenced by integers. See [pathargs](vm.md#pathargs).
 * **Argument** - Outside the context of the CLVM, the term "argument" can mean "program argument" (the "argv" of the C language, for example), or "function argument", among other things. Because of this potential confusion, we avoid using the term "argument" in this document. The context is especially important considering the way in which CLVM programs look up their program arguments. See [pathargs](vm.md#pathargs).
 
-Nil does not name a function. It is an error to evaluate nil as a function.
-
 A CLVM program must have an unambigious definition and meaning, so that Chia block validation and consensus is deterministic.
 Programs are treated as Merkle trees, which are uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
 
+# Human readable serialization
+
+Underlying CLVM objects contain atoms and cons pairs, but for convenience there's a human readable string format. In particular this format is what's passed in to brun. It isn't used anywhere in blockchain validation and has no impact on consensus. There are multiple ways of encoding the same CLVM object in the human readable serialization format, so going backwards to pretty print a CLVM object in this format requires guessing as to the best representation.
+
+Atoms in the human readable representation can be represented as directly quoted strings. They can also be expressed as integers which get converted to two's complement minimal encoding length. Built-in opcodes map directly to specific strings.
+
+Cons pairs can be represented using dot as an infix operator like so: `(3 . 4)` which corresponds to a cons box containing 3 and 4. A more common representation is for lists, which are done not using a dot and assume a nil terminator, for example `(3 4 5)` represents the same thing as `(3 . (4 . (5 . nil)))`. This can of course be used recursively as well. Note that `0`, `nil`, `false`, `''`, `q`, and `()` all get parsed to the same value.
+
 # Program Evaluation
-The semantics of the language implemented by the CLVM is similar to Lisp. A program is represented as a tree, and the root of the tree is the outermost value (usually a cons pair). Leaves are evaluated before their parent nodes. This means that parameters are always evaluated before being passed to their function.
+The semantics of the language implemented by the CLVM is similar to Lisp. A program is represented as a tree, and the root of the tree is the outermost thing getting called, with later/inner function calls embedded recursively inside of it.
 
-Evaluating a program means evaluaing all leaf node of the program tree, and then all of their parents, recursively, util the root node is evaluated.
+Whenever a program is called it always has a context of a CLVM object which is the arguments passed in, referred to in the plural even though it's technically a single object.
 
-If the root of the program is an atom, only one evaluation is performed. Please see [treeargs](#treeargs), below.
+If the root of the program is an atom then an argument lookup is performed and returned. Please see [treeargs](#treeargs), below.
 
-If the the root of the program is a list, all parameters are evaluated, then the first element of the list is evaluated. The first element of a list is expected to evaluate to an atom which names a function - otherwise an error occurs.
+If the the root of the program is a cons pair then a function call is made and the result of that function call is returned. The object on the left determines the function to call and the object on the right determines what arguments it gets passed.
+
+The left object is either an atom, in which case it's treated as an opcode, or a cons pair, in which case it's an implicit eval. The quote opcode is very special in that it's recognized by the interpreter and causes whatever's on the right to not be evaluated but instead returned verbatim. All other functions get passed the results of evaluating what's on the right first. When the interpreter evaluates the right value it does so using the lisp list convention: It either encounters a nil, in which case it returns nil, in which case it returns nil, or it encounters a cons pair, in which case it returns a cons pair containing the result of a recursive call to evalute using the current argument context to the thing on the left and the result of recursing evaluation to the thing on the right.
+
+If implicit evaluation is used then the value on the left is evaluated then it's called getting passed the value from evaluating what's on the right as context. This differs from recursive evaluation because it changes the argument context instead of that getting inherited. Note that if you want to run an argument passed in as a function you can't specify which arg at the outermost position using an atom because that will be treated as an opcode lookup but you can work around the limitation by using first on a list of length one which will treat an atom as an arg lookup during evaluation.
 
 A compiled CLVM program can be thought of as a binary tree.
 
@@ -72,7 +82,9 @@ After First Reduction
 
 After Second Reduction, and function application
 
-```3```
+```
+3
+```
 
 Program trees are evaluated by first evaluating the leaf nodes, then their parents, recursively.
 Arguments to functions are always evaluated before the function is called.
@@ -144,12 +156,10 @@ are nodes with two children. We then number the paths as follows:
 etc.
 ```
 
-You're probably thinking "the first two rows make sense, but why do the numbers
-do that weird thing after?" The reason has to do with making the implementation simple.
-We want a simple loop which starts with the root node, then processes bits starting with
-the least significant, moving either left or right (first or rest). So the LEAST significant
-bit controls the first branch, then the next-least the second, and so on. That leads to this
-ugly-numbered tree.
+This quirky numbering makes the implementation simple.
+It starts at the argument passed in, and if the index is 1 it returns args directly otherwise
+it uses the lest significant bit to decide whether to recurse left or right and and right
+shifts the index one bit.
 
 See the implementation [here](https://github.com/Chia-Network/clvm_tools/blob/master/clvm_tools/NodePath.py)
 
