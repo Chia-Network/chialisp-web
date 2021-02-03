@@ -376,7 +376,7 @@ Conventions used in the Operator Table
 * max_arg_strlen: the length of the longest arg atom, in bytes
 * result: the return value of the function
 
-All opcodes below accept arguments as a [flat list](ref-opcodes#definitions).
+All opcodes below accept arguments as a [flat list](opcodes#definitions).
 
 keyword|opcode|impl|funcall|args|return|preconditions|cost|Allocations
 -------|------|-------------|---|---|---|---|---|---
