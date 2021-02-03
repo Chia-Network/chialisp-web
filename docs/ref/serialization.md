@@ -1,5 +1,5 @@
 ---
-id: ref1
+id: serialization
 title: CLVM Reference Manual
 sidebar_label: 1 - Serialization
 ---

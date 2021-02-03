@@ -1,6 +1,6 @@
 
 ---
-id: ref-opcodes
+id: ref-index
 title: CLVM Reference Manual
 sidebar_label: 0 - Index
 ---
@@ -9,10 +9,10 @@ sidebar_label: 0 - Index
 * Blockchain & Consensus
 * Language
 * Virtual Machine
-* [Opcodes](ref-opcodes.md)
+* [Opcodes](/docs/ref/opcodes)
 * Compiler
 * Tools
-* [Serialization](ref-serialization.md)
-* [Limits](ref-limits.md)
+* [Serialization](/docs/ref/serialization)
+* [Limits](/docs/ref/limits)
 * Appendix
 

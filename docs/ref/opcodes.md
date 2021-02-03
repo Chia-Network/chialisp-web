@@ -1,6 +1,5 @@
-
 ---
-id: ref-opcodes
+id: opcodes
 title: CLVM Reference Manual
 sidebar_label: 2 - Opcodes
 ---
@@ -16,14 +15,14 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 * **Value** - We use value to mean an abstract value like `1` (an integer), `0xCAFE` (a byte string), `"hello"` (a string) or `(sha256 (q "hello"))` (a program). Values are represented by CLVM Objects.
 * **CLVM Object** - An atom or cons pair and everything recursively pointed to by it. CLVM objects can't have contain circular references although they can contain redundant references into the same underlying object. Although redundant data structures can be created there's no way for the CLVM language to tell whether two objects are the same reference or merely contain the same data (there is no 'is' function) and there's no way to represent them in the current human readable serialization format.
 * **List** - CLVM lists follow the lisp convention of being either a cons pair which contains the first element on the left and the rest of the list on the right or a nil indicating end of the list/empty list. While this is in many cases a higher layer semantic convention it does factor in to how programs are executed.
-* **Function** - A function in the CLVM is either a built-in opcode or a user-defined program.  User defined functions are covered in [User Defined Functions](language.md#user-defined-functions).
+* **Function** - A function in the CLVM is either a built-in opcode or a user-defined program.  User defined functions are covered in [User Defined Functions](/docs/ref/language#user-defined-functions).
 * **Operator** - An opcode/string specifying a built-in function to use.
 * **Program** - A CLVM object which can be executed. When a program is executed it's passed a CLVM object as parameters and returns a CLVM object. On-chain programming involves a lot of usage of self-reference and what's called eval() in other languages, which is safe in this context due to the total lack of side effects.
 * **Opcodes** - The strings used for function lookup by the CLVM. Unknown opcodes either error out or return nil depending on the context, likely error out for mempool checking or local testing and return nil when validating the blockchain for consensus.
 * **Tree** - A binary tree can be formed from cons pairs and atoms by allowing the right and left cells of a cons pair to hold either an atom, or a cons pair. Atoms are the leaves of the tree.
 * Function Parameter - All of the values in a list except the first. In the program `(+ (q 1) (q 2))`, the quoted atoms `1` and `2` are parameters to the operator `+`
-* **Treearg** - These are program arguments passed in from outside the program. They are referenced by integers. See [pathargs](vm.md#pathargs).
-* **Argument** - Outside the context of the CLVM, the term "argument" can mean "program argument" (the "argv" of the C language, for example), or "function argument", among other things. Because of this potential confusion, we avoid using the term "argument" in this document. The context is especially important considering the way in which CLVM programs look up their program arguments. See [pathargs](vm.md#pathargs).
+* **Treearg** - These are program arguments passed in from outside the program. They are referenced by integers. See [pathargs](/docs/ref/vm#pathargs).
+* **Argument** - Outside the context of the CLVM, the term "argument" can mean "program argument" (the "argv" of the C language, for example), or "function argument", among other things. Because of this potential confusion, we avoid using the term "argument" in this document. The context is especially important considering the way in which CLVM programs look up their program arguments. See [pathargs](/docs/ref/vm#pathargs).
 
 A CLVM program must have an unambigious definition and meaning, so that Chia block validation and consensus is deterministic.
 Programs are treated as Merkle trees, which are uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
@@ -98,7 +97,7 @@ If the item to be evaluated is a list, all of the parameters are evaluated and t
 
 All arguments of a function are evaluated before being passed to that function.
 
-When a list is evaluated, if the first item in the list is an atom, it is interpreted as a function. Function definitions are covered in [functions](language.md#functions)
+When a list is evaluated, if the first item in the list is an atom, it is interpreted as a function. Function definitions are covered in [functions](/docs/ref/language#functions)
 
 ## Types
 
@@ -221,7 +220,7 @@ TODO We need the full list of errors.
 
 * First element in an evaluated list is not a valid function. Example: `("hello" (q 1))` => `FAIL: unimplemented operator "hello"`
 * Wrong number of arguments. Example: `(lognot (q 1) (q 2))` => `FAIL: lognot requires 1 arg`
-* Program evaluation exceeds max cost see [Costs](ref-opcodes.md#costs)
+* Program evaluation exceeds max cost see [Costs](/docs/ref/opcodes#costs)
 * Too many allocations have been performed
 
 An error will cause the program to abort.
@@ -275,7 +274,7 @@ The arithmetic operators `+`, `-`, `*` and `divmod` treat their arguments as sig
 
 ## Bit Operations
 
-logand, logior and logxor operate on any number of arguments (See [limits](ref-limits.md))
+logand, logior and logxor operate on any number of arguments (See [limits](/docs/ref/limits))
 If any argument is nil, they return nil. Fail if either A or B is not an atom.
 The shorter atom is considered to be extended with zero bytes until equal in length to the longer atom.
 
@@ -377,7 +376,7 @@ Conventions used in the Operator Table
 * max_arg_strlen: the length of the longest arg atom, in bytes
 * result: the return value of the function
 
-All opcodes below accept arguments as a [flat list](#definitions).
+All opcodes below accept arguments as a [flat list](ref-opcodes#definitions).
 
 keyword|opcode|impl|funcall|args|return|preconditions|cost|Allocations
 -------|------|-------------|---|---|---|---|---|---
@@ -393,7 +392,7 @@ sha256|0x0b|op_sha256|(sha256 ...)|>=0|return sha256 of *concat* of args|All arg
 -|0x0d|op_subtract|(- A B ...)|>=0|A + B + ...|All args are atoms|strlen(concat A B ...)) * 10|Atom(max(map(strlen, args)))
 `*`|0x0e|op_multiply|(* A B ...)|>=0|A * B * ...|All args are atoms|strlen(A) * strlen(B) * ... * 10
 divmod|0x0f|op_divmod|(divmod A B)|2|((div A B) . (mod A B))|A and B are atoms|strlen(concat A B ...)) * 10|Atom(len(A) * len(B) * ...)
-substr|0x10|op_substr|(substr S start end)|3|new atom with bytes from|S is atom<br> start <= end<br>start>=0<br>end>=0<br>end<=len(S)|1|Atom(len(S))
+substr|0x10|op_substr|(substr S start end)|3|new atom with bytes from|<ul><li>S is atom</li><li>start <= end</li><li>start>=0</li><li>end>=0</li><li>end<=len(S)</li></ul>|1|Atom(len(S))
 strlen|0x11|op_strlen|(strlen S)|1|length of atom S|S is atom|len(S)|None
 point_add|0x12|op_point_add|(point_add P1 P2 ...)|>=0|Sum any number, N, of G1 Elements|P[n] are 48 bytes in length|N * 32|Atom(96)
 pubkey_for_exp|0x13|op_pubkey_for_exp|(pubkey_for_exp E)|1|Get pubkey for E|E is an atom|900|Atom(96)
@@ -407,7 +406,7 @@ logxor|0x1a|op_logxor|(logxor A B)|2|Bitwise XOR of args. The bit is 1 if that b
 lognot|0x1b|op_lognot|(lognot A)|1|Flip every bit in A|A is an atom|strlen(A)*2|Atom(len(A))
 ash|0x1c|op_ash|(ash A B)|2|Arithmetic shift. if B >= 0, A << B. Else A >> abs(B). Shift in 1's if right shifting a negative number|A and B are atoms|2 * (strlen(A) + strlen(result)) |Atom(len(result))
 lsh|0x1d|op_lsh|(lsh A B)|2|Unsigned shift. if B >= 0, A << B. Else A >> abs(B). Shift in 0's in all cases|A and B are atoms|2 * (strlen(A) + strlen(result)) | Atom(len(result))
-softfork|0x1e|op_softfork|(softfork COST)|1|See [Blockchain & Consensus]()|COST>=1||None
+softfork|0x1e|op_softfork|(softfork COST)|1|See [Blockchain & Consensus](/docs/ref/consensus)|COST>=1||None
 
 ## Detailed behaviour Notes
 
@@ -628,3 +627,5 @@ ASSERT_BLOCK_INDEX_EXCEEDS | 55
 ASSERT_BLOCK_AGE_EXCEEDS | 56
 AGG_SIG_ME | 57
 ASSERT_FEE | 58
+
+
