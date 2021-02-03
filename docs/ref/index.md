@@ -1,6 +1,6 @@
 
 ---
-id: ref-index
+id: ref/index
 title: CLVM Reference Manual
 sidebar_label: 0 - Index
 ---
