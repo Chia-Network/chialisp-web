@@ -1,6 +1,6 @@
 ---
 id: doc4
-title: 4 - The High Level Languange, Compiler, and Functions
+title: 4 - The High Level Language, Compiler, and Functions
 ---
 
 This guide assumes that you have already read the previous parts.
