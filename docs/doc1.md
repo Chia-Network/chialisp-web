@@ -289,4 +289,4 @@ This marks the end of this section of the guide.
 In this section we have covered many of the basics of using ChiaLisp.
 It is recommended you play with using the information presented here for a bit before moving on.
 
-This guide has not covered all of the operators available in ChiaLisp - try using some of the other ones listed [here](https://github.com/Chia-Network/clvm/blob/master/docs/clvm.org).
+This guide has not covered all of the operators available in ChiaLisp - try using some of the other ones listed! [here](https://github.com/Chia-Network/clvm/blob/master/docs/clvm.org).
