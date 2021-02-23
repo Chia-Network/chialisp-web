@@ -79,12 +79,13 @@ Here is the complete list of OpCodes along with their format and behaviour.
 
 * **AGG_SIG - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message.
 * **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid then create a new coin with the given puzzlehash and amount.
-* **ASSERT_COIN_CONSUMED - [52] - (52 0xcoinID)**: This spend is only valid if the given Coin ID has also been spent in this block. This allows you to use the consumed coins value as part of your own output.
+* **ASSERT_ANNOUNCEMENT - [52] - (52 0xannouncement_hash)**: This spend is only valid if there is an announcement in the same block as the spend that matches the announcement_hash. (An announcement_hash is the hash of the concatenated coin ID and the message being announced, i.e. `(sha256 0xcoinID 0xmessage)`)
 * **ASSERT_MY_COIN_ID - [53] - (53 0xcoinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
 * **ASSERT_MIN_TIME - [54] - (54 time)**: This spend is only valid if the given time has passed.
 * **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
-* **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the given block_age has surpassed the age of the coin being spent.
+* **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the block it ended up in has surpassed the given block_age.
 * **AGG_SIG_ME - [57] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
+* **CREATE_ANNOUNCEMENT - [60] - (60 0xmessage)**: If this spend is valid then announce a message that can be asserted using ASSERT_ANNOUNCEMENT
 
 These are returned as a list of lists in the form:
 

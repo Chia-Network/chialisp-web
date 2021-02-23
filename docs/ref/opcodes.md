@@ -250,6 +250,8 @@ Example: `'(c (q "A") (q ()))'` => `(65)`
 
 **=** *equal* `(= A B)` returns 1 if `A` and `B` are both atoms and both equal. Otherwise `()`. Do not use this to test if two programs are identical. Use **sha256tree**. Nil tests equal to zero, but nil is not equal to a single zero byte.
 
+**not** *not* `(not A)` returns 1 if `A` is `()`, otherwise returns 0.
+
 **>** *greater than* `(> A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise `()`. `(> A B)` means `A > B` in infix syntax.
 
 **>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise `()`. Compare to strcmp.
@@ -620,12 +622,12 @@ Condition | CLVM Opcode
 ---|---
 AGG_SIG | 50
 CREATE_COIN | 51
-ASSERT_COIN_CONSUMED | 52
+ASSERT_ANNOUNCEMENT | 52
 ASSERT_MY_COIN_ID | 53
-ASSERT_TIME_EXCEEDS | 54
+ASSERT_RELATIVE_TIME_EXCEEDS | 54
 ASSERT_BLOCK_INDEX_EXCEEDS | 55
 ASSERT_BLOCK_AGE_EXCEEDS | 56
 AGG_SIG_ME | 57
 ASSERT_FEE | 58
-
-
+ASSERT_TIME_EXCEEDS | 59
+CREATE_ANNOUNCEMENT | 60
