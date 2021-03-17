@@ -79,14 +79,17 @@ Here is the complete list of OpCodes along with their format and behaviour.
 
 * **AGG_SIG - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message.
 * **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid then create a new coin with the given puzzlehash and amount.
-* **ASSERT_COIN_CONSUMED - [52] - (52 0xcoinID)**: This spend is only valid if the given Coin ID has also been spent in this block. This allows you to use the consumed coins value as part of your own output.
+* **ASSERT_ANNOUNCEMENT - [52] - (52 0xannouncementID)**: This spend is only valid if the given Coin ID has also been spent in this block. This allows you to use the consumed coins value as part of your own output.
 * **ASSERT_MY_COIN_ID - [53] - (53 0xcoinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
-* **ASSERT_MIN_TIME - [54] - (54 time)**: This spend is only valid if the given time has passed.
+* **ASSERT_RELATIVE_TIME_EXCEEDS - [54] - (54 time)**: This spend is only valid if the given time has passed.
 * **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
 * **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the given block_age has surpassed the age of the coin being spent.
 * **AGG_SIG_ME - [57] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
+* **ASSERT_FEE - [58] - (58 amount)**: The spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
+* **ASSERT_TIME_EXCEEDS - [59] - (59 time)**: The spend is only valid if the given time has passed.
+* **CREATE_ANNOUNCEMENT - [60] - (60 message)**: This creates an ephemeral announcement with an ID dependent on the coin that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
 
-These are returned as a list of lists in the form:
+Conditions are returned as a list of lists in the form:
 
 ```lisp
 ((51 0xabcd1234 200) (50 0x1234abcd) (53 0xdeadbeef))
@@ -105,12 +108,12 @@ For the following example the password is "hello" which has the hash value 0x2cf
 The implementation for the above coin would be thus:
 
 ```lisp
-(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q 51) (c 5 (c (q 100) (q ())))) (q "wrong password"))
+(i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q . 51) (c 5 (c (q . 100) ()))) (q "wrong password"))
 ```
 
 This program takes the hash, with `(sha256 )`, of the first element in the solution, with `2`, and compares that value with the already committed.
-If the password is correct it will return `(c (q 51) (c 5 (c (q 100) (q ())))` which evaluates to `(51 0xmynewpuzzlehash 100)`.
-Remember, `51` is the OpCode to create a new coin using the puzzlehash presented in the solution, and 5 is equivalent to `(f (r (a)))`.
+If the password is correct it will return `(c (q . 51) (c 5 (c (q . 100) (q ())))` which evaluates to `(51 0xmynewpuzzlehash 100)`.
+Remember, `51` is the OpCode to create a new coin using the puzzlehash presented in the solution, and `5` is equivalent to `(f (r 1))`.
 
 If the password is incorrect it will return the string "wrong password".
 
@@ -134,24 +137,24 @@ There is one final change we need to make before this is a complete smart transa
 
 If you want to invalidate a spend then you need to raise an exception using `x`.
 Otherwise you just have a valid spend that isn't returning any OpCodes, and that would destroy our coin and not create a new one!
-So we need to change the fail condition to be `(x (q "wrong password"))` which means the transaction fails and the coin is not spent.
+So we need to change the fail condition to be `(x (q . "wrong password"))` which means the transaction fails and the coin is not spent.
 
-If we're doing this then we should also change the `(i A B C)` pattern to `((c (i A (q B) (q C)) 1))`.
+If we're doing this then we should also change the `(i A B C)` pattern to `(a (i A (q . B) (q . C)) 1)`.
 The reason for this is explained in [part 3](/docs/doc3/). For now don't worry about why.
 
 Here is our completed password protected coin:
 
 ```lisp
-((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ()))) (q (x "wrong password"))) 1))
+(a (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q . (c (c (q . 51) (c 5 (c (q . 100) ()))) ())) (q . (x (q . "wrong password")))) 1)
 ```
 
 Let's test it out using clvm_tools:
 
 ```lisp
-$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ()))) (q (x "wrong password"))) 1))' '("let_me_in" 0xdeadbeef)'
+$ brun '(a (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q . (c (c (q . 51) (c 5 (c (q . 100) ()))) ())) (q . (x (q . "wrong password")))) 1)' '("let_me_in" 0xdeadbeef)'
 FAIL: clvm raise ("wrong password")
 
-$ brun '((c (i (= (sha256 2) (q 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q (c (c (q 51) (c 5 (c (q 100) (q ())))) (q ()))) (q (x "wrong password"))) 1))' '("hello" 0xdeadbeef)'
+$ brun '(a (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q . (c (c (q . 51) (c 5 (c (q . 100) ()))) ())) (q . (x (q . "wrong password")))) 1)' '("hello" 0xdeadbeef)'
 ((51 0xdeadbeef 100))
 ```
 
@@ -163,16 +166,16 @@ Another way of phrasing this is "how much control over the output should the sol
 Suppose we lock a coin up using the following puzzle:
 
 ```lisp
-(q ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))
+(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))
 ```
 
 Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzlehash 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a and the amount 100.
 
 ```lisp
-$ brun '(q ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '(80 90 "hello")'
+$ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '(80 90 "hello")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 
-$ brun '(q ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '("it doesn't matter what we put here")'
+$ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '("it doesn't matter what we put here")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 ```
 
@@ -204,12 +207,12 @@ This balance of power determines a lot of how puzzles are designed in ChiaLisp.
 For example, let's create a puzzle that lets the spender choose the output, but with one stipulation.
 
 ```lisp
-  (c (q (51 0xcafef00d 200)) 1)
+  (c (q . (51 0xcafef00d 200)) 1)
 ```
 This will let the spender return any conditions and OpCodes they want via the solution but will always add the condition to create a coin with the puzzlehash 0xcafef00d and value 200.
 
 ```
-$ brun '(c (q (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
+$ brun '(c (q . (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ((51 0xcafef00d 200) (51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
 ```
 
@@ -222,22 +225,20 @@ In the next exercise we will put everything we know together and create the "sta
 To 'send a coin to somebody' you simply create a puzzle that requires the recipients signature, but then allows them to return any other OpCodes that they like.
 This means that the coin cannot be spent by anybody else, but the outputs are entirely decided by the recipient.
 
-We can construct the following smart transaction where AGGSIG is 50 and the recipient's pubkey is 0xpubkey.
+We can construct the following smart transaction where AGGSIG is 50 and the recipient's pubkey is `0xfadedcab`.
 
 ```lisp
-(c (c (q 50) (c (q 0xpubkey) (c (sha256tree 1) (q ())))) 1)
+(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) 3)
 ```
 
-The `sha256tree` operator simply takes a program as a parameter and then creates a hash of that program (compared to `sha256` which would take a hash of the result of the program).
-
-This puzzle forces the resultant evaluation to contain `(50 0xpubkey *hash_of_solution*)` but then adds on all of the conditions presented in the solution.
+This puzzle forces the resultant evaluation to contain `(50 0xpubkey *hash_of_first_solution_arg*)` but then adds on all of the conditions presented in the solution.
 
 Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
 The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadeddab.
 
 ```lisp
-$ brun '(c (c (q 50) (c (q 0xdeadbeef) (c (sha256tree 1) (q ())))) 1)' '((51 0xfadeddab 100))'
-((50 0xdeadbeef 0x34b88c869130fc1d50aafd392d8fa6797de4370b1969e5216bb076850ed3beae) (51 0xfadeddab 100))
+$ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) 3)' '("hello" (51 0xcafef00d 200))'
+((50 0xfadedcab 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824) (51 0xcafef00d 200))
 ```
 
 Brilliant.
@@ -280,7 +281,7 @@ The SpendBundle also contains an Aggregated Signature object which is how the AG
 You can also further tighten the link between them by using ASSERT_COIN_CONSUMED.
 Suppose you have a 20 coin and an 80 coin.
 In the 20 coin you can make it return `(CREATE_COIN 0xnewpuzhash 100)` in the spend.
-Then in the 80 coin you can make it return `(ASSERT_COIN_CONSUMED 0x20coinID)`.
+Then in the 80 coin you can make it return `(ASSERT_COIN_CONSUMED 0xcoinID)`.
 The coupling inside the SpendBundle and the 80 value asserting its relationship to the 20 means that the value from the 80 coin is channeled into the creation of the new value 100 coin.
 
 ### Standard Transaction
@@ -288,10 +289,10 @@ The coupling inside the SpendBundle and the 80 value asserting its relationship 
 We can construct an even more powerful version of the signature locked coin to use as our standard transaction.
 
 ```lisp
-(c (c (q 50) (c (q 0xpubkey) (c (sha256tree 2) (q ())))) ((c 2 5)))
+(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) (a 5 11))
 ```
 
-The first part is mostly the same, the puzzle always returns an AGGSIG check for the recipients public key.
+The first part is mostly the same, the puzzle always returns an AGGSIG check for the pubkey `0xfadedcab`.
 However it only checks for the first element of the solution.
 This is because instead of the solution for this puzzle being a list of OpConditions to be printed out, the solution is a program/solution pair.
 This means that the recipient can run their own program as part of the solution generation, or sign a puzzle and let somebody else provide the solution.
@@ -302,13 +303,13 @@ We will cover in more detail how this works in the [next part](/docs/doc3/) of t
 A basic solution for this standard transaction might look like:
 
 ```lisp
-((q ((51 0xmynewpuzzlehash 50) (51 0xanothernewpuzzlehash 50))) (q ()))
+("hello" (q . ((51 0xmynewpuzzlehash 50) (51 0xanothernewpuzzlehash 50))) (q . ()))
 ```
 
 Running that in the clvm_tools looks like this:
 
 ```lisp
-$ brun '(c (c (q 50) (c (q 0xfadeddab) (c (sha256tree 2) (q ())))) ((c 2 5)))' '((q ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) (q ()))'
+$ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) (a 5 11))' '("hello" (q . ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) (q . ()))'
 
 ((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (51 0xdeadbeef 50) (51 0xf00dbabe 50))
 ```

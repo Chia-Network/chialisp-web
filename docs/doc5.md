@@ -35,15 +35,6 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 
 * **Op Constraints/Conditions** - Constraints are returned by the puzzle when it’s passed the solution. If all of the returned conditions are met then a transaction is valid.
 
-* **AGG_SIG - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the aggregated signature in this block contains a signature from the given public key of the given message.
-* **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid then create a new coin with the given puzzlehash and amount.
-* **ASSERT_COIN_CONSUMED - [52] - (52 0xcoinID)**: This spend is only valid if the given Coin ID has also been spent in this block.
-* **ASSERT_MY_COIN_ID - [53] - (53 0xcoinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
-* **ASSERT_MIN_TIME - [54] - (54 time)**: This spend is only valid if the given time has passed.
-* **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
-* **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the block has existed for the given amount of time.
-* **AGG_SIG_ME - [57] - (57 0xpubkey 0xmessage)**:  The spend is only valid if the pubkey signs a message in the form (message concatenated with coin ID).
-
 * **Wallet** - Software written to interact with transactions. Chia uses Hierarchical Deterministic Wallets (HD Wallets). This means that they can generate many different public keys that are all valid and verifiable as unique to that wallet. A wallet contains a coin if it possesses the information necessary to unlock that coin and create a transaction which spends it.
 
 * **Puzzle Generator** - A wallet will use a Puzzle Generator to define how it wants to receive transactions. Most wallets will want to generate the standard transaction, however by storing a ChiaLisp program that generate a puzzle, all a Sending Wallet needs to do is ask the Recipient Wallet what its Program Generator is and then run that to create the puzzle to lock the coin up with.

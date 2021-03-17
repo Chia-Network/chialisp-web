@@ -16,7 +16,7 @@ This can cause unexpected problems if you are not aware of it.
 Consider the following program which uses `x` which immediately halts and throws an error if it is evaluated.
 
 ```lisp
-$ brun '(i (q 1) (q 100) (x (q "still being evaluated")))'
+$ brun '(i (q . 1) (q . 100) (x (q . "still being evaluated")))'
 FAIL: clvm raise (0x7374696c6c206265696e67206576616c7561746564)
 ```
 
@@ -25,36 +25,29 @@ This is because ChiaLisp evaluates both of the leaves even though it will only f
 To get around this we can use the following design pattern to replace (i A B C).
 
 ```lisp
-((c (i (A) (q B) (q C)) (a)))
+(a (i (A) (q B) (q C)) (a))
 ```
 
 Applying this to our above example looks like this:
 
 ```lisp
-$ brun '((c (i (q 1) (q (q 100)) (q (x (q "still being evaluated")))) (a)))'
+$ brun '(a (i (q . 1) (q . (q . 100)) (q . (x (q . "still being evaluated")))) 1)'
 100
 ```
 
 It is worth keeping this in mind whenever you write an `(i A B C)`.
 
-If you're wondering how this works (and how the standard transaction from [part 2](/docs/doc2) worked), then allow me to introduce Eval.
+If you're wondering how this works (and how the standard transaction from [part 2](/docs/doc2) worked), then allow me to introduce Evaluate.
 
-## Introduction to Eval
+## Introduction to Evaluate
 
 In [Part 1](/docs/) we mentioned that a program is usually a list where the first element is an operator, and every subsequent element is a valid program.
-However a Program can also have a program as the first element. This will cause that program to be evaluated as a new puzzle.
-The solution is then every element after the first in this list.
+We can also run programs with new arguments inside a program.
 
 This looks like this:
 
 ```lisp
-(*(puzzle)* *solution_element_1* *solution_element_2* *solution_element_3* *solution_element_4*)
-```
-
-In order to create this list we want to use:
-
-```lisp
-((c *(puzzle)* *(solution)*))
+(a *(puzzle)* (*solution)*)
 ```
 
 Let's put this into practice.
@@ -62,22 +55,22 @@ Let's put this into practice.
 Here is a program that evaluates the program `(+ 2 (q 5)))` and uses the list `(70 80 90)` or `(80 90 100)` as the solution.
 
 ```lisp
-$ brun '((c (q (+ 2 (q 5))) (q (70 80 90))))' '(20 30 40)'
+$ brun '(a (q . (+ 2 (q . 5))) (q . (70 80 90)))' '(20 30 40)'
 75
 
-$ brun '((c (q (+ 2 (q 5))) (q (80 90 100))))' '(20 30 40)'
+$ brun '(a (q . (+ 2 (q . 5))) (q . (80 90 100)))' '(20 30 40)'
 85
 
 ```
 
 Notice how the original solution `(20 30 40)` does not matter for the new evaluation environment.
-In this example we use `q` to quote both the new puzzle and the new solution to prevent them from being prematurely evaluated.
+In this example we use `q . ` to quote both the new puzzle and the new solution to prevent them from being prematurely evaluated.
 
 A neat trick that we can pull is that we can define the new solution in terms of the outer solution.
 In this next example we will add the first element of the old solution to our new solution.
 
 ```lisp
-$ brun '((c (q (+ 2 (q 5))) (c 2 (q (70 80 90)))))' '(20 30 40)'
+$ brun '(a (q . (+ 2 (q . 5))) (c 2 (q . (70 80 90))))' '(20 30 40)'
 25
 ```
 
@@ -88,18 +81,18 @@ However it's not just the new solution that we can affect using this, we can als
 The core CLVM does not have an operator for creating user defined functions.
 It does, however, allow programs to be passed as parameters, which can be used for similar results.
 
-Here is a puzzle that executes the program contained in `(f (a))` with the solution `(12)`.
+Here is a puzzle that executes the program contained in `2` (the first solution argument) with the solution `(12)`.
 
 ```lisp
-$ brun '((c 2 (q (12))))' '((* 2 (q 2)))'
+$ brun '(a 2 (q . (12)))' '((* 2 (q . 2)))'
 24
 ```
 
 Taking this further we can make the puzzle run a new evaluation that only uses parameters from its old solution:
 
 ```lisp
-$ brun '((c 2 1))' '((* 5 (q 2))) 10)'
-10
+$ brun '(a 2 1)' '((* 5 (q . 2)) 10)'
+20
 ```
 
 We can use this technique to implement recursive programs.
