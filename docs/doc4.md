@@ -11,7 +11,7 @@ It is highly recommended that you do so as the higher level language is built di
 The first difference you need to be aware of for the higher level language is that you should call `run` instead of `brun`.
 This lets the runtime know that it should be including higher level features.
 
-The first higher level feature you should be aware of is that it is no longer necessary to quote atoms.
+The first higher level feature you should be aware of is that **it is no longer necessary to quote atoms!**
 
 Compare `brun` and `run` here:
 
@@ -39,10 +39,10 @@ $ run '(list 100 "test" 0xdeadbeef)'
 `if` automatically puts our `i` statement into the lazy evaluation form so we do not need to worry about the unused code path being evaluated.
 
 ```lisp
-$ run '(if (= (f (a)) 100) (q "success") (x))' '(100)'
+$ run '(if 1 (q . "success") (x))' '(100)'
 "success"
 
-$ run '(if (= (f (a)) 100) (q "success") (x))' '(101)'
+$ run '(if 0 (q . "success") (x))' '(100)'
 FAIL: clvm raise ()
 ```
 
@@ -52,29 +52,17 @@ FAIL: clvm raise ()
 The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute out sections of predetermined code.
 
 Suppose we are writing a program that returns another coin's puzzle.
-We know that a puzzle takes the form: `(c (c (q 50) (c (q 0xpubkey) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))`
+We know that a puzzle takes the form: `(c (c (q . 50) (c (q . 0xpubkey) (c (sha256 2) (q . ())))) (a 5 11))`
 However we will want to change 0xpubkey to a value passed to us through our solution.
 
-```lisp
-$ run '(qq (c (c (q 50) (c (q (unquote (f (a)))) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a)))))))' '(0xdeadbeef)'
-
-(c (c (q 50) (c (q 0xdeadbeef) (c (sha256tree (f (a))) (q ())))) ((c (f (a)) (f (r (a))))))
-```
-
-## and
-
-`and` takes two boolean values and returns true if both values are true
+**Note: `@` allows us to access the arguments in the higher level language**
 
 ```lisp
-$ run '(and (= (f (a)) 10) (= (f (r (a))) 20))' '(10 20)'
-1
+$ run '(qq (c (c (q 50) (c (q (unquote (f @))) (c (sha256 2) (q ())))) (a 5 11)))' '(0xdeadbeef)'
 
-$ run '(and (= (f (a)) 10) (= (f (r (a))) 20))' '(10 25)'
-()
-$ run '(and (= (f (a)) 10) (= (f (r (a))) 20))' '(15 20)'
-()
-
+(c (c (q 50) (c (q 0xdeadbeef) (c (sha256 2) (q ())))) (a 5 11))
 ```
+
 
 ## Compiling to CLVM with Mod
 
@@ -84,6 +72,8 @@ This is where `mod` comes in.
 `mod` is an operator that lets the runtime know that it needs to be compiling the code rather than actually running it.
 
 `(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the last is the higher level script which is to be compiled.
+
+Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program
 
 ```lisp
 $ run '(mod (arg_one arg_two) (list arg_one))'
@@ -113,7 +103,7 @@ Usually a program will be structured like this:
   (defun another_function (param_one param_two param_three) (*function_code*))
   (defmacro macro_name (param_one param_two) (*macro_code*))
 
-  (main program)
+  (main *program*)
 )
 ```
 
@@ -146,9 +136,9 @@ Saving the above example as `factorial.clvm` allows us to do the following.
 
 ```lisp
 $ run factorial.clvm
-((c (q ((c 2 (c 2 (c 5 (q ())))))) (c (q ((c (i (= 5 (q 1)) (q (q 1)) (q (* ((c 2 (c 2 (c (- 5 (q 1)) (q ()))))) 5))) 1))) 1)))
+(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 (c 2 (c (- 5 (q . 1)) ()))) 5)) 1) 1))
 
-$ brun '((c (q ((c 2 (c 2 (c 5 (q ())))))) (c (q ((c (i (= 5 (q 1)) (q (q 1)) (q (* ((c 2 (c 2 (c (- 5 (q 1)) (q ()))))) 5))) 1))) 1)))' '(5)'
+$ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 (c 2 (c (- 5 (q . 1)) ()))) 5)) 1) 1))' '(5)'
 120
 ```
 
@@ -185,15 +175,15 @@ Compiling and running this code results in this:
 
 ```lisp
 $ run square_list.clvm
-((c (q ((c 2 (c 2 (c 3 (q ())))))) (c (q ((c (i 5 (q (c (* 9 9) ((c 2 (c 2 (c 13 (q ()))))))) (q 5)) 1))) 1)))
+(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))
 
-$ brun '((c (q ((c 2 (c 2 (c 3 (q ())))))) (c (q ((c (i 5 (q (c (* 9 9) ((c 2 (c 2 (c 13 (q ()))))))) (q 5)) 1))) 1)))' '(10 9 8 7)'
+$ brun '(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))' '(10 9 8 7)'
 (100 81 64 49)
 ```
 
 ## Conclusion
 
-You should now have the context and knoweldge needed to write your own smart contracts.
+You should now have the context and knowledge needed to write your own chialisp programs.
 Remember from [part 2](/docs/doc2/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
 
 If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).
