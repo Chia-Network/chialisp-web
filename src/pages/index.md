@@ -30,4 +30,4 @@ The first Chialisp smart transaction that we integrated into chia-blockchain wer
 4. [The Compiler and Other Useful Information](/docs/doc4/)
 5. [Glossary of Chialisp terms](/docs/doc5/)
 
-* - [Lower Level Language Reference Document](/ref/opcodes)
+* - [Lower Level Language Reference Document](/docs/ref/opcodes/)
