@@ -13,6 +13,4 @@ sidebar_label: 0 - Index
 * Compiler
 * Tools
 * [Serialization](/docs/ref/serialization)
-* [Limits](/docs/ref/limits)
 * Appendix
-
