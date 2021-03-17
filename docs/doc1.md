@@ -32,7 +32,7 @@ However, we can chain cons boxes together to construct lists.
 
 ## Lists
 
-Lists take the form of parentheses and each entry in the list is single spaced with no period between values.
+Lists are enclosed by parentheses and each entry in the list is single spaced with no period between values.
 Lists are much more commonly used than cons boxes as they are more versatile.
 
 ```
