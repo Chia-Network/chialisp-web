@@ -30,14 +30,4 @@ The first Chialisp smart transaction that we integrated into chia-blockchain wer
 4. [The Compiler and Other Useful Information](/docs/doc4/)
 5. [Glossary of Chialisp terms](/docs/doc5/)
 
-## Reference Wallets and Smart Transactions to be integrated
-
-- [Atomic Swaps](https://github.com/Chia-Network/wallets/blob/master/docs/atomic_swaps.md)
-- [Authorized Payees](https://github.com/Chia-Network/wallets/blob/master/docs/authorised_payees.md)
-- [Multisig Wallet](https://github.com/Chia-Network/wallets/blob/master/multisig/README.org)
-- [Rate Limited Wallet](https://github.com/Chia-Network/wallets/blob/master/docs/rate_limited_wallet.md)
-- [Recoverable Wallets](https://github.com/Chia-Network/wallets/blob/master/docs/recoverable_wallet.md)
-
-## Reference Wallets and Smart Transactions under construction
-
-- Distributed Identity Wallet - a Recoverable Wallet designed to support [DIDs](https://www.w3.org/2019/did-wg/)
+* - [Lower Level Language Reference Document](/ref/opcodes)
