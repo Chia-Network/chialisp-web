@@ -1,7 +1,7 @@
 # Chialisp
 
 Chialisp is a powerful and secure LISP-like language for encumbering and releasing funds with smart-contract capabilities.
-This is website is a consolidated place to learn about Chialisp, CLVM and the conditions language.
+This website is a consolidated place to learn about Chialisp, CLVM and the conditions language.
 
 Here's a sample:
 ```
