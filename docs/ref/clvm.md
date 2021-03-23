@@ -45,6 +45,9 @@ Proper lists are built from linked cons pairs, and assume a nil terminator. For 
 Note that `0`, `''`, and `()` all are parsed to the same value, but 0x0 is not.
 
 # Program Evaluation
+
+The syntax of CLVM assembly is similar to Lisp. It is a parenthesized [prefix notation](https://en.wikipedia.org/wiki/Polish_notation) that puts the operator before the arguments when reading left to right.
+
 The semantics of the language implemented by the CLVM is similar to Lisp. A program is represented as a binary tree. The root of the tree is the least nested object in the program tree, with inner function calls embedded recursively inside of it. In the following example, the outer parentheses represent the cons box that is the root of the tree `(+ (q . 1) (q . 2))`.
 
 Whenever a program is called it always has a context, or environemnt, which is a CLVM object. This object holds all the arguments passed into the program. This is the second command line argument to `run` and `brun`. The default environment is nil.
@@ -294,15 +297,33 @@ The arithmetic operators `+`, `-`, `*`, `/` and `divmod` treat their arguments a
 
 **`/`** `(/ A B)` divides two integers and returns the floored quotient
 
+
+### Rounding
+
 ```
 brun '(/ (q . 1)  (q . 2))' => ()
 brun '(/ (q . 2)  (q . 2))' => 1
 brun '(/ (q . 4)  (q . 2))' => 2
-
-brun '(/ (q . -1)  (q .  1))' -1
-brun '(/ (q .  1)  (q . -1))' -1
-brun '(/ (q . -1)  (q . -1))'  1
 ```
+
+### Division of negative numbers
+
+The treatment of negative dividend and divisors is as follows:
+```
+brun '(/ (q . -1)  (q .  1))' => -1
+brun '(/ (q .  1)  (q . -1))' => -1
+brun '(/ (q . -1)  (q . -1))' =>  1
+```
+
+### Flooring of negative nubmers
+Note that a division with a remainder always rounds down, not toward zero.
+```
+$ brun '(/ (q . -3) (q . 2))'
+-2
+$ brun '(/ (q . 3) (q . 2))'
+1
+```
+This means that `-a / b` is not always equal to `-(a / b)`
 
 **divmod** `(divmod A B)` takes two integers and returns a list containing the floored quotient and the remainder
 
@@ -318,14 +339,14 @@ The shorter atom is considered to be extended with zero bytes until equal in len
 
 **logior** `(logior A B ...)` bitwise logical **OR** of one or more atoms. Given zero arguments, returns zero.
 
-**logxor** `(logxor A B)` bitwise **XOR** of any number of atoms. Given zero arguments, returns zero.
+**logxor** `(logxor A B ...)` bitwise **XOR** of any number of atoms. Given zero arguments, returns zero.
 
 **lognot** `(lognot A)` bitwise **NOT** of A. All bits are inverted.
 
-
-brun '(lognot (q . ())  )'
+```
+brun '(lognot (q . ()))'
 -1
-brun '(lognot (q . 1)  )'
+brun '(lognot (q . 1))'
 -2
 brun '(concat (q . -2) (q . -2))'
 -258
@@ -333,7 +354,7 @@ brun '(concat (q . -2) (q . -2) (q . -2) (q . -2))'
 0xfefefefe
 brun '(lognot (lognot (q . 17)))'
 17
-
+```
 
 ## Shifts
 
@@ -359,7 +380,8 @@ brun '(lognot (lognot (q . 17)))'
 
 ```
 (strlen (q . "clvm")) => 4
-(strlen (q . "0x0")) => 1
+(strlen (q . "0x0")) => 3
+(strlen (q . 0x0)) => 1
 (strlen (q . "")) => ()
 (strlen (q . 0)) => ()
 (strlen (q . ())) => ()
@@ -397,16 +419,20 @@ Example: `(point_add (pubkey_for_exp (q . 1)) (pubkey_for_exp (q . 2)))` => `0x8
 
 ## Arithmetic and Bitwise Identities
 
-Some operators have a special value that is returned when they are called with zero arguments. This value is the identity of that function.
+Some operators have a special value that is returned when they are called with zero arguments. This value is the identity of that function. For example, calling the operator `+` with zero arguments will return `0`:
+
+`(+)` => `0`
 
 Operator | Identity
 ---|---
 `+`| 0
+`-`| 0
 `*`| 1
-AND| all 1's
-OR| all zeros
-XOR| all zeros
+logand| all 1's
+logior| all zeros
+logxor| all zeros
 
+Note that `/`, `divmod`, and `lognot` do not have an identity value. Calling them with zero arguments is an error.
 
 ## Arithmetic
 
