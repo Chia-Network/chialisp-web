@@ -5,7 +5,8 @@ This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern 
 ### Installation
 
 ```
-$ yarn
+$ npm install --local yarn
+$ ./node_modules/yarn/bin/yarn
 ```
 
 ### Local Development
@@ -15,6 +16,12 @@ $ yarn start
 ```
 
 This command starts a local development server and open up a browser window. Most changes are reflected live without having to restart the server.
+
+### Local Development notes
+
+`yarn` & `docusaurus` interpret text within angle-brackets, so be careful when using them, if you are editing the .md files directly.
+
+If you are logged in to your github account, you can edit a page right on chialisp.com, by clicking on the "Edit this page" link at the bottom of the article. That will allow you to edit the page, and submit a pull request against the underlying markdown file.
 
 ### Build
 
