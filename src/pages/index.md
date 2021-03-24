@@ -32,7 +32,7 @@ Here's a sample:
 4. [The Compiler and Other Useful Information](/docs/doc4/)
 5. [Glossary of Chialisp terms](/docs/doc5/)
 
-* [Lower Level Language Reference Document](/docs/ref/opcodes/)
+* [Lower Level Language Reference Document](/docs/ref/clvm/)
 
 ## Coloured Coins
 
