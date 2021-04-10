@@ -134,7 +134,7 @@ The exception to this rule is `0` because `0` is  exactly the same as `()`.
 $ brun '(= (q . 0) ())' '()'
 1
 
-$ brun '(+ (q 70) ())' '()'
+$ brun '(+ (q . 70) ())' '()'
 70
 ```
 
@@ -260,27 +260,27 @@ And remember lists can be nested too.
 $ brun '(f (f (r 1)))' '((70 80) (90 100) (110 120))'
 90
 
-$ run '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+$ brun '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 (91 92 93 94 95)
 ```
 
 These environment variables can be used in combination with all other operators.
 
 ```lisp
-$ run '(+ (f 1) (q 5))' '(10)'
+$ brun '(+ (f 1) (q . 5))' '(10)'
 15
 
-$ run '(* (f 1) (f 1))' '(10)'
+$ brun '(* (f 1) (f 1))' '(10)'
 100
 ```
 
 This program checks that the second variable is equal to the square of the first variable.
 
 ```lisp
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
+$ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
 1
 
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
+$ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
 ()
 ```
 
