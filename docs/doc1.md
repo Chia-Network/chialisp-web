@@ -12,7 +12,7 @@ You should be able to follow along by running a version of [clvm_tools](https://
 
 ## Cons Boxes
 
-ChiaLisp is built out of cons boxes and atoms.
+ChiaLisp is built out of [cons boxes](https://en.wikipedia.org/wiki/Cons) and [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.).
 A cons box is defined as a pair of ChiaLisp objects.
 The items in a cons box can either be an atom or another cons box.
 
