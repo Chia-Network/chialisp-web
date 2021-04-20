@@ -161,7 +161,7 @@ To defer evaluation until after the condition, `B` and `C` must be quoted (with
 `q`), and then evaluated with `(a)`.
 
 ```lisp
-$ brun '(a (i (q . 0) (q (x (q 1337) )) (q . 1)))'
+$ brun '(a (i (q . 0) (q . (x (q . 1337) )) (q . 1)) ())'
 ```
 
 Now seems like a good time to clarify further about lists and programs.
