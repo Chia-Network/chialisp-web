@@ -77,17 +77,22 @@ The OpCodes are split into two categories: *"this spend is only valid if X"* and
 
 Here is the complete list of OpCodes along with their format and behaviour.
 
-* **AGG_SIG - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message.
-* **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid then create a new coin with the given puzzlehash and amount.
-* **ASSERT_ANNOUNCEMENT - [52] - (52 0xannouncementID)**: This spend is only valid if the given Coin ID has also been spent in this block. This allows you to use the consumed coins value as part of your own output.
-* **ASSERT_MY_COIN_ID - [53] - (53 0xcoinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
-* **ASSERT_RELATIVE_TIME_EXCEEDS - [54] - (54 time)**: This spend is only valid if the given time has passed.
-* **ASSERT_BLOCK_INDEX_EXCEEDS - [55] - (55 block_index)**: The spend is only valid if the given block_index has been reached.
-* **ASSERT_BLOCK_AGE_EXCEEDS - [56] - (56 block_age)**: The spend is only valid if the given block_age has surpassed the age of the coin being spent.
-* **AGG_SIG_ME - [57] - (57 0xpubkey 0xmessage)**: The spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's id.
-* **ASSERT_FEE - [58] - (58 amount)**: The spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
-* **ASSERT_TIME_EXCEEDS - [59] - (59 time)**: The spend is only valid if the given time has passed.
-* **CREATE_ANNOUNCEMENT - [60] - (60 message)**: This creates an ephemeral announcement with an ID dependent on the coin that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
+* **AGG_SIG_UNSAFE - [49] - (49 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID. 
+* **AGG_SIG_ME - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID.
+* **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid, then create a new coin with the given puzzlehash and amount.
+* **ASSERT_FEE - [52] - (52 amount)**: This spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
+* **CREATE_COIN_ANNOUNCEMENT - [60] - (60 message)**: If this spend is valid, this creates an ephemeral announcement with an ID dependent on the coin that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
+* **ASSERT_COIN_ANNOUNCEMENT - [61] - (61 0xannouncementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.  The announcementID is the hash of the message that was announced concatenated with the coin ID of the coin that announced it `announcementID == sha256(coinID + message)`.
+* **CREATE_PUZZLE_ANNOUNCEMENT - [62] - (62 message)**: If this spend is valid, this creates an ephemeral announcement with an ID dependent on the puzzle that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
+* **ASSERT_PUZZLE_ANNOUNCEMENT - [63] - (63 0xannouncementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.  The announcementID is the message that was announced concatenated with the puzzle hash of the coin that announced it `announcementID == sha256(puzzle_hash + message)`.
+* **ASSERT_MY_COIN_ID - [70] - (70 0xcoinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
+* **ASSERT_MY_PARENT_ID - [71] - (71 0xparentID)**: This spend is only valid if the presented parent coin info is exactly the same as the parent coin info of the coin that contains this puzzle.
+* **ASSERT_MY_PUZZLE_HASH - [72] - (72 0xpuzzlehash)**: This spend is only valid if the presented puzzle hash is exactly the same as the puzzle hash of the coin that contains this puzzle.
+* **ASSERT_MY_AMOUNT - [73] - (73 0xamount)**: This spend is only valid if the presented amount is exactly the same as the amount of the coin that contains this puzzle.
+* **ASSERT_SECONDS_RELATIVE - [80] - (80 seconds)**: This spend is only valid if the given time has passed since this coin was created.
+* **ASSERT_SECONDS_ABSOLUTE - [81] - (81 time)**: This spend is only valid if the timestamp on this block is greater than the specified timestamp.
+* **ASSERT_HEIGHT_RELATIVE - [82] - (82 block_age)**: This spend is only valid if the specified number of blocks have passed since this coin was created.
+* **ASSERT_HEIGHT_ABSOLUTE - [83] - (83 block_height)**: This spend is only valid if the given block_height has been reached.
 
 Conditions are returned as a list of lists in the form:
 
