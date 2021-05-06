@@ -240,7 +240,7 @@ It's important to remember that the context for ChiaLisp is for use in locking u
 This means that we need to be able to pass some information to the puzzle.
 
 A solution is a list of values passed to the puzzle.
-The solution can be referenced with `1`.
+The solution can be referenced with `1` in `brun`, or equivalently `@` with `run`.
 
 ```lisp
 $ brun '1' '("this" "is the" "solution")'
@@ -292,13 +292,6 @@ In clvm assembly (`brun`), calling `1` accesses the root of the tree and returns
 
 ```lisp
 $ brun '1' '("example" "data" "for" "test")'
-("example" "data" "for" "test")
-```
-
-To do the same in ChiaLisp (`run`), use `@`:
-
-```lisp
-$ run '@' '("example" "data" "for" "test")'
 ("example" "data" "for" "test")
 ```
 
