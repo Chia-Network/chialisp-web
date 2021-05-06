@@ -82,7 +82,7 @@ $ brun '(+ (q . 10) (q . 20) (q . 30) (q . 40))' '()'
 You may have noticed that the multiplication example above takes more than two parameters in the list.
 This is because many operators can take a variable number of parameters.
 `+` and `*` are commutative so the order of parameters does not matter.
-For non-commutative operations, `(- (q 100) (q 30) (q 20) (q 5))` is equivalent to `(- (q 100) (+ (q 30) (q 20) (q 5)))`.
+For non-commutative operations, `(- (q . 100) (q . 30) (q . 20) (q . 5))` is equivalent to `(- (q . 100) (+ (q . 30) (q . 20) (q . 5)))`.
 Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
 
 There is also support for negative values.
@@ -134,7 +134,7 @@ The exception to this rule is `0` because `0` is  exactly the same as `()`.
 $ brun '(= (q . 0) ())' '()'
 1
 
-$ brun '(+ (q 70) ())' '()'
+$ brun '(+ (q . 70) ())' '()'
 70
 ```
 
@@ -260,39 +260,46 @@ And remember lists can be nested too.
 $ brun '(f (f (r 1)))' '((70 80) (90 100) (110 120))'
 90
 
-$ run '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+$ run '(f (f (r @)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 (91 92 93 94 95)
 ```
 
 These environment variables can be used in combination with all other operators.
 
 ```lisp
-$ run '(+ (f 1) (q 5))' '(10)'
+$ run '(+ (f @) (q . 5))' '(10)'
 15
 
-$ run '(* (f 1) (f 1))' '(10)'
+$ run '(* (f @) (f @))' '(10)'
 100
 ```
 
 This program checks that the second variable is equal to the square of the first variable.
 
 ```lisp
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
+$ run '(= (f (r @)) (* (f @) (f @)))' '(5 25)'
 1
 
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
+$ run '(= (f (r @)) (* (f @) (f @)))' '(5 30)'
 ()
 ```
 
 ## Accessing Environmental Variables Through Integers
 
 In the above examples we were using `run`, calling the higher level language, instead of `brun` for the lower level language.
-This is because for the sake of minimalism in the lower level CLVM language, we address the solution with evaluated integers.
+This is because for the sake of minimalism in the lower level CLVM language, we use self-eval on integers to mean "look up this argument in the environment tree", wheras in `run`, numbers evaluate to themselves.
 
-Calling `1` accesses the root of the tree and returns the entire solution list.
+In clvm assembly (`brun`), calling `1` accesses the root of the tree and returns the entire solution list.
 
 ```lisp
 $ brun '1' '("example" "data" "for" "test")'
+("example" "data" "for" "test")
+```
+
+To do the same in ChiaLisp (`run`), use `@`:
+
+```lisp
+$ run '@' '("example" "data" "for" "test")'
 ("example" "data" "for" "test")
 ```
 
