@@ -260,33 +260,33 @@ And remember lists can be nested too.
 $ brun '(f (f (r 1)))' '((70 80) (90 100) (110 120))'
 90
 
-$ run '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+$ brun '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 (91 92 93 94 95)
 ```
 
 These environment variables can be used in combination with all other operators.
 
 ```lisp
-$ run '(+ (f 1) (q 5))' '(10)'
+$ brun '(+ (f 1) (q . 5))' '(10)'
 15
 
-$ run '(* (f 1) (f 1))' '(10)'
+$ brun '(* (f 1) (f 1))' '(10)'
 100
 ```
 
 This program checks that the second variable is equal to the square of the first variable.
 
 ```lisp
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
+$ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
 1
 
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
+$ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
 ()
 ```
 
 ## Accessing Environmental Variables Through Integers
 
-In the above examples we were using `run`, calling the higher level language, instead of `brun` for the lower level language.
+In the above examples we were using `brun`, calling the higher level language, instead of `run` for the lower level language.
 This is because for the sake of minimalism in the lower level CLVM language, we address the solution with evaluated integers.
 
 Calling `1` accesses the root of the tree and returns the entire solution list.
