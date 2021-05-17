@@ -30,7 +30,7 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 * **Treearg** - These are program arguments passed in from outside the program. They are referenced by integers that describe a path in the argument tree.
 * **Argument** - Outside the context of the CLVM, the term "argument" can mean "program argument" (the "argv" of the C language, for example), or "function argument", among other things. Because of this potential confusion, we avoid using the term "argument" in this document. The context is especially important considering the way in which CLVM programs look up their program arguments.
 
-A CLVM program must have an unambigious definition and meaning, so that Chia block validation and consensus is deterministic. Programs are treated as Merkle trees, uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
+A CLVM program must have an unambiguous definition and meaning, so that Chia block validation and consensus is deterministic. Programs are treated as Merkle trees, uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
 
 # Readable assembly format
 
@@ -50,7 +50,7 @@ The syntax of CLVM assembly is similar to Lisp. It is a parenthesized [prefix no
 
 The semantics of the language implemented by the CLVM is similar to Lisp. A program is represented as a binary tree. The root of the tree is the least nested object in the program tree, with inner function calls embedded recursively inside of it. In the following example, the outer parentheses represent the cons box that is the root of the tree `(+ (q . 1) (q . 2))`.
 
-Whenever a program is called it always has a context, or environemnt, which is a CLVM object. This object holds all the arguments passed into the program. This is the second command line argument to `run` and `brun`. The default environment is nil.
+Whenever a program is called it always has a context, or environment, which is a CLVM object. This object holds all the arguments passed into the program. This is the second command line argument to `run` and `brun`. The default environment is nil.
 
 If the program is an atom then an argument lookup is performed, and the argument is returned. Please see [treeargs](#treeargs), below.
 
@@ -107,13 +107,13 @@ If the item is a quoted value, the value is returned.
 
 If the item is an atom, the atom is looked up as a Treearg.
 
-If the item to be evaluated is a list, all of the parameters are evaluated and then the evaluatted parameters are passed to the function
+If the item to be evaluated is a list, all of the parameters are evaluated and then the evaluated parameters are passed to the function
 
 All arguments of a function are evaluated before being passed to that function.
 
 ## Types
 
-The two types of CLVM Object are *cons pair* and *atom*. They can be distinguished by the **listp** opcode. Atoms in the CLVM language do not carry other type information. However, similarly to the machine code instructions for a CPU, functions interpret atoms in specific predictible ways. Thus, each function imposes a type for each of its arguments.
+The two types of CLVM Object are *cons pair* and *atom*. They can be distinguished by the **listp** opcode. Atoms in the CLVM language do not carry other type information. However, similarly to the machine code instructions for a CPU, functions interpret atoms in specific predictable ways. Thus, each function imposes a type for each of its arguments.
 
 The value of an atom - its length, and the values of its bytes - are always well defined and unambiguous. Because atoms have no type information, the meaning of an atom is determined when a function is applied to it. In the following example, an atom that was read in as a string is treated as an integer.
 
@@ -180,7 +180,7 @@ etc.
 
 This quirky numbering makes the implementation simple.
 
-Numbering starts at the root of the tree. The path index is set to 1, whic represents the entire argument tree.
+Numbering starts at the root of the tree. The path index is set to 1, which represents the entire argument tree.
 Bits are appended to the right of the path index as we descend, 0 for left, and 1 for right.
 
 See the implementation [here](https://github.com/Chia-Network/clvm_tools/blob/master/clvm_tools/NodePath.py)
@@ -211,7 +211,7 @@ Nil, decimal zero and the empty string all evaluate to the same atom.
 
 `(q . "")` => `()`
 
-which is not the same as a sigle zero byte.
+which is not the same as a single zero byte.
 
 `(q . 0x0)` => `0x00`
 
@@ -266,18 +266,22 @@ Example: `'(c (q . "A") (q . ()))'` => `(65)`
 **l** *listp* `(l X)` takes exactly one operand and returns `()` if it is an atom or `1` if it is a cons pair. In contrast to most other lisps, nil is not a list in CLVM.
 
 ## Control Flow
-**a** *apply* `(a P A)` run the program P with the arguments A.
+**a** *apply* `(a P A)` run the program P with the arguments A. Note that this executes P in a new environment. Using integers to reference values in the solution will reference values in A.
 
 **i** *if* `(i A B C)` takes exactly three operands `A`, `B`, `C`. If `A` is `()`, return `C`. Otherwise, return `B`. Both B and C are evaluated before *if* is evaluated.
 
 **x** *raise exception* `(x X Y ...)` takes an arbitrary number of arguments (even zero). Immediately fail, with the argument list passed up into the (python) exception. No other CLVM instructions are run after this instruction is evaluated.
 
-**=** *equal* `(= A B)` returns 1 if `A` and `B` are both atoms and both equal. Otherwise `()`. Do not use this to test if two programs are identical. Use **sha256tree**. Nil tests equal to zero, but nil is not equal to a single zero byte.
+**=** *equal* `(= A B)` returns 1 if `A` and `B` are both atoms and both equal. Otherwise `()`. Do not use this to test if two programs are identical. That is determined by their tree hash. Nil tests equal to zero, but nil is not equal to a single zero byte.
 
 **>** *greater than* `(> A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise `()`. `(> A B)` means `A > B` in infix syntax.
 
 **>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise `()`. Compare to strcmp.
 `(>s "a" "b")` => `()`
+
+**all** `(all A B ...)` takes an arbitrary number of arguments (even zero). Returns `()` if any of the arguments evaluate to `()`. Otherwise, returns 1.
+
+**any** `(any A B ...)` takes an arbitrary number of arguments (even zero). Returns 1 if any of the arguments evaluate to something other than `()`. Otherwise, returns `()`.
 
 
 ## Constants
@@ -361,6 +365,8 @@ brun '(lognot (lognot (q . 17)))'
 **ash** `(ash A B)` if B is positive, return Arithmetic shift A << B. Else returns A >> |B|. *ash* sign extends.
 
 **lsh** `(lsh A B)` if B is positive, Logical shift A by B bits left. Else Logical shift A >> |B|. Zeros are inserted into the vacated bits.
+
+Both **ash** and **lsh** have a maximum |B| of 65536
 
 ## Strings
 
