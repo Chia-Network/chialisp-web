@@ -236,6 +236,13 @@ However, the same is not true for Built-ins.
 (q . "q") => 113
 ```
 
+## Operators are atoms too
+
+When you write a program, the first argument in the list is interpreted as an operator.  However, this operator is also stored as an unsigned int.  This can lead to ambiguity and confusing outputs:
+
+`(r (q . (1 2 3)))` => `(a 3)`
+
+Since `2` is at the beginning of the list, `brun` assumes it is the operator and looks up its corresponding representation, which in this case is `a`. It is the correct output of the program, it is just displayed in an unexpected way.
 
 ## Errors
 
