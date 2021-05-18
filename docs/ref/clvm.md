@@ -140,6 +140,8 @@ This type has the potential for multiple representations to be treated as the sa
 
 These integers are byte-aligned. For example, `0xFFF` is interpreted as the two bytes `0x0F`,`0xFF`, with value `4095`.
 
+This can also cause unexpected representations of numbers when they are expected to be interpreted as strings.  If a positive integer's first byte is >= `0x80` (the most significant bit is 1) then it will be prepended with a `0x00` when the operator output type is a signed integer. Without that prepended byte, a positive value would appear negative in the case that the high bit is set.  You are likely to encounter this when using the output of an int operation as the input of a string operation.
+
 ### BLS Point
 
 This type represents a point on an elliptic curve over finite field described [here](https://electriccoin.co/blog/new-snark-curve/).
