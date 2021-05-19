@@ -27,10 +27,10 @@ Here's a sample:
 - [A video introduction to developing in Chialisp](https://www.youtube.com/watch?v=dEFLJSU87K8)
 
 1. [CLVM Basics](/docs/)
-2. [Coins, Spends and Wallets](/docs/doc2/)
-3. [Deeper into CLVM](/docs/doc3/)
-4. [The Compiler and Other Useful Information](/docs/doc4/)
-5. [Glossary of Chialisp terms](/docs/doc5/)
+2. [Coins, Spends and Wallets](/docs/coins_spends_and_wallets/)
+3. [Deeper into CLVM](/docs/deeper_into_clvm/)
+4. [The Compiler and Other Useful Information](/docs/high_level_lang/)
+5. [Glossary of Chialisp terms](/docs/glossary/)
 
 * [Lower Level Language Reference Document](/docs/ref/clvm/)
 

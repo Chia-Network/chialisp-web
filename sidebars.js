@@ -1,6 +1,6 @@
 module.exports = {
   someSidebar: {
-    Chialisp: ['doc1', 'doc2', 'doc3', 'doc4', 'doc5'],
+    Chialisp: ['basics', 'coins_spends_and_wallets', 'deeper_into_clvm', 'high_level_lang', 'glossary'],
     CLVM: ['ref/clvm', 'ref/serialization'],
     FAQ: ['faq'],
   },

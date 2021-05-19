@@ -1,5 +1,5 @@
 ---
-id: doc4
+id: high_level_lang
 title: 4 - The High Level Language, Compiler, and Functions
 ---
 
@@ -55,7 +55,7 @@ Suppose we are writing a program that returns another coin's puzzle.
 We know that a puzzle takes the form: `(c (c (q . 50) (c (q . 0xpubkey) (c (sha256 2) (q . ())))) (a 5 11))`
 However we will want to change 0xpubkey to a value passed to us through our solution.
 
-**Note: `@` allows us to access the arguments in the higher level language**
+**Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
 
 ```lisp
 $ run '(qq (c (c (q 50) (c (q (unquote (f @))) (c (sha256 2) (q ())))) (a 5 11)))' '(0xdeadbeef)'
@@ -114,8 +114,6 @@ A few things to note:
 - Macros that refer to their parameters must be quasiquoted with the parameters unquoted
 - Be careful of infinite loops in macros that reference other macros.
 - Comments can be written with semicolons
-
-Now lets look at some example programs using functions.
 
 ## Factorial
 
@@ -184,6 +182,6 @@ $ brun '(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ()))
 ## Conclusion
 
 You should now have the context and knowledge needed to write your own Chialisp programs.
-Remember from [part 2](/docs/doc2/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
+Remember from [part 2](/docs/coins_spends_and_wallets/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
 
 If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).

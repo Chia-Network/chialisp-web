@@ -1,5 +1,5 @@
 ---
-id: doc5
+id: glossary
 title: The Great Chia Glossary
 ---
 
@@ -25,9 +25,9 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 
 * **Puzzle (Scriptpubkey)** - A ChiaLisp program which specifies the behaviour of a coin when it is spent. A puzzle can either reject a solution or output a set of constraints.
 
-* **Solution (Scriptsig)** - This is some ChiaLisp which is passed to the puzzle for evaluation when a transaction is submitted. For more information about how transactions work, and how solutions can generate new coins check out this [guide](/docs/doc2)
+* **Solution (Scriptsig)** - This is some ChiaLisp which is passed to the puzzle for evaluation when a transaction is submitted. For more information about how transactions work, and how solutions can generate new coins check out this [guide](/docs/coins_spends_and_wallets)
 
-* **CLVM** - The CLVM is the ChiaLisp Virtual Machine which is the sandboxed environment that puzzles and solutions are run in. The CLVM only runs the compiled minimal version of ChiaLisp, though a compiler can convert the higher level ChiaLisp to the compiled minimal version. See more about that [here](/docs/doc4)
+* **CLVM** - The CLVM is the ChiaLisp Virtual Machine which is the sandboxed environment that puzzles and solutions are run in. The CLVM only runs the compiled minimal version of ChiaLisp, though a compiler can convert the higher level ChiaLisp to the compiled minimal version. See more about that [here](/docs/high_level_lang)
 
 * **Aggregated Signature/AggSig** - Aggregated Signatures allow us to condense multiple signatures into a single aggregated signature, such that if we know a public key and value we can verify if it exists inside of the single aggregate. This uses BLS non-interactive aggregation.
 

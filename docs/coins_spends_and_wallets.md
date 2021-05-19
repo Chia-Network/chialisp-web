@@ -1,12 +1,12 @@
 ---
-id: doc2
+id: coins_spends_and_wallets
 title: 2 - Coins, Spends and Wallets
 ---
 
 This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
-If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/doc5).
+If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
 ## Coins
 
@@ -77,7 +77,7 @@ The OpCodes are split into two categories: *"this spend is only valid if X"* and
 
 Here is the complete list of OpCodes along with their format and behaviour.
 
-* **AGG_SIG_UNSAFE - [49] - (49 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID. 
+* **AGG_SIG_UNSAFE - [49] - (49 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID.
 * **AGG_SIG_ME - [50] - (50 0xpubkey 0xmessage)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID.
 * **CREATE_COIN - [51] - (51 0xpuzzlehash amount)**: If this spend is valid, then create a new coin with the given puzzlehash and amount.
 * **ASSERT_FEE - [52] - (52 amount)**: This spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
@@ -145,7 +145,7 @@ Otherwise you just have a valid spend that isn't returning any OpCodes, and that
 So we need to change the fail condition to be `(x (q . "wrong password"))` which means the transaction fails and the coin is not spent.
 
 If we're doing this then we should also change the `(i A B C)` pattern to `(a (i A (q . B) (q . C)) 1)`.
-The reason for this is explained in [part 3](/docs/doc3/). For now don't worry about why.
+The reason for this is explained in [part 3](/docs/deeper_into_clvm/). For now don't worry about why.
 
 Here is our completed password protected coin:
 
@@ -303,7 +303,7 @@ This is because instead of the solution for this puzzle being a list of OpCondit
 This means that the recipient can run their own program as part of the solution generation, or sign a puzzle and let somebody else provide the solution.
 
 The new program and solution inside the solution are evaluated and the result of that is added to the OpCode output.
-We will cover in more detail how this works in the [next part](/docs/doc3/) of this guide.
+We will cover in more detail how this works in the [next part](/docs/deeper_into_clvm/) of this guide.
 
 A basic solution for this standard transaction might look like:
 

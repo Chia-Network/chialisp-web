@@ -1,5 +1,5 @@
 ---
-id: doc1
+id: basics
 title: 1 - CLVM Basics
 sidebar_label: 1 - CLVM Basics
 ---
