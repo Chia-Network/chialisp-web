@@ -530,4 +530,34 @@ A left arithmetic shift will only extend the atom length when more bits are need
 
 # Costs
 
-When a clvm program is run, a cost is attributed to it. The minimum program cost is 40. After each opcode is run, its cost is added to the total program cost. When the cost exceeds a threshold, the program is terminated, and no value is returned.
+When a clvm program is run, a cost is attributed to it. The minimum program cost is 40. After each opcode is run, its cost is added to the total program cost. When the cost exceeds a threshold, the program is terminated, and no value is returned. Also, if the number of atoms or pairs exceeds 2^31, the program is terminated and no value is returned.
+
+| operator | base cost | cost per arg | cost per byte |
+| -------- | --------- | ------------ | ------------- |
+| `f` | 30 | - | - |
+| `i` | 33 | - | - |
+| `c` | 50 | - | - |
+| `r` | 30 | - | - |
+| `l` | 19 | - | - |
+| `q` | 20 | - | - |
+| `a` | 90 | - | - |
+| `=` | 117 | - | 1 |
+| `+` | 99 | 320 | 3 |
+| `/` | 988 | - | 4 |
+| `*` | 92 | 885 | [see here](https://github.com/Chia-Network/clvm_tools/blob/main/costs/README.md#multiplication) |
+| `logand`, `logior`, `logxor` | 100 | 264| 3 |
+| `lognot` | 331 | - | 3 |
+| `>` | 498 | - | 2 |
+| `>s` | 117 | - | 1 |
+| `strlen` | 173 | - | 1 |
+| `concat` | 142 | 135 | 3 |
+| `divmod` | 1116 | - | 6 |
+| `sha256` | 87 | 134 | 2 |
+| `ash` | 596 | - | 3 |
+| `lsh` | 277 | - | 3 |
+| `not`, `any`, `all` | 200 | 300 | - |
+| `point_add` | 101094 | 1343980 | - |
+| `pubkey_for_exp` | 1325730 | - | 38 |
+| | | | |
+| `CREATE_COIN` | 1800000 | - | - |
+| `AGG_SIG_UNSAFE`,`AGG_SIG_ME` | 1200000 | - | - |
