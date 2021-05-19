@@ -19,7 +19,6 @@ Here's a sample:
 
 - Bram’s introductory post on [Chialisp](https://www.chia.net/2019/11/27/chialisp.en.html)
 - Bram’s introduction to our [MVP of Coloured coins](https://www.chia.net/2020/04/29/coloured-coins-launch.en.html)
-- [Download Chialisp 0.4 in tar.gz format](https://github.com/Chia-Network/clvm/archive/0.4.tar.gz)
 
 ## Developer Documentation
 
