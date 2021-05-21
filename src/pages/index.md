@@ -24,6 +24,7 @@ Here's a sample:
 
 - [ChiaLisp Compiler Repository](https://github.com/Chia-Network/clvm)
 - [A video introduction to developing in Chialisp](https://www.youtube.com/watch?v=dEFLJSU87K8)
+- [clvm_tools for developing in Chialisp](https://github.com/Chia-Network/clvm_tools)
 
 1. [CLVM Basics](/docs/)
 2. [Coins, Spends and Wallets](/docs/coins_spends_and_wallets/)
