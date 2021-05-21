@@ -91,7 +91,7 @@ You may be wondering what other parameters `mod` takes, between variable names a
 
 ## Functions, Macros and Constants
 
-In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defmacro` and `defconstant`.
+In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defun-inline`, `defmacro` and `defconstant`.
 
 We can define as many of these as we like before the main source code.
 Usually a program will be structured like this:
@@ -101,6 +101,7 @@ Usually a program will be structured like this:
   (defconstant const_name value)
   (defun function_name (parameter_one parameter_two) (*function_code*))
   (defun another_function (param_one param_two param_three) (*function_code*))
+  (defun-inline utility_function (param_one param_two) (*function_code*))
   (defmacro macro_name (param_one param_two) (*macro_code*))
 
   (main *program*)
@@ -109,11 +110,14 @@ Usually a program will be structured like this:
 
 A few things to note:
 
-- Functions can reference themselves in their code but macros cannot as they are inserted at compile time, similar to inline functions.
+- Functions can reference themselves in their code but macros and inlines cannot as they are inserted at compile time.
 - Both functions and macros can reference other functions, macros and constants.
 - Macros that refer to their parameters must be quasiquoted with the parameters unquoted
 - Be careful of infinite loops in macros that reference other macros.
 - Comments can be written with semicolons
+- Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
+
+
 
 ## Factorial
 
