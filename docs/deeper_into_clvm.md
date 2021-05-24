@@ -25,7 +25,7 @@ This is because ChiaLisp evaluates both of the leaves even though it will only f
 To get around this we can use the following design pattern to replace (i A B C).
 
 ```lisp
-(a (i (A) (q B) (q C)) (a))
+(a (i (A) (q . B) (q . C)) 1)
 ```
 
 Applying this to our above example looks like this:
@@ -52,7 +52,7 @@ This looks like this:
 
 Let's put this into practice.
 
-Here is a program that evaluates the program `(+ 2 (q 5)))` and uses the list `(70 80 90)` or `(80 90 100)` as the solution.
+Here is a program that evaluates the program `(+ 2 (q . 5)))` and uses the list `(70 80 90)` or `(80 90 100)` as the solution.
 
 ```lisp
 $ brun '(a (q . (+ 2 (q . 5))) (q . (70 80 90)))' '(20 30 40)'

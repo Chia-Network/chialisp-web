@@ -58,9 +58,9 @@ However we will want to change 0xpubkey to a value passed to us through our solu
 **Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
 
 ```lisp
-$ run '(qq (c (c (q 50) (c (q (unquote (f @))) (c (sha256 2) (q ())))) (a 5 11)))' '(0xdeadbeef)'
+$ run '(qq (c (c (q . 50) (c (q (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
 
-(c (c (q 50) (c (q 0xdeadbeef) (c (sha256 2) (q ())))) (a 5 11))
+(c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) (a 5 11))
 ```
 
 
@@ -77,13 +77,13 @@ Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` in
 
 ```lisp
 $ run '(mod (arg_one arg_two) (list arg_one))'
-(c 2 (q ()))
+(c 2 ())
 ```
 
 As you can see it returns our program in compiled lower level form.
 
 ```lisp
-$ brun '(c 2 (q ()))' '(100 200 300)'
+$ brun '(c 2 ())' '(100 200 300)'
 (100)
 ```
 
@@ -116,7 +116,6 @@ A few things to note:
 - Be careful of infinite loops in macros that reference other macros.
 - Comments can be written with semicolons
 - Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
-
 
 
 ## Factorial
