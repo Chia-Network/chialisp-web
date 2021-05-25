@@ -1,12 +1,12 @@
 ---
-id: doc3
+id: deeper_into_clvm
 title: 3 - Deeper into CLVM
 ---
 
 This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover how ChiaLisp relates to transactions and coins on the Chia network.
-If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/doc5).
+If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
 ## Lazy Evaluation in ChiaLisp
 
@@ -25,7 +25,7 @@ This is because ChiaLisp evaluates both of the leaves even though it will only f
 To get around this we can use the following design pattern to replace (i A B C).
 
 ```lisp
-(a (i (A) (q B) (q C)) (a))
+(a (i (A) (q . B) (q . C)) 1)
 ```
 
 Applying this to our above example looks like this:
@@ -37,7 +37,7 @@ $ brun '(a (i (q . 1) (q . (q . 100)) (q . (x (q . "still being evaluated")))) 1
 
 It is worth keeping this in mind whenever you write an `(i A B C)`.
 
-If you're wondering how this works (and how the standard transaction from [part 2](/docs/doc2) worked), then allow me to introduce Evaluate.
+If you're wondering how this works (and how the standard transaction from [part 2](/docs/coins_spends_and_wallets) worked), then allow me to introduce Evaluate.
 
 ## Introduction to Evaluate
 
@@ -52,7 +52,7 @@ This looks like this:
 
 Let's put this into practice.
 
-Here is a program that evaluates the program `(+ 2 (q 5)))` and uses the list `(70 80 90)` or `(80 90 100)` as the solution.
+Here is a program that evaluates the program `(+ 2 (q . 5)))` and uses the list `(70 80 90)` or `(80 90 100)` as the solution.
 
 ```lisp
 $ brun '(a (q . (+ 2 (q . 5))) (q . (70 80 90)))' '(20 30 40)'

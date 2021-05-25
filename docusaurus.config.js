@@ -43,7 +43,7 @@ module.exports = {
             },
             {
               label: 'Coins, Spends and Wallets',
-              to: 'docs/doc2/',
+              to: 'docs/coins_spends_and_wallets/',
             },
           ],
         },
@@ -83,7 +83,7 @@ module.exports = {
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: 'doc1',
+          homePageId: 'basics',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:

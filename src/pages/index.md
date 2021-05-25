@@ -19,18 +19,18 @@ Here's a sample:
 
 - Bram’s introductory post on [Chialisp](https://www.chia.net/2019/11/27/chialisp.en.html)
 - Bram’s introduction to our [MVP of Coloured coins](https://www.chia.net/2020/04/29/coloured-coins-launch.en.html)
-- [Download Chialisp 0.4 in tar.gz format](https://github.com/Chia-Network/clvm/archive/0.4.tar.gz)
 
 ## Developer Documentation
 
 - [ChiaLisp Compiler Repository](https://github.com/Chia-Network/clvm)
 - [A video introduction to developing in Chialisp](https://www.youtube.com/watch?v=dEFLJSU87K8)
+- [clvm_tools for developing in Chialisp](https://github.com/Chia-Network/clvm_tools)
 
 1. [CLVM Basics](/docs/)
-2. [Coins, Spends and Wallets](/docs/doc2/)
-3. [Deeper into CLVM](/docs/doc3/)
-4. [The Compiler and Other Useful Information](/docs/doc4/)
-5. [Glossary of Chialisp terms](/docs/doc5/)
+2. [Coins, Spends and Wallets](/docs/coins_spends_and_wallets/)
+3. [Deeper into CLVM](/docs/deeper_into_clvm/)
+4. [The Compiler and Other Useful Information](/docs/high_level_lang/)
+5. [Glossary of Chialisp terms](/docs/glossary/)
 
 * [Lower Level Language Reference Document](/docs/ref/clvm/)
 

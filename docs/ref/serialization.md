@@ -101,7 +101,7 @@ size = (0x84 & 0x3F) = 4
 value = [ 33 22 11 00 ]
 ```
 
-In the above example, the length of the value is **4**, and we only needed the bottom 3 bits of the c[0] byte to encode the length, so the size is completely described by the first serialized byte. The total lenth of the encoded atom is 5 bytes.
+In the above example, the length of the value is **4**, and we only needed the bottom 3 bits of the c[0] byte to encode the length, so the size is completely described by the first serialized byte. The total length of the encoded atom is 5 bytes.
 
 Note that for values greater than 0x7F, the bytes of the serialized value representing the length are disjoint with the actual value bytes.
 
@@ -110,7 +110,7 @@ Let us consider some special cases.
 ```
 value(0x80) = 81 80
 ```
-c[0] is `0x81`.Since c[0] is between `0x7F` and `0xC0`, we know that there is only one sie byte, c[0], and the value is contained in the following bytes, starting at c[1]. The total size of the value array is
+c[0] is `0x81`.Since c[0] is between `0x7F` and `0xC0`, we know that there is only one size byte, c[0], and the value is contained in the following bytes, starting at c[1]. The total size of the value array is
 `size` = `c[0] & 0x3F` = `0x1`. So, the full value is contained in the single following byte.
 
 ```
@@ -181,5 +181,3 @@ ff 01 ff ff 02 ff 03 80 80
 ```
 
 There can be many cons cells in a CLVM program, so 0xFF will be common in the serialized program. There will be one serialized nil (0x80) per properly terminated list. Nil may also occur at other places in the program. There are usually more cons boxes than lists, so 0xFF occurs more frequently than 0x80.
-
-

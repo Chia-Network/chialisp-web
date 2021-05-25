@@ -1,5 +1,5 @@
 ---
-id: doc1
+id: basics
 title: 1 - CLVM Basics
 sidebar_label: 1 - CLVM Basics
 ---
@@ -12,8 +12,8 @@ You should be able to follow along by running a version of [clvm_tools](https://
 
 ## Cons Boxes
 
-ChiaLisp is built out of [cons boxes](https://en.wikipedia.org/wiki/Cons) and [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.).
-A cons box is defined as a pair of ChiaLisp objects.
+CLVM is built out of [cons boxes](https://en.wikipedia.org/wiki/Cons) and [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.).
+A cons box is defined as a pair of CLVM objects.
 The items in a cons box can either be an atom or another cons box.
 
 Cons boxes are represented as a parentheses with two elements separated by a `.`.
@@ -56,17 +56,17 @@ The following expressions are equal:
 Atoms are either literal binary blobs or variables.
 **A program is actually just a list in [polish notation](https://en.wikipedia.org/wiki/Polish_notation).**
 
-There is no distinguishing of atom types in ChiaLisp.
+There is no distinguishing of atom types in CLVM.
 This means that `(100 0x65 0x68656c6c6f)` and `(0x64 101 'hello')` are equivalent lists.
 Internally however the blobs can be interpreted in a number of different ways depending on the operator.
 We will cover this in further detail later.
 
 ## Math
 
-There are no support for floating point numbers in ChiaLisp, only integers.
+There are no support for floating point numbers in CLVM, only integers.
 Internally integers are interpreted as 256 bit signed integers.
 
-The math operators are `*`, `+`, and `-`.
+The math operators are `+`, `-`, `*`, and `/`.
 
 ```lisp
 $ brun '(- (q . 6) (q . 5))' '()'
@@ -77,12 +77,17 @@ $ brun '(* (q . 2) (q . 4) (q . 5))' '()'
 
 $ brun '(+ (q . 10) (q . 20) (q . 30) (q . 40))' '()'
 100
+
+$ brun '(/ (q . 20) (q . 11))' '()'
+1
 ```
+
+*Note that `/` returns the* ***floored*** *quotient*
 
 You may have noticed that the multiplication example above takes more than two parameters in the list.
 This is because many operators can take a variable number of parameters.
 `+` and `*` are commutative so the order of parameters does not matter.
-For non-commutative operations, `(- (q 100) (q 30) (q 20) (q 5))` is equivalent to `(- (q 100) (+ (q 30) (q 20) (q 5)))`.
+For non-commutative operations, `(- 100 30 20 5)` is equivalent to `(- 100 (+ 30 20 5))`.
 Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
 
 There is also support for negative values.
@@ -164,6 +169,8 @@ To defer evaluation until after the condition, `B` and `C` must be quoted (with
 $ brun '(a (i (q . 0) (q . (x (q . 1337) )) (q . 1)) ())'
 ```
 
+More on this later.
+
 Now seems like a good time to clarify further about lists and programs.
 
 ## Lists and Programs
@@ -196,7 +203,7 @@ $ brun '(i (= (q . 50) (q . 50)) (+ (q . 40) (q . 30)) (q . 20))' '()'
 70
 ```
 
-Programs in ChiaLisp tend to get built in this fashion.
+Programs in CLVM tend to get built in this fashion.
 Smaller programs are assembled together to create a larger program.
 It is recommended that you create your programs in an editor with brackets matching!
 
@@ -235,7 +242,7 @@ $ brun '(f (r (r (q . (100 110 120 130 140)))))' '()'
 
 ## Solutions and Environment Variables
 
-Up until now our programs have not had any input or variables, however ChiaLisp does have support for a kind of variable which is passed in through a solution.
+Up until now our programs have not had any input or variables, however CLVM does have support for a kind of variable which is passed in through a solution.
 
 It's important to remember that the context for ChiaLisp is for use in locking up coins with a puzzle program.
 This means that we need to be able to pass some information to the puzzle.
@@ -260,43 +267,42 @@ And remember lists can be nested too.
 $ brun '(f (f (r 1)))' '((70 80) (90 100) (110 120))'
 90
 
-$ run '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
+$ brun '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 (91 92 93 94 95)
 ```
 
 These environment variables can be used in combination with all other operators.
 
 ```lisp
-$ run '(+ (f 1) (q 5))' '(10)'
+$ brun '(+ (f 1) (q . 5))' '(10)'
 15
 
-$ run '(* (f 1) (f 1))' '(10)'
+$ brun '(* (f 1) (f 1))' '(10)'
 100
 ```
 
 This program checks that the second variable is equal to the square of the first variable.
 
 ```lisp
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
+$ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
 1
 
-$ run '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
+$ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
 ()
 ```
 
 ## Accessing Environmental Variables Through Integers
 
-In the above examples we were using `run`, calling the higher level language, instead of `brun` for the lower level language.
-This is because for the sake of minimalism in the lower level CLVM language, we address the solution with evaluated integers.
-
-Calling `1` accesses the root of the tree and returns the entire solution list.
+In the above examples we only used `1` which access the root of the tree and returns the entire solution list.
 
 ```lisp
 $ brun '1' '("example" "data" "for" "test")'
 ("example" "data" "for" "test")
 ```
 
-After that, you can imagine a binary tree of `f` and `r`, where each node is numbered.
+However, every unquoted integer in the lower level language refers to a part of the solution.
+
+You can imagine a binary tree of `f` and `r`, where each node is numbered.
 
 ```lisp
 $ brun '2' '("example" "data" "for" "test")'
@@ -322,7 +328,7 @@ And so on.
 ## End of Part 1
 
 This marks the end of this section of the guide.
-In this section we have covered many of the basics of using ChiaLisp.
+In this section we have covered many of the basics of using CLVM/ChiaLisp.
 It is recommended you play with using the information presented here for a bit before moving on.
 
-This guide has not covered all of the operators available in ChiaLisp - try using some of the other ones listed! [here](https://github.com/Chia-Network/clvm/blob/master/docs/clvm.org).
+This guide has not covered all of the operators available in CLVM - try using some of the other ones listed! [here](https://github.com/Chia-Network/clvm/blob/master/docs/clvm.org).

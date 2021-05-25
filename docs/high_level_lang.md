@@ -1,5 +1,5 @@
 ---
-id: doc4
+id: high_level_lang
 title: 4 - The High Level Language, Compiler, and Functions
 ---
 
@@ -55,12 +55,12 @@ Suppose we are writing a program that returns another coin's puzzle.
 We know that a puzzle takes the form: `(c (c (q . 50) (c (q . 0xpubkey) (c (sha256 2) (q . ())))) (a 5 11))`
 However we will want to change 0xpubkey to a value passed to us through our solution.
 
-**Note: `@` allows us to access the arguments in the higher level language**
+**Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
 
 ```lisp
-$ run '(qq (c (c (q 50) (c (q (unquote (f @))) (c (sha256 2) (q ())))) (a 5 11)))' '(0xdeadbeef)'
+$ run '(qq (c (c (q . 50) (c (q (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
 
-(c (c (q 50) (c (q 0xdeadbeef) (c (sha256 2) (q ())))) (a 5 11))
+(c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) (a 5 11))
 ```
 
 
@@ -77,13 +77,13 @@ Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` in
 
 ```lisp
 $ run '(mod (arg_one arg_two) (list arg_one))'
-(c 2 (q ()))
+(c 2 ())
 ```
 
 As you can see it returns our program in compiled lower level form.
 
 ```lisp
-$ brun '(c 2 (q ()))' '(100 200 300)'
+$ brun '(c 2 ())' '(100 200 300)'
 (100)
 ```
 
@@ -91,7 +91,7 @@ You may be wondering what other parameters `mod` takes, between variable names a
 
 ## Functions, Macros and Constants
 
-In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defmacro` and `defconstant`.
+In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defun-inline`, `defmacro` and `defconstant`.
 
 We can define as many of these as we like before the main source code.
 Usually a program will be structured like this:
@@ -101,6 +101,7 @@ Usually a program will be structured like this:
   (defconstant const_name value)
   (defun function_name (parameter_one parameter_two) (*function_code*))
   (defun another_function (param_one param_two param_three) (*function_code*))
+  (defun-inline utility_function (param_one param_two) (*function_code*))
   (defmacro macro_name (param_one param_two) (*macro_code*))
 
   (main *program*)
@@ -109,13 +110,13 @@ Usually a program will be structured like this:
 
 A few things to note:
 
-- Functions can reference themselves in their code but macros cannot as they are inserted at compile time, similar to inline functions.
+- Functions can reference themselves in their code but macros and inlines cannot as they are inserted at compile time.
 - Both functions and macros can reference other functions, macros and constants.
 - Macros that refer to their parameters must be quasiquoted with the parameters unquoted
 - Be careful of infinite loops in macros that reference other macros.
 - Comments can be written with semicolons
+- Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
 
-Now lets look at some example programs using functions.
 
 ## Factorial
 
@@ -183,7 +184,7 @@ $ brun '(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ()))
 
 ## Conclusion
 
-You should now have the context and knowledge needed to write your own chialisp programs.
-Remember from [part 2](/docs/doc2/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
+You should now have the context and knowledge needed to write your own Chialisp programs.
+Remember from [part 2](/docs/coins_spends_and_wallets/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
 
 If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).
