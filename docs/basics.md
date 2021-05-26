@@ -10,11 +10,24 @@ The full set of operators is documented [here](https://github.com/Chia-Network/c
 This guide will cover the basics of the language and act as an introduction to the structure of programs.
 You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).
 
-## Cons Boxes
+## CLVM values
 
-CLVM is built out of [cons boxes](https://en.wikipedia.org/wiki/Cons) and [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.).
-A cons box is defined as a pair of CLVM objects.
-The items in a cons box can either be an atom or another cons box.
+CLVM is built out of [cons boxes](https://en.wikipedia.org/wiki/Cons) and [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.). These are referred to as CLVM Objects.
+A cons box is a pair of CLVM Objects. The items in a cons box can either be an atom or another cons box.
+
+### Atoms
+
+An atom is a string of bytes. These bytes can be interpreted both as a signed big-endian integer and a byte string, depending on the operator using it.
+
+All atoms in CLVM are immutable. All operators that perform computations on atoms create new atoms for the result.
+
+Atoms can be printed in three different ways, decimal, hexadecimal and as a string. Hexadecimal values are prefixed by `0x`, and strings are quoted in `"`.
+The way the integer is printed does not affect its underlying value.
+The atom `100` printed in decimal is the same as `0x64` printed in hexadecimal. Likewise the value `0x68656c6c6f` is the same as `"hello"`.
+
+When interpreting atoms as integers, it's important to remember that they are signed. In order to represent a positive integer, the most significant bit may not be set. Because of this, positive integers have a 0 byte prepended to them, in case the most significant bit in the next byte is set.
+
+### Cons Boxes
 
 Cons boxes are represented as a parentheses with two elements separated by a `.`.
 For example:
@@ -27,7 +40,7 @@ Are legal cons boxes, but the following is not.
 ```
 (200 . 300 . 400)
 ```
-A cons box is strictly only a pair.
+A cons box always has two elements.
 However, we can chain cons boxes together to construct lists.
 
 ## Lists
@@ -51,20 +64,17 @@ The following expressions are equal:
 (200 300 400)
 ```
 
-## Atoms
+## Quoting
 
-Atoms are either literal binary blobs or variables.
-**A program is actually just a list in [polish notation](https://en.wikipedia.org/wiki/Polish_notation).**
-
-There is no distinguishing of atom types in CLVM.
-This means that `(100 0x65 0x68656c6c6f)` and `(0x64 101 'hello')` are equivalent lists.
-Internally however the blobs can be interpreted in a number of different ways depending on the operator.
-We will cover this in further detail later.
+To interpret an atom as a value, rather than a program, it needs to be quoted with `q`. Quoted values form a cons box where the first item is the `q` operator.
+For example, this program is just the value `100`:
+```
+(q . 100)
+```
 
 ## Math
 
-There are no support for floating point numbers in CLVM, only integers.
-Internally integers are interpreted as 256 bit signed integers.
+There are no support for floating point numbers in CLVM, only integers. There is no hard size limit on integers in CLVM.
 
 The math operators are `+`, `-`, `*`, and `/`.
 
@@ -161,7 +171,7 @@ $ brun '(i (q . ()) (q . 70) (q . 80))' '()'
 80
 ```
 
- Note that both `B` and `C` are evaluated eagerly, just like all subexpressions.
+Note that both `B` and `C` are evaluated eagerly, just like all subexpressions.
 To defer evaluation until after the condition, `B` and `C` must be quoted (with
 `q`), and then evaluated with `(a)`.
 
