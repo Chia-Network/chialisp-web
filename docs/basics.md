@@ -40,7 +40,7 @@ Are legal cons boxes, but the following is not.
 ```
 (200 . 300 . 400)
 ```
-A cons box always have two elements.
+A cons box always has two elements.
 However, we can chain cons boxes together to construct lists.
 
 ## Lists
