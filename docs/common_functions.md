@@ -10,26 +10,27 @@ When you start to write full smart contracts, you will start to realize that you
 If you want to import some functionality that you use frequently without having to copy/paste it between files, you can use `include`:
 
 ```lisp
-;; temperature.cinc
+;; condition_codes.clvm
 (
-  (defun celcius_to_fahrenheit (celcius) (+ (* celcius (/ 9 5)) 32))
+  (defconstant AGG_SIG_ME 50)
+  (defconstant CREATE_COIN 51)
 )
 ```
 
 ```lisp
-;;main.clisp
-(mod create_temp_announcement (temp)
+;;main.clvm
+(mod create_sig_coin (pubkey msg puzzle_hash amount)
 
-  (include "temperature.cinc")
+  (include "condition_codes.clvm")
 
-  (list CREATE_COIN_ANNOUNCEMENT (celcius_to_fahrenheit temp))
+  (list (list AGG_SIG_ME pubkey msg) (list CREATE_COIN puzzle_hash amount))
 
 )
 ```
 
-When running main.clisp with `run`, make sure to use the `-i` option to specify which directories to look in for files to include.
+When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for files.
 
-Also note that the include files take a special format in which all functions and constants defined end up in just one set of parentheses.
+Also note that the include files are a special format. All functions and constants defined go in a set of parentheses.
 
 ## sha256tree1
 
@@ -47,40 +48,7 @@ Recall that every clvm program can be represented as a binary tree.  Every objec
 )
 ```
 
-This is extremely useful for a **ton** of things in practice.  You can assert puzzles of other coins, condense puzzles for easier signing, and make CREATE_COIN conditions that are dependent on some passed in data.  
-
-## sha256tree_esc
-
-Remember that when tree hashing a puzzle, we prepend a different value depending on if it's an atom or a cons box.  Suppose we want to hash a tree in which we already know the hashes of some of the subtrees. If we just replace these subtrees at their root with tree hashes, `sha256tree1` will assume they are an atom and will rehash them with a prepended 1 producing an incorrect tree hash.
-
-Because of this, we need a function that takes a list of hashes that it assumes to be already hashed sub trees so that it knows not to rehash them.  Here's what that modification looks like:
-
-```lisp
-;;utility function used by sha256tree_esc
-(defun is-in-list (atom items)
- ;; returns 1 if `atom` is in the list of `items`
- (if items
-   (if (= atom (f items))
-     1
-     (is-in-list atom (r items))
-   )
-   0
- )
-)
-
-(defun sha256tree_esc
-  (TREE LITERALS)
-  (if (l TREE)
-      (sha256 2 (sha256tree_esc (f TREE) LITERALS) (sha256tree_esc (r TREE) LITERALS))
-      (if (is-in-list TREE LITERALS)
-          TREE
-          (sha256 1 TREE)
-      )
-  )
-)
-```
-
-This may potentially seem like an overcomplicated optimization, but its real power comes from the fact that we can hash programs into puzzle hashes *without knowing what those programs are*.  Let's explain one more function to tie it all together.
+It is extremely useful to calculate tree hashes within a Chialisp puzzle.  You can assert puzzles of other coins, condense puzzles for easier signing, and make CREATE_COIN conditions that are dependent on some passed in data.  
 
 ## Currying
 
@@ -115,6 +83,7 @@ Let's take our password locked coin example from earlier, this time as a Chialis
     )
   )
 
+  ; main
   (check_password password new_puzhash amount)
 )
 ```
@@ -133,6 +102,7 @@ You can see that the password hash is baked into the source of the puzzle.  This
     )
   )
 
+  ; main
   (check_password PASSWORD_HASH password new_puzhash amount)
 )
 ```
@@ -140,6 +110,7 @@ You can see that the password hash is baked into the source of the puzzle.  This
 However, now we have the problem that anyone can pass in whatever password/hash combo that they please and unlock this coin.  When we create this coin we need the password hash to be committed to. Before determining the puzzle hash of the coin we're going to create, we need to curry in the hash with something like this:
 
 ```lisp
+; curry_password_coin.clvm
 (mod (password_hash password_coin_mod)
   (include "curry.clvm") ; From above
 
@@ -150,12 +121,12 @@ However, now we have the problem that anyone can pass in whatever password/hash 
 If we compile this function and pass it parameters like this:
 
 ```
-brun <curry mod> '((q . 0xcafef00d) (q . <password coin mod>))'
+brun <curry password coin mod> '((q . 0xcafef00d) (q . <password coin mod>))'
 ```
 
 we will receive a puzzle that looks very similar to our password coin module, but has been expanded to include the hash we passed in.  You can now run the currying mod above with a different password hash and it will output a new puzzle every time.  We can then hash that puzzle and create a coin with the returned puzzle hash.
 
-Note that this required that we run the currying module using `brun` in our own environment off the chain in order to create the puzzle we would lock up our coin with.  A lot of the time this currying will happen in python or whatever wrapper language is being used in the software creating the coins.  However there are some use cases in which we would want to use currying within the scope of a puzzle.  Let's look at one now.
+Note that this required that we run the currying module using `brun` in our own environment off chain in order to create the puzzle we would lock up our coin with.  A lot of the time this currying will happen in python or whatever wrapper language is being used by the software creating the coins.  However, there are some use cases in which we would want to use currying within the scope of a puzzle.  Let's look at one now.
 
 ## Outer and Inner puzzles
 
@@ -174,14 +145,13 @@ For this example, we're going to continue with our password locking, but this ti
   )
 
   (include "condition_codes.clvm")
-  (include "curry.clvm")
   (include "sha256tree1.clvm")
-  (include "sha256tree_esc.clvm")
+  (include "curry-and-treehash.clvm")
 
-  (defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash inner_puzzle_hash)
-     (sha256tree_esc
-       (curry MOD_HASH (list mod_hash_hash new_password_hash inner_puzzle_hash)) ;; puzzle to tree hash
-       (list MOD_HASH mod_hash_hash inner_puzzle_hash) ;; already hashed values
+  (defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash_hash inner_puzzle_hash)
+     (puzzle-hash-of-curried-function
+       MOD_HASH
+       inner_puzzle_hash new_password_hash_hash mod_hash_hash ; parameters must be passed in reverse order
      )
    )
 
@@ -189,7 +159,7 @@ For this example, we're going to continue with our password locking, but this ti
   (defun-inline morph-condition (condition new_password_hash MOD_HASH)
    (if (= (f condition) CREATE_COIN)
      (list CREATE_COIN
-       (pw-puzzle-hash MOD_HASH (sha256tree1 MOD_HASH) new_password_hash (f (r condition)))
+       (pw-puzzle-hash MOD_HASH (sha256tree1 MOD_HASH) (sha256tree1 new_password_hash) (f (r condition)))
        (f (r (r condition)))
      )
      condition
@@ -216,6 +186,8 @@ For this example, we're going to continue with our password locking, but this ti
 )
 ```
 
+You may notice that we imported a new library called `curry-and-treehash`.  We'll talk about that in a few steps.
+
 First, let's talk about the arguments.  When you create this puzzle for the first time you need to curry in 3 things: `MOD_HASH` which is the tree hash of this code, `PASSWORD_HASH` which is the hash of the password that will unlock this coin, and `INNER_PUZZLE` which is a completely separate puzzle that will have its own rules about how the coin can be spent.
 
 Chialisp puzzles have the tendency to be read from the bottom up, so lets start with this chunk:
@@ -228,7 +200,7 @@ Chialisp puzzles have the tendency to be read from the bottom up, so lets start 
 )
 ```
 
-All that's happening here is that we're making sure the password is correct and if it is, we're going to run the curried in `INNER_PUZZLE` with the passed in `inner_solution`.  This will return a list of opcodes like any other spend that we will pass to the next function along with the new password hash and `MOD_HASH`.
+All that's happening here is that we're making sure the password is correct and, if it is, we're going to run the curried in `INNER_PUZZLE` with the passed in `inner_solution`.  This will return a list of opcodes that we will pass to the next function along with the new password hash and `MOD_HASH`.
 
 ```lisp
 ;; tweak all `CREATE_COIN` conditions, enforcing created coins to be locked by passwords
@@ -250,7 +222,7 @@ Recursion is the foundation of Chialisp and functions like these very commonly s
 (defun-inline morph-condition (condition new_password_hash MOD_HASH)
  (if (= (f condition) CREATE_COIN)
    (list CREATE_COIN
-     (pw-puzzle-hash MOD_HASH (sha256tree1 MOD_HASH) new_password_hash (f (r condition)))
+     (pw-puzzle-hash MOD_HASH (sha256tree1 MOD_HASH) (sha256tree1 new_password_hash) (f (r condition)))
      (f (r (r condition)))
    )
    condition
@@ -261,20 +233,20 @@ Recursion is the foundation of Chialisp and functions like these very commonly s
 This function is also pretty simple. We're first checking if the opcode (first item in the list) is CREATE_COIN.  If it's not, just return the condition as usual.  If it is, return a condition that is almost exactly the same, except we're passing the puzzle hash into a function that will modify it:
 
 ```lisp
-(defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash inner_puzzle_hash)
- (sha256tree_esc
-   (curry MOD_HASH (list mod_hash_hash new_password_hash inner_puzzle_hash)) ;; puzzle to tree hash
-   (list MOD_HASH mod_hash_hash inner_puzzle_hash) ;; already hashed values
- )
+(defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash_hash inner_puzzle_hasr
+   (puzzle-hash-of-curried-function
+     MOD_HASH
+     inner_puzzle_hash new_password_hash_hash mod_hash_hash ; parameters must be passed in reverse order
+   )
 )
 ```
 
 This is where the exciting stuff happens.  Since we don't know the inner puzzle, only it's hash, it's impossible to curry it directly into the next puzzle we want to create.  Furthermore, if we don't want to pass in the whole source of this current module every time that we spend it, we don't have a puzzle to curry things into either.
 
-However, all we care about is generating the correct puzzle hash for that future puzzle, and we DO have the tree hashes for both this module and the inner puzzle.  We can use `sha256tree_esc` which in some sense allows us to *resume* a partially completed puzzle hash so that we don't have to worry about sub trees that have already been hashed.  In this function we just pretend that the hashes of the module and the inner puzzle are the full puzzles, curry everything as we would normally, and then when taking the tree hash we specify which values represent already hashed subtrees. In this case: `MOD_HASH`, `mod_hash_hash`, and `inner_puzzle_hash`.  Note that `new_password_hash` is a literal value, not the hash of a subtree, so we leave it out of the list.
+However, all we care about is generating the correct *puzzle hash* for the next puzzle, and we do have the tree hashes for both this module and the inner puzzle.  We can use `puzzle-hash-of-curried-function` which allows us to create the puzzle hash of a function given: a) the puzzle hash of that function and b) the puzzle hashes of all of its arguments in reverse order.  The implementation details of this library are a bit much to go into in this part of the tutorial but, in essence, it allows us to *resume* a tree hash that we have completed except for the last step.
 
-And that's it!  When this coin is created, it can only be spent by a password that hashes to the curried in PASSWORD_HASH.  The inner puzzle can be anything that you want including other smart contracts that have their own inner puzzles.  Whatever coins get created as a result of that inner puzzle, they will be "wrapped" by this same outer puzzle ensuring that every child of this coin is locked by a password *forever*.
+And that's it!  When this coin is created, it can only be spent by a password that hashes to the curried in PASSWORD_HASH.  The inner puzzle can be anything that you want including other smart contracts that have their own inner puzzles.  Whatever coins get created as a result of that inner puzzle will be "wrapped" by this same outer puzzle ensuring that every child of this coin is locked by a password *forever*.
 
-We created a simple coin, but you can see the potential of this. Maybe you issue coins that represent assets whose movement requires a set of signatures every time they move.  Perhaps you want to ensure that all children coins *must* have come from you so that you entirely control the supply.  The possibilities are endless and represent the vast programmability that Chialisp gives to its coins.
+We created a simple coin, but you can see the potential of this. You can enforce a set of rules not only on a coin that you lock up, but on *every* descendant coin.  Not only that, the rules can be enforced *on top of other smart contracts*.  In the Chialisp ecosystem, all smart contracts are interoperable with each other unless otherwise specified by a parent smart contract. The possibilities are endless and represent the vast programmability that Chialisp enables for coins.
 
 In the next section, we'll talk about how the network handles the coins and what you need to know before you try to deploy one yourself.
