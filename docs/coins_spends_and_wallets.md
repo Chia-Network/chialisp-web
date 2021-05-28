@@ -280,18 +280,15 @@ You cannot create two coins of the same value, with the same puzzlehash, from th
 ### Coin Aggregation and Spend Bundles
 
 You can aggregate a bunch of smaller coins together into one large coin.
-To do this, you can create a SpendBundle which groups together one or more spends so that they cannot be split.
-The SpendBundle also contains an Aggregated Signature object which is how the AGGSIG condition can check if a value has been signed.
+To do this, you can create a SpendBundle which groups together one or more spends with a single aggregated signature.
 
-You can also further tighten the link between them by using ASSERT_COIN_CONSUMED.
-Suppose you have a 20 coin and an 80 coin.
-In the 20 coin you can make it return `(CREATE_COIN 0xnewpuzhash 100)` in the spend.
-Then in the 80 coin you can make it return `(ASSERT_COIN_CONSUMED 0xcoinID)`.
-The coupling inside the SpendBundle and the 80 value asserting its relationship to the 20 means that the value from the 80 coin is channeled into the creation of the new value 100 coin.
+SpendBundles are particularly important when the using announcements.  Since created announcements are only good for the block they are created in, you want to make sure that the coins that are asserting those announcements get spent alongside the announcing coins.
 
-### Standard Transaction
+We'll go more into SpendBundles and cohesion between coins in a later section.
 
-We can construct an even more powerful version of the signature locked coin to use as our standard transaction.
+### Example: Pay to "Delegated Puzzle"
+
+We can construct an even more powerful version of the signature locked coin:
 
 ```lisp
 (c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) (a 5 11))
@@ -299,8 +296,9 @@ We can construct an even more powerful version of the signature locked coin to u
 
 The first part is mostly the same, the puzzle always returns an AGGSIG check for the pubkey `0xfadedcab`.
 However it only checks for the first element of the solution.
-This is because instead of the solution for this puzzle being a list of OpConditions to be printed out, the solution is a program/solution pair.
+This is because, instead of the solution for this puzzle being a list of Conditions to be printed out, the solution is a program/solution pair.
 This means that the recipient can run their own program as part of the solution generation, or sign a puzzle and let somebody else provide the solution.
+When we use program parameters to generate solutions, refer to that as a "delegated puzzle".
 
 The new program and solution inside the solution are evaluated and the result of that is added to the OpCode output.
 We will cover in more detail how this works in the [next part](/docs/deeper_into_clvm/) of this guide.
