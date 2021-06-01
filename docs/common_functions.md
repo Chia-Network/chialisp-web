@@ -30,7 +30,7 @@ If you want to import some functionality that you use frequently without having 
 
 When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for files.
 
-Also note that the include files are a special format. All functions and constants defined go in a set of parentheses.
+Also note that the include files are a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.  You can then use any of those constants/functions when writing your program, without having to import each one individually.  The compiler will only include things that you use, so don't worry about including a large library file when attempting to optimize the size of your program.
 
 ## sha256tree1
 
@@ -67,7 +67,20 @@ Currying is an extremely important concept in Chialisp that is responsible for a
 (defun curry (func list_of_args) (qq (a (q . (unquote func)) (unquote (fix_curry_args list_of_args (q . 1))))))
 ```
 
-The reason this is so useful is because you want to be able to reuse puzzles, but not necessarily always have the same values used inside the puzzle.  You can't rely on the puzzle solver to honestly and correctly pass in the information you want to use, so you need to make sure it is passed in before they ever get the chance to solve it.
+The reason this is so useful is because you may want to create the blueprint of a puzzle, but use different values for certain parameters every time you create it.  You can't rely on the puzzle solver to honestly and correctly pass in the information you want to use, so you need to make sure it is passed in before they ever get the chance to solve it.
+
+The above function may look complex, but all it's really doing is wrapping the function in an `a` and prepending the arguments to `1` which (when compiled to clvm) will refer the rest of the puzzle arguments.  Absent of all the quotes, the above code reduces to something like this:
+
+```lisp
+(a func (c curry_arg_1 (c curry_arg_2 1)))
+```
+
+You can also do the reverse operation.  Given a program, you can *uncurry* the list of arguments, with a simple `(f (r (r )))`:
+
+```lisp
+(f (r (r curried_func)))
+; (c curry_arg_1 (c curry_arg_2 1))
+```
 
 Let's take our password locked coin example from earlier, this time as a Chialisp puzzle:
 
