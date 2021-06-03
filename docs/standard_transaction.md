@@ -21,7 +21,15 @@ The solution that the standard transaction uses is to derive a new private key f
 
 `synthetic_offset == sha256(hidden_puzzle_hash + original_public_key)`
 
-We then curry in the corresponding public key added to the original public key which becomes both the key that signs delegated spends *and* a way to verify that someone knows both the hidden puzzle and the original public key that was used to derive it.
+We then calculate the public key of this new private key, and add it to our esiting original public key:
+
+`synthentic_public_key == original_public_key + synthetic_offset_pubkey`
+
+If the solver can correctly reveal BOTH the hidden puzzle and the original public key, then our puzzle can derive the synthetic public key and make sure that it matches the one that is curried in.
+
+You may wonder why we add the public key from our derived private key to the original public key when it's already part of the derivation.  This is because we use the synthetic public key to sign for our delegated spends as well.  When you add two public keys, the private key for the resulting public key is the sum of the original private keys.  If we didn't add the original public key then anyone who knew the hidden puzzle could derive the synthetic private key and could then perform delegated spends!  Adding original public key ensures that there is still a secret component of the synthetic private key, even though half of can be known.
+
+This trick is also neat because it allows us to hide the hidden puzzle in a piece of information that was already necessary for the delegated spend.  It's impossible to guess what the hidden puzzle is, even if it's a standard hidden puzzle!  It's even hard to tell if there's a hidden puzzle at all.  This can also contributes to privacy.  For example, if two parties agree to lock up some coins with a hidden puzzle together, you can share pubkeys and verify that information on the blockchain without revealing anything to the network.  Then, if you both agree that the coins *can* be spent with the hidden puzzle if either party is dishonest, you can trustlessly delegated spend the coins to the correct destinations and it's impossible to tell that they are not just normal everyday spends.
 
 We'll look at the code in a moment, but here's a few terms to know before you look at it:
 
@@ -139,8 +147,6 @@ If the spend is the hidden spend, we pass most of our parameters to `is_hidden_p
 ```
 
 This is the Chialisp representation of what was explained in the section above.  A private key is any 32 bytes so we're going to use `sha256` (whose output is 32 bytes) to make sure our private key is derived from the `original_public_key` and the hash of the hidden puzzle.  We pass the resulting hash to `pubkey_for_exp` which turns our private key into a public key.  Then, we `point_add` this generated public key to our original pubkey to get our synthetic public key.  If it equals the curried in one, this function passes, otherwise it returns `()` and the `assert` from the previous function raises.
-
-You may wonder why we add the public key from our derived private key to the `original_public_key` when it's already part of the derivation.  This is because we use the `SYNTHETIC_PUBLIC_KEY` to sign for our delegated spends as well.  When you `point_add` two public keys, the private key for the resulting public key is the sum of the original private keys.  If we didn't add the `original_public_key` then anyone who knew the hidden puzzle could derive the synthetic private key and could then perform delegated spends!  Adding `original_public_key` ensures that there is still a secret component of the synthetic private key, even though half of can be known.
 
 
 ## Conclusion
