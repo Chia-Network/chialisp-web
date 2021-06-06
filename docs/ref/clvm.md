@@ -185,7 +185,7 @@ This quirky numbering makes the implementation simple.
 Numbering starts at the root of the tree. The path index is set to 1, which represents the entire argument tree.
 Bits are appended to the right of the path index as we descend, 0 for left, and 1 for right.
 
-See the implementation [here](https://github.com/Chia-Network/clvm_tools/blob/master/clvm_tools/NodePath.py)
+See the implementation [here](https://github.com/Chia-Network/clvm_tools/blob/main/clvm_tools/NodePath.py)
 
 ## Quoting
 
