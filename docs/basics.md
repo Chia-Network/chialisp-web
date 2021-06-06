@@ -72,6 +72,8 @@ For example, this program is just the value `100`:
 (q . 100)
 ```
 
+Note that in the higher level Chialisp language, values do not need to be quoted.
+
 ## Math
 
 There are no support for floating point numbers in CLVM, only integers. There is no hard size limit on integers in CLVM.
@@ -149,7 +151,7 @@ The exception to this rule is `0` because `0` is  exactly the same as `()`.
 $ brun '(= (q . 0) ())' '()'
 1
 
-$ brun '(+ (q 70) ())' '()'
+$ brun '(+ (q . 70) ())' '()'
 70
 ```
 
