@@ -139,7 +139,7 @@ The exception to this rule is `0` because `0` is  exactly the same as `()`.
 $ brun '(= (q . 0) ())' '()'
 1
 
-$ brun '(+ (q 70) ())' '()'
+$ brun '(+ (q . 70) ())' '()'
 70
 ```
 
