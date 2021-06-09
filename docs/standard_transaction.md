@@ -13,7 +13,7 @@ If you remember from [part 2](/docs/coins_spends_and_wallets) we created a puzzl
 
 However, we also want the ability to pre-commit to a puzzle without revealing it, and let anybody with the knowledge of the "hidden" puzzle spend it.
 
-But how do we pre-commit to this hidden puzzle?  We can curry it in, but if we perform the delegated spend case we will have to reveal the full puzzle including the curried in hidden puzzle and it will no longer be hidden.  We can't lock up a coin with the same puzzle anymore, or else people will be able to tell that the puzzle hash is the same and spend it without our consent.  Our delegated spend might not even make it to the network, a malicious node can just deny our transaction after seeing it and then publish the hidden spend case on their own.
+But how do we pre-commit to this hidden puzzle?  We can curry it in, but if we perform the delegated spend case we will have to reveal the full puzzle including the curried in hidden puzzle and it will no longer be hidden.  We can't lock up a coin with the same puzzle anymore, or else people will be able to tell that the puzzle hash is the same and spend it without our consent.  Our delegated spend might not even make it to the network; a malicious node can just deny our transaction after seeing it and then publish the hidden spend case on their own.
 
 We can attempt to solve this by hashing the hidden puzzle.  This has some similar problems.  If you spend the hidden case even once, people can see any identical puzzle hashes later and spend them without your consent.  Furthermore, many people may try to use the same hidden puzzle.  If anyone reveals it, all coins locked up with that same puzzle can also be identified and spent.  We need the puzzle to be hidden, but also have some entropy that keeps it unique to us.
 
@@ -21,7 +21,7 @@ The solution that the standard transaction uses is to derive a new private key f
 
 `synthetic_offset == sha256(hidden_puzzle_hash + original_public_key)`
 
-We then calculate the public key of this new private key, and add it to our esiting original public key:
+We then calculate the public key of this new private key, and add it to our existing original public key:
 
 `synthentic_public_key == original_public_key + synthetic_offset_pubkey`
 
