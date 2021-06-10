@@ -6,14 +6,14 @@ title: 2 - Coins, Spends and Wallets
 This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
-If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
+If there are any terms that you are not sure of, be sure to check the [glossary](/docs/glossary).
 
 ## Coins
 
 A coin's ID is constructed from 3 pieces of information.
 
 1. The ID of its parent
-2. The hash of its puzzle (AKA the puzzlehash)
+2. The hash of its puzzle (AKA the puzzle hash)
 3. The amount that it is worth
 
 To construct a coin ID simply take the hash of these 3 pieces of information concatenated in order.
@@ -79,7 +79,7 @@ Here is the complete list of conditions along with their format and behaviour.
 
 * **AGG_SIG_UNSAFE - [49] - (49 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID.
 * **AGG_SIG_ME - [50] - (50 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID.
-* **CREATE_COIN - [51] - (51 puzzlehash amount)**: If this spend is valid, then create a new coin with the given puzzlehash and amount.
+* **CREATE_COIN - [51] - (51 puzzlehash amount)**: If this spend is valid, then create a new coin with the given puzzle hash and amount.
 * **ASSERT_FEE - [52] - (52 amount)**: This spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
 * **CREATE_COIN_ANNOUNCEMENT - [60] - (60 message)**: If this spend is valid, this creates an ephemeral announcement with an ID dependent on the coin that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
 * **ASSERT_COIN_ANNOUNCEMENT - [61] - (61 announcementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.  The announcementID is the hash of the message that was announced concatenated with the coin ID of the coin that announced it `announcementID == sha256(coinID + message)`.
@@ -141,7 +141,7 @@ $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e
 There is one final change we need to make before this is a complete smart transaction.
 
 If you want to invalidate a spend then you need to raise an exception using `x`.
-Otherwise you just have a valid spend that isn't returning any conditions, and that would destroy our coin and not create a new one!
+Otherwise you just have a valid spend that is not returning any conditions, and that would destroy our coin and not create a new one!
 So we need to change the fail condition to be `(x "wrong password")` which means the transaction fails and the coin is not spent.
 
 If we're doing this then we should also change the `(i A B C)` pattern to `(a (i A (q . B) (q . C)) 1)`.
@@ -174,18 +174,18 @@ Suppose we lock a coin up using the following puzzle:
 (q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))
 ```
 
-Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzlehash 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a and the amount 100.
+Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzle hash 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a and the amount 100.
 
 ```lisp
 $ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '(80 90 "hello")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 
-$ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '("it doesn't matter what we put here")'
+$ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '("it does not matter what we put here")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 ```
 
 In this example the result of spending the coin is entirely determined from the puzzle.
-Even though anybody could initiate the spend of the coin, the person that locked the coin up has all the power in the way that the coin is spent as the solution doesn't matter at all.
+Even though anybody could initiate the spend of the coin, the person that locked the coin up has all the power in the way that the coin is spent as the solution does not matter at all.
 
 Conversely lets consider a coin locked up with the following puzzle:
 
@@ -274,7 +274,7 @@ Change making is simple.
 If a wallet spends less than the total value of a coin, they can create another coin with the remaining portion of value, and lock it up with the standard puzzle for themselves again.
 You can split a coin up into as many new coins with fractions of the original value as you'd like.
 
-You cannot create two coins of the same value, with the same puzzlehash, from the same parent as this will lead to an ID collision and the spend will be rejected.
+You cannot create two coins of the same value, with the same puzzle hash, from the same parent as this will lead to an ID collision and the spend will be rejected.
 
 ### Coin Aggregation and Spend Bundles
 

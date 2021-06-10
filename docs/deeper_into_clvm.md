@@ -6,7 +6,7 @@ title: 3 - Deeper into CLVM
 This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover how ChiaLisp relates to transactions and coins on the Chia network.
-If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
+If there are any terms that you are not sure of, be sure to check the [glossary](/docs/glossary).
 
 ## Lazy Evaluation in ChiaLisp
 

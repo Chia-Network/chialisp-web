@@ -5,7 +5,7 @@ sidebar_label: 1 - CLVM Basics
 ---
 
 CLVM is the compiled, minimal version of ChiaLisp that is used by the Chia network.
-Chialisp compiles into CLVM so it's important to understand how it works.
+ChiaLisp compiles into CLVM so it's important to understand how it works.
 The full set of operators is documented [here](https://chialisp.com/docs/ref/clvm)
 
 This guide will cover the basics of the language and act as an introduction to the structure of programs.
@@ -73,7 +73,7 @@ For example, this program is just the value `100`:
 (q . 100)
 ```
 
-Note that in the higher level Chialisp language, values do not need to be quoted.
+Note that in the higher level ChiaLisp language, values do not need to be quoted.
 
 ## Lists and Programs
 
@@ -252,7 +252,7 @@ $ brun '(i (q . ()) (q . 70) (q . 80))'
 80
 ```
 
-Note that both `B` and `C` are evaluated eagerly, just like all subexpressions.
+Note that both `B` and `C` are evaluated eagerly, just like all sub-expressions.
 To defer evaluation until after the condition, `B` and `C` must be quoted (with
 `q`), and then evaluated with `(a)`.
 

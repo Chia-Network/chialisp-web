@@ -98,7 +98,7 @@ Usually a program will be structured like this:
 
 ```lisp
 (mod (arg_one arg_two)
-  (defconstant const_name value)
+  (defconstant constant_name value)
   (defun function_name (parameter_one parameter_two) (*function_code*))
   (defun another_function (param_one param_two param_three) (*function_code*))
   (defun-inline utility_function (param_one param_two) (*function_code*))
@@ -110,9 +110,9 @@ Usually a program will be structured like this:
 
 A few things to note:
 
-- Functions can reference themselves in their code but macros and inlines cannot as they are inserted at compile time.
+- Functions can reference themselves in their code but macros and inlined functions cannot as they are inserted at compile time.
 - Both functions and macros can reference other functions, macros and constants.
-- Macros that refer to their parameters must be quasiquoted with the parameters unquoted
+- Macros that refer to their parameters must be quasi-quoted with the parameters unquoted
 - Be careful of infinite loops in macros that reference other macros.
 - Comments can be written with semicolons
 - Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
@@ -146,11 +146,11 @@ $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 
 ## Squaring a List
 
 Now lets do an example which uses macros as well.
-When writing a macro it must be quasiquoted with the parameters being unquoted.
+When writing a macro it must be quasi-quoted with the parameters being unquoted.
 
 We can also take this time to show another feature of the compiler.
 You can name each parameter in a list or you can name the list itself.
-This works at any place where you name parameters, and allows you to handle lists where you aren't sure of the size.
+This works at any place where you name parameters, and allows you to handle lists where you are not sure of the size.
 
 Here we define a macro to square a parameter and then a function to square a list.
 
@@ -184,7 +184,7 @@ $ brun '(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ()))
 
 ## Conclusion
 
-You should now have the context and knowledge needed to write your own Chialisp programs.
+You should now have the context and knowledge needed to write your own ChiaLisp programs.
 Remember from [part 2](/docs/coins_spends_and_wallets/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
 
 If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).
