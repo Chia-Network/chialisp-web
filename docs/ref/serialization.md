@@ -10,11 +10,10 @@ The CLVM serialization format closely follows the in-memory representation of th
 
 This in turn, closely resembles the text format of a fully compiled CLVM program.
 
-At the lowest level, there are only three types of Object in the CLVM.
+At the lowest level, there are only two types of Object in the CLVM.
 
-* Cons Cells
-* Values
-* Nil, a subtype of Value
+* Pair (also called Cons Pair/Cons Box/Cons Cell) - A pair of two values. Usually, the first value is an atom and contains information, whereas the second value is usually either a pointer to another pair, or a `nil` atom. Lists are built from these pairs.
+* Atom - A value that holds data, which is represented as a byte array with the static length. Empty, zero-length atoms are used to represent `nil` value.
 
 Each CLVM Object is represented by a series of one or more bytes. Each byte belongs to the representation of exactly one CLVM Object. That is, no bits in a byte are shared by multiple CLVM objects.
 
