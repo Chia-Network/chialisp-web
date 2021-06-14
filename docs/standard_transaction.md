@@ -9,7 +9,7 @@ Before you go through this section, it may be worth it to check out this [blog p
 
 ## Pay to "Delegated Puzzle" or "Hidden Puzzle"
 
-If you remember from [part 2](/docs/coins_spends_and_wallets) we created a puzzle that paid to a "delegated puzzle": a puzzle that allows the solver to pass in a puzzle and solution to create their own conditions for the output.  This is one half of the functionality we want our standard transaction to have.
+If you remember from [our discussion of coins, spends, and wallets](/docs/coins_spends_and_wallets) we created a puzzle that paid to a "delegated puzzle": a puzzle that allows the solver to pass in a puzzle and solution to create their own conditions for the output.  This is one half of the functionality we want our standard transaction to have.
 
 However, we also want the ability to pre-commit to a puzzle without revealing it, and let anybody with the knowledge of the "hidden" puzzle spend it.
 
@@ -29,7 +29,7 @@ If the solver can correctly reveal BOTH the hidden puzzle and the original publi
 
 You may wonder why we add the public key from our derived private key to the original public key when it's already part of the derivation.  This is because we use the synthetic public key to sign for our delegated spends as well.  When you add two public keys, the private key for the resulting public key is the sum of the original private keys.  If we didn't add the original public key then anyone who knew the hidden puzzle could derive the synthetic private key and could then perform delegated spends!  Adding original public key ensures that there is still a secret component of the synthetic private key, even though half of can be known.
 
-This trick is also neat because it allows us to hide the hidden puzzle in a piece of information that was already necessary for the delegated spend.  It's impossible to guess what the hidden puzzle is, even if it's a standard hidden puzzle!  It's even hard to tell if there's a hidden puzzle at all.  This can also contributes to privacy.  For example, if two parties agree to lock up some coins with a hidden puzzle together, you can share pubkeys and verify that information on the blockchain without revealing anything to the network.  Then, if you both agree that the coins *can* be spent with the hidden puzzle if either party is dishonest, you can trustlessly delegated spend the coins to the correct destinations and it's impossible to tell that they are not just normal everyday spends.
+This technique is also neat because it allows us to hide the hidden puzzle in a piece of information that was already necessary for the delegated spend.  It's impossible to guess what the hidden puzzle is, even if it's a standard hidden puzzle!  It's even hard to tell if there's a hidden puzzle at all.  This can also contributes to privacy.  For example, if two parties agree to lock up some coins with a hidden puzzle together, you can share pubkeys and verify that information on the blockchain without revealing anything to the network.  Then, if you both agree that the coins *can* be spent with the hidden puzzle if either party is dishonest, you can trustlessly delegated spend the coins to the correct destinations and it's impossible to tell that they are not just normal everyday spends.
 
 We'll look at the code in a moment, but here's a few terms to know before you look at it:
 
