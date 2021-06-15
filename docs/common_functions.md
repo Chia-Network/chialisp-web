@@ -262,4 +262,4 @@ And that's it!  When this coin is created, it can only be spent by a password th
 
 We created a simple coin, but you can see the potential of this. You can enforce a set of rules not only on a coin that you lock up, but on *every* descendant coin.  Not only that, the rules can be enforced *on top of other smart contracts*.  In the Chialisp ecosystem, all smart contracts are interoperable with each other unless otherwise specified by a parent smart contract. The possibilities are endless and represent the vast programmability that Chialisp enables for coins.
 
-In the next section, we'll talk about how the network handles the coins and what you need to know before you try to deploy one yourself.
+In the next section, we'll talk about the standard transaction format on the Chia network.
