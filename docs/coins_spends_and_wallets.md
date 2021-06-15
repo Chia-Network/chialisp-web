@@ -227,7 +227,7 @@ In the next exercise we will put everything we know together and create the "sta
 
 ### Example: Signature Locked Coin
 
-To 'send a coin to somebody' you simply create a puzzle that requires the recipients signature, but then allows them to return any other OpCodes that they like.
+To 'send a coin to somebody' you simply create a puzzle that requires the recipient's signature, but then allows them to return any other OpCodes that they like.
 This means that the coin cannot be spent by anybody else, but the outputs are entirely decided by the recipient.
 
 We can construct the following smart transaction where AGG_SIG_UNSAFE is 50 and the recipient's pubkey is `0xfadedcab`.
@@ -265,7 +265,7 @@ This is because all wallets already know and agree on what the standard format f
 They know what their own pubkeys are, so when a new coin is created a wallet can check if the puzzle inside that coin is a 'standard send puzzle' to one of their pubkeys.
 If it is, then that coin can be considered to be owned by that 'wallet' as nobody else can spend it.
 
-If the wallet that 'owns' the coin then wanted to send that coin on again to somebody else, they ask for an address (which is a bech32m encoded puzzle hash) and then they could then spend the coin that they own, destroying it, and creating a new coin that is locked up with the new recipients puzzle hash.
+If the wallet that 'owns' the coin then wanted to send that coin on again to somebody else, they ask for an address (which is a bech32m encoded puzzle hash) and then they could then spend the coin that they own, destroying it, and creating a new coin that is locked up with the new recipient's puzzle hash.
 The new recipient can then identify that it 'owns' the coin and can send it on as they wish later.
 
 ### Change Making
