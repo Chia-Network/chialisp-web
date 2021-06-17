@@ -322,7 +322,7 @@ $ brun '3' '("example" "data" "for" "test")'
 ("data" "for" "test")
 
 $ brun '5' '("example" "data" "for" "test")'
-("data" "for" "test")
+"data"
 ```
 
 And this is designed to work when there are lists inside lists too.
