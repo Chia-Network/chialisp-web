@@ -19,7 +19,7 @@ If you want to import some functionality that you use frequently without having 
 
 ```lisp
 ;;main.clvm
-(mod create_sig_coin (pubkey msg puzzle_hash amount)
+(mod (pubkey msg puzzle_hash amount)
 
   (include "condition_codes.clvm")
 
