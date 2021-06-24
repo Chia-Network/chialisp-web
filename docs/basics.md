@@ -143,7 +143,7 @@ $ brun '(f (r (r (q . (100 110 120 130 140)))))'
 
 ## Math
 
-There are no support for floating point numbers in CLVM, only integers. There is no hard size limit on integers in CLVM.
+There are no support for floating point numbers in CLVM, only integers. There is no hard size limit on integers in CLVM. There is also support for negative values.
 
 The math operators are `+`, `-`, `*`, and `/`.
 
@@ -163,13 +163,25 @@ $ brun '(/ (q . 20) (q . 11))'
 
 *Note that `/` returns the* ***floored*** *quotient. CLVM is also different from most languages in that it floors to negative infinity rather than zero.  This can create some unexpected results when trying to divide negative numbers.*
 
+```lisp
+brun '(/ (q . 3) (q . 2))'
+1
+
+brun '(/ (q . 3) (q . -2))'
+-2
+
+brun '(/ (q . -3) (q . 2))'
+-2
+
+brun '(/ (q . -3) (q . -2))'
+1
+```
+
 You may have noticed that the multiplication example above takes more than two parameters in the list.
 This is because many operators can take a variable number of parameters.
 `+` and `*` are commutative so the order of parameters does not matter.
 For non-commutative operations, `(- 100 30 20 5)` is equivalent to `(- 100 (+ 30 20 5))`.
 Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
-
-There is also support for negative values.
 
 ```lisp
 $ brun '(- (q . 5) (q . 7))'
