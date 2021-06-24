@@ -8,6 +8,7 @@ module.exports = {
       'common_functions',
       'standard_transaction',
       'coin_lifecycle',
+      'security',
       'glossary'
     ],
     CLVM: ['ref/clvm', 'ref/serialization'],
