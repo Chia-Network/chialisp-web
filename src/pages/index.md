@@ -20,11 +20,11 @@ Here's a sample:
 Many people come into our keybase channel and ask us why we chose a 60 year old language as our on chain programming language.
 We chose it due to a few unique features that make it remarkably well suited to the Chia blockchain:
 
-* **Completely sandboxed.** Chialisp has *absolutely no side effects*.  The language needs to be run on half a million computers, so it is important that the program cannot reach out and affect everyone's machines in an unintended way.  A lisp program is *evaluated* and therefore cannot spawn any new processes or interact with the system it is running on.
+* **Completely sandboxed.** Chialisp resource utilization is completely controlled.  The language needs to be run on half a million computers, so it is important that the program cannot reach out and affect everyone's machines in an unintended way.  A lisp program is *evaluated* and therefore cannot spawn any new processes or interact with the system it is running on.
 
-* **Programs are data structures.** A lisp program is itself just a list.  This allows for powerful techniques that allow you to modify source code during program evaluation.  Doing so can allow a "smart contract" to enforce rules on a participating coin while still allowing it to utilize the full programmability that Chialisp has to offer.  Using lisp programs like this allows you to have *layers of smart contracts*.
+* **Composability.** A lisp program is itself just a list.  This feature allows for powerful techniques that allow you to modify source code during program evaluation.  Doing so can allow a "smart contract" to enforce rules on a participating coin while still allowing it to utilize the full programmability that Chialisp has to offer.  Using lisp programs like this allows you to have *layers of smart contracts* in which the output of an "inner" contract can be used in the evaluation of the "outer" contract.
 
-* **Interoperability.** There is no typing in lisp, everything becomes a sequence of bytes that is only interpreted differently by choice of the operation that is reading/manipulating it.  The means that everything in the Chia ecosystem interoperates with everything else.  Any smart contract should be able to interact or communicate with any other coin or smart contract, regardless of whether either smart contract was designed to do so.
+* **Interoperability.** Every contract in the Chia ecosystem, no matter how complex, is fundamentally a coin that is locked up with a Chialisp puzzle. The input to any puzzle will always be a lisp data structure, and the output will always be a list of **conditions** that all puzzles share. This means that everything in Chia interoperates with everything else.  Any smart contract should be able to interact or communicate with any other coin or smart contract, regardless of whether either smart contract was specifically designed to do so.
 
 ## Coloured Coins
 
