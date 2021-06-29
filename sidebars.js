@@ -9,6 +9,7 @@ module.exports = {
       'standard_transaction',
       'coin_lifecycle',
       'security',
+      'debugging',
       'glossary'
     ],
     CLVM: ['ref/clvm', 'ref/serialization'],

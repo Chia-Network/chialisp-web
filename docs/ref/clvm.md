@@ -1,7 +1,7 @@
 ---
 id: clvm
 title: CLVM Reference Manual
-sidebar_label: 1 - The CLVM
+sidebar_label: CLVM Reference
 ---
 
 The clvm is a small, tightly defined VM that defines the semantics of CLVM programs run during Chia blockchain validation. It serves as a target language for higher level languages, especially ChiaLisp.

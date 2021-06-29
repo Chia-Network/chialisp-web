@@ -35,7 +35,7 @@ Exclusion should also be a concern at the forefront of your mind.  Oftentimes, y
 
 Remember to think about when puzzles and solutions are revealed.  They are revealed only at spend time of the coin that is committed to them.  The only thing that the network sees prior to that is the parent coin and the puzzle hash.  This can be an advantage, since you can hide sensitive information for spending the coin inside the puzzle hash before it is ever revealed.  However, once the puzzle is revealed, it's revealed forever, so that sensitive information cannot be considered sensitive again.
 
-Also keep in mind that if a parent coin is currying information to its child coin before it creates it, that will be public before the child coin is spent.  For some wallets, this is an advantage since you may want certain data about a coin's puzzle to calculate whether or not it's yours.  However, if you were trying to use a plain-text password, that won't be very secure.  Instead, make sure to pre-commit to things with hashes and then assert that they are reveled correctly later.
+Also keep in mind that if a parent coin is currying information to its child coin before it creates it, that will be public before the child coin is spent.  For some wallets, this is an advantage since you may want certain data about a coin's puzzle to calculate whether or not it's yours.  However, if you were trying to use a plain-text password, that won't be very secure.  Instead, make sure to pre-commit to things with hashes and then assert that they are revealed correctly later.
 
 ## Password Locked Coin Security
 
