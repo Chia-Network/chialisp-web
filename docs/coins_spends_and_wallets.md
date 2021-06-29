@@ -118,7 +118,7 @@ The implementation for the above coin would be thus:
 
 This program takes the hash, with `(sha256 )`, of the first element in the solution, with `2`, and compares that value with the already committed.
 If the password is correct it will return `(c (q . 51) (c 5 (c (q . 100) ())))` which evaluates to `(51 0xmynewpuzzlehash 100)`.
-Remember, `51` is the opcode for the condition to create a new coin using the puzzle hash presented in the solution, and `5` is equivalent to `(f (r 1))`.
+Remember, `51` is the opcode for the condition to create a new coin with the specified puzzle hash and amount. `5` is equivalent to `(f (r 1))` and we use it to access the puzzle hash from the solution.
 
 If the password is incorrect it will return the string "wrong password".
 
