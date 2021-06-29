@@ -213,7 +213,7 @@ Chialisp puzzles have the tendency to be read from the bottom up, so lets start 
 )
 ```
 
-All that's happening here is that we're making sure the password is correct and, if it is, we're going to run the curried in `INNER_PUZZLE` with the passed in `inner_solution`.  This will return a list of opcodes that we will pass to the next function along with the new password hash and `MOD_HASH`.
+All that's happening here is that we're making sure the password is correct and, if it is, we're going to run the curried in `INNER_PUZZLE` with the passed in `inner_solution`.  This will return a list of conditions that we will pass to the next function along with the new password hash and `MOD_HASH`.
 
 ```lisp
 ;; tweak all `CREATE_COIN` conditions, enforcing created coins to be locked by passwords
