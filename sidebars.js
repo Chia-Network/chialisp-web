@@ -8,8 +8,10 @@ module.exports = {
       'common_functions',
       'standard_transaction',
       'coin_lifecycle',
+      'security',
       'glossary'
     ],
+    Puzzles: ['puzzles/singletons'],
     CLVM: ['ref/clvm', 'ref/serialization'],
     FAQ: ['faq'],
   },
