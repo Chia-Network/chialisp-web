@@ -69,13 +69,13 @@ $ brun '(c (q . 800) 1)' '("some data" 0xdeadbeef)'
 ```
 
 These are fun exercises in isolation, but this format can be used to communicate instructions to the blockchain network of how a coin should behave when it is spent.
-This can be done by having the result of an evaluation be a list of **OpCodes**.
+This can be done by having the result of an evaluation be a list of **conditions**.
 
-### OpCodes
+### Conditions
 
-The OpCodes are split into two categories: *"this spend is only valid if X"* and *"if this spend is valid then X"*.
+Conditions are split into two categories: *"this spend is only valid if X"* and *"if this spend is valid then X"*.
 
-Here is the complete list of OpCodes along with their format and behaviour.
+Here is the complete list of conditions along with their format and behaviour.
 
 * **AGG_SIG_UNSAFE - [49] - (49 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID.
 * **AGG_SIG_ME - [50] - (50 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID.
@@ -108,7 +108,7 @@ Let's create a few examples puzzles and solutions to demonstrate how this is use
 
 Let's create a coin that can be spent by anybody as long as they know the password.
 
-To implement this we would have the hash of the password committed into the puzzle and, if presented with the correct password, the puzzle will return instructions to create a new coin with a puzzlehash given in the solution.
+To implement this we would have the hash of the password committed into the puzzle and, if presented with the correct password, the puzzle will return instructions to create a new coin with a puzzle hash given in the solution.
 For the following example the password is "hello" which has the hash value 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824.
 The implementation for the above coin would be thus:
 
@@ -118,7 +118,7 @@ The implementation for the above coin would be thus:
 
 This program takes the hash, with `(sha256 )`, of the first element in the solution, with `2`, and compares that value with the already committed.
 If the password is correct it will return `(c (q . 51) (c 5 (c (q . 100) ())))` which evaluates to `(51 0xmynewpuzzlehash 100)`.
-Remember, `51` is the OpCode to create a new coin using the puzzlehash presented in the solution, and `5` is equivalent to `(f (r 1))`.
+Remember, `51` is the opcode for the condition to create a new coin with the specified puzzle hash and amount. `5` is equivalent to `(f (r 1))` and we use it to access the puzzle hash from the solution.
 
 If the password is incorrect it will return the string "wrong password".
 
@@ -141,7 +141,7 @@ $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e
 There is one final change we need to make before this is a complete smart transaction.
 
 If you want to invalidate a spend then you need to raise an exception using `x`.
-Otherwise you just have a valid spend that isn't returning any OpCodes, and that would destroy our coin and not create a new one!
+Otherwise you just have a valid spend that isn't returning any conditions, and that would destroy our coin and not create a new one!
 So we need to change the fail condition to be `(x "wrong password")` which means the transaction fails and the coin is not spent.
 
 If we're doing this then we should also change the `(i A B C)` pattern to `(a (i A (q . B) (q . C)) 1)`.
@@ -163,7 +163,7 @@ $ brun '(a (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa74
 ((51 0xdeadbeef 100))
 ```
 
-### Generating OpCodes from the Puzzle vs. from the Solution
+### Generating Conditions from the Puzzle vs. from the Solution
 
 Let's take a moment to consider the balance of power between the send and the spender.
 Another way of phrasing this is "how much control over the output should the solution have?"
@@ -214,20 +214,20 @@ For example, let's create a puzzle that lets the spender choose the output, but 
 ```lisp
   (c (q . (51 0xcafef00d 200)) 1)
 ```
-This will let the spender return any conditions and OpCodes they want via the solution but will always add the condition to create a coin with the puzzlehash 0xcafef00d and value 200.
+This will let the spender return any conditions they want via the solution but will always add the condition to create a coin with the puzzle hash 0xcafef00d and value 200.
 
 ```
 $ brun '(c (q . (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ((51 0xcafef00d 200) (51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
 ```
 
-This section is intended to demonstrate the point that OpCodes can come from both the recipient's solution and from the sender's puzzle, and how that represents trust and the balance of power.
+This section is intended to demonstrate the point that conditions can come from both the recipient's solution and from the sender's puzzle, and how that represents trust and the balance of power.
 
 In the next exercise we will put everything we know together and create the "standard" transaction in Chia that underpins how wallets are able to send money to each other.
 
 ### Example: Signature Locked Coin
 
-To 'send a coin to somebody' you simply create a puzzle that requires the recipient's signature, but then allows them to return any other OpCodes that they like.
+To 'send a coin to somebody' you simply create a puzzle that requires the recipient's signature, but then allows them to return any other conditions that they like.
 This means that the coin cannot be spent by anybody else, but the outputs are entirely decided by the recipient.
 
 We can construct the following smart transaction where AGG_SIG_UNSAFE is 50 and the recipient's pubkey is `0xfadedcab`.
@@ -299,7 +299,7 @@ This is because, instead of the solution for this puzzle being a list of Conditi
 This means that the recipient can run their own program as part of the solution generation, or sign a puzzle and let somebody else provide the solution.
 When we use program parameters to generate solutions, refer to that as a "delegated puzzle".
 
-The new program and solution inside the solution are evaluated and the result of that is added to the OpCode output.
+The new program and solution inside the solution are evaluated and the result of that is added to the condition output.
 We will cover in more detail how this works in the [next part](/docs/deeper_into_clvm/) of this guide.
 
 A basic solution for this standard transaction might look like:
