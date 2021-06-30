@@ -1,0 +1,16 @@
+substr
+lognot
+listp
+sha256
+logand
+logior
+logxor
+divmod
+lsh
+ash
+concat
+defun
+defmacro
+defconstant
+defun-inline
+qq

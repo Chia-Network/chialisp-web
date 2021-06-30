@@ -3,11 +3,11 @@ id: security
 title: 8 - Security
 ---
 
-When writing Chialisp, security concerns should be at the front of your mind.  The language is specifically designed to secure money on a network with *no centralized authority* to enforce rules.  The only person standing in the way of attackers and potentially large sums of money is going to be you.
+When writing ChiaLisp, security concerns should be at the front of your mind.  The language is specifically designed to secure money on a network with *no centralized authority* to enforce rules.  The only person standing in the way of attackers and potentially large sums of money is going to be you.
 
 ## Signing and Asserting Solution Truth
 
-Remember from [our discussion of coin lifecycles](https://chialisp.com/docs/coin_lifecycle) that when you push a transaction, it gets gossiped to other nodes until it finds one who will put it into a block.  Every node chooses what will be passed on to the next node. If it likes, it can change some data before it forwards it.
+Remember from [our discussion of coin life cycles](https://chialisp.com/docs/coin_lifecycle) that when you push a transaction, it gets gossiped to other nodes until it finds one who will put it into a block.  Every node chooses what will be passed on to the next node. If it likes, it can change some data before it forwards it.
 
 This is why the aggregated signature is part of the spend bundle.  It allows you to mark data as valid only if there is also a signature that vouches for its correctness.  Signatures are how you prevent nodes from changing your transaction in malicious ways; if they do, the spend will no longer be valid.
 
@@ -45,4 +45,4 @@ In order to fix it, it's probably best to curry in a public key that also has to
 
 ## Conclusion
 
-Hopefully you have a better idea of what risks are involved when creating a Chialisp puzzle.  It's very worth your time to try and exploit your puzzles by passing in dangerous solutions or leaving out transactions/signatures.  You're not just trying to protect against bad actors, but also against people accidentally bricking their coins.  Puzzles are usually pretty permanent, so it's worth the extra time.
+Hopefully you have a better idea of what risks are involved when creating a ChiaLisp puzzle.  It's very worth your time to try and exploit your puzzles by passing in dangerous solutions or leaving out transactions/signatures.  You're not just trying to protect against bad actors, but also against people accidentally bricking their coins.  Puzzles are usually pretty permanent, so it's worth the extra time.

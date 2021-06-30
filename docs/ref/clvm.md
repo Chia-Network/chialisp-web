@@ -64,7 +64,7 @@ The quote opcode is special. When it is recognized by the interpreter, it causes
 
 A compiled CLVM program can be thought of as a binary tree.
 
-Here is an example of a function invocation (or "function call"). `(+ (q . 1) (q . 2))`. The function is the opcode `+`, a function built-in to the clvm runtime.
+Here is an example of a function invocation (or "function call"). `(+ (q . 1) (q . 2))`. The function is the opcode `+`, a function built-in to the clvm run-time.
 
 
 `(+ (q . 1) (q . 2))`
@@ -151,7 +151,7 @@ These values are opaque values, 48 bytes in length. The outputs of `pubkey_for_e
 
 ## Treeargs : Program Arguments, and Argument Lookup
 
-For a program running on a deterministic machine to have different behaviours, it must be able to have different starting states. The starting state for a CLVM program is the program argument list - the treearg.
+For a program running on a deterministic machine to have different behaviors, it must be able to have different starting states. The starting state for a CLVM program is the program argument list - the treearg.
 
 When an unquoted integer is evaluated, it is replaced with the corresponding value/CLVM Object from the program Treearg. If the argument is not found, `nil` is returned.
 
@@ -246,7 +246,7 @@ Since `2` is at the beginning of the list, `brun` assumes it is the operator and
 
 ## Errors
 
-While running a clvm program, checks are made to ensure the CLVM does not enter an undefined state. When a program violates one of these runtime checks, it is said to have caused an error.
+While running a clvm program, checks are made to ensure the CLVM does not enter an undefined state. When a program violates one of these run-time checks, it is said to have caused an error.
 
 * First element in an evaluated list is not a valid function. Example: `("hello" (q . 1))` => `FAIL: unimplemented operator "hello"`
 * Wrong number of arguments. Example: `(lognot (q . 1) (q . 2))` => `FAIL: lognot requires 1 arg`
@@ -328,7 +328,7 @@ brun '(/ (q .  1)  (q . -1))' => -1
 brun '(/ (q . -1)  (q . -1))' =>  1
 ```
 
-### Flooring of negative nubmers
+### Flooring of negative numbers
 Note that a division with a remainder always rounds down, not toward zero.
 ```
 $ brun '(/ (q . -3) (q . 2))'
@@ -441,7 +441,7 @@ The `softfork` operator takes at least one parameter cost. So `(softfork cost ar
 
 At the moment, `softfork` always returns `0` (aka `()` or nil), and takes `cost` amount of cost.
 
-At first glance, it seems pretty useless since it doesn't do anything, and just wastes cost doing it.
+At first glance, it seems pretty useless since it does not do anything, and just wastes cost doing it.
 
 The idea is, after a soft fork, the meaning of the arguments may change. In fact, we can hide completely new dialects of ChiaLisp inside here, that has new operators that calculate new things.
 
@@ -474,15 +474,15 @@ Note that `/`, `divmod`, and `lognot` do not have an identity value. Calling the
 
 ## Arithmetic
 
-### Behaviour of nil when used as an integer
+### Behavior of nil when used as an integer
 
 When used in an integer context, nil behaves as zero.
 
-### Behaviour of zero when used as a value that may be checked for nil
+### Behavior of zero when used as a value that may be checked for nil
 
 When used as a parameter that may be checked for nil, zero is interpreted as nil.
 
-## Detailed behaviour Notes
+## Detailed behavior Notes
 
 **ash**
 ```
@@ -506,7 +506,7 @@ That is, a right shift (negative shift count) of `-1` by any amount is `-1`:
 
 **lsh**
 
-lsh behaviour from the [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/elisp.pdf):
+lsh behavior from the [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/elisp.pdf):
 
 ```
 (ash -7 -1) ; -7 = . . . 111111111111111111111111111001

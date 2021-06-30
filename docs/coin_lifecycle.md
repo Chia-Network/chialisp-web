@@ -7,7 +7,7 @@ You should now understand how to create Chialisp puzzles that lock up coins with
 
 ## The Coin Set Model
 
-Chia's model of how coins are stored is called the **coin set** model and is closely modelled after Bitcoin's UTXO model.  The idea is simple, every full node holds onto a database of **coin records**:
+Chia's model of how coins are stored is called the **coin set** model and is closely modeled after Bitcoin's UTXO model.  The idea is simple, every full node holds onto a database of **coin records**:
 
 ```
 class Coin:

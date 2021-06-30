@@ -1,6 +1,6 @@
 ---
 id: common_functions
-title: 5 - Common Functions in Chialisp
+title: 5 - Common Functions in ChiaLisp
 ---
 
 When you start to write full smart contracts, you will start to realize that you will need certain common functionality in a lot of puzzles.  Let's go over how to include them and what some of them are:
@@ -36,7 +36,7 @@ Also note that the include files are a special format. Everything that is define
 
 When puzzles are hashed, they are not simply serialized and passed to sha256.  Instead, we take the *tree hash* of the puzzle.
 
-Recall that every clvm program can be represented as a binary tree.  Every object is either an atom (a leaf of the tree) or a cons box (a branch of the tree).  When we hash the puzzle we start at the leaves of the tree and hash our way up, concatenating either a 1 or a 2 to denote that it's either an atom or a cons box.  Once a cons box is hashed, it becomes a new leaf to be hashed into its parent cons box and the process recurses.  Here's what that looks like in Chialisp:
+Recall that every clvm program can be represented as a binary tree.  Every object is either an atom (a leaf of the tree) or a cons box (a branch of the tree).  When we hash the puzzle we start at the leaves of the tree and hash our way up, concatenating either a 1 or a 2 to denote that it's either an atom or a cons box.  Once a cons box is hashed, it becomes a new leaf to be hashed into its parent cons box and the process recurses.  Here's what that looks like in ChiaLisp:
 
 ```lisp
 (defun sha256tree1
@@ -48,11 +48,11 @@ Recall that every clvm program can be represented as a binary tree.  Every objec
 )
 ```
 
-It is extremely useful to calculate tree hashes within a Chialisp puzzle.  You can assert puzzles of other coins, condense puzzles for easier signing, and make CREATE_COIN conditions that are dependent on some passed in data.  
+It is extremely useful to calculate tree hashes within a ChiaLisp puzzle.  You can assert puzzles of other coins, condense puzzles for easier signing, and make CREATE_COIN conditions that are dependent on some passed in data.  
 
 ## Currying
 
-Currying is an extremely important concept in Chialisp that is responsible for almost the entirety of how state is stored in coins.  The idea is to pass in arguments to a puzzle *before* it is hashed.  When you curry, you commit to solution values so that the individual solving the puzzle cannot change them.  Let's take a look at how this is implemented in Chialisp:
+Currying is an extremely important concept in ChiaLisp that is responsible for almost the entirety of how state is stored in coins.  The idea is to pass in arguments to a puzzle *before* it is hashed.  When you curry, you commit to solution values so that the individual solving the puzzle cannot change them.  Let's take a look at how this is implemented in ChiaLisp:
 
 ```lisp
 ;; utility function used by curry
@@ -82,7 +82,7 @@ You can also do the reverse operation.  Given a program, you can *uncurry* the l
 ; (c curry_arg_1 (c curry_arg_2 1))
 ```
 
-Let's take our password locked coin example from earlier, this time as a Chialisp puzzle:
+Let's take our password locked coin example from earlier, this time as a ChiaLisp puzzle:
 
 ```lisp
 (mod (password new_puzhash amount)
@@ -143,7 +143,7 @@ Note that this required that we run the currying module using `brun` in our own 
 
 ## Outer and Inner puzzles
 
-A common design pattern, and one of the most powerful features of Chialisp, is the ability to have an outer smart contract the "wraps" an inner puzzle.  This concept is extremely handy because it allows a coin to retain all of it's standard functionality and programmability within the inner puzzle, but be bound to an extra set of rules by the outer puzzle.
+A common design pattern, and one of the most powerful features of ChiaLisp, is the ability to have an outer smart contract the "wraps" an inner puzzle.  This concept is extremely handy because it allows a coin to retain all of it's standard functionality and programmability within the inner puzzle, but be bound to an extra set of rules by the outer puzzle.
 
 For this example, we're going to continue with our password locking, but this time we're going to require that every time the coin is spent, it requires a new password to be set.  Let's look at all the code and then we'll break it down:
 
@@ -203,7 +203,7 @@ You may notice that we imported a new library called `curry-and-treehash`.  We'l
 
 First, let's talk about the arguments.  When you create this puzzle for the first time you need to curry in 3 things: `MOD_HASH` which is the tree hash of this code, `PASSWORD_HASH` which is the hash of the password that will unlock this coin, and `INNER_PUZZLE` which is a completely separate puzzle that will have its own rules about how the coin can be spent.
 
-Chialisp puzzles have the tendency to be read from the bottom up, so lets start with this chunk:
+ChiaLisp puzzles have the tendency to be read from the bottom up, so lets start with this chunk:
 
 ```lisp
 ; main
@@ -228,7 +228,7 @@ All that's happening here is that we're making sure the password is correct and,
 )
 ```
 
-Recursion is the foundation of Chialisp and functions like these very commonly show up when writing it.  In order to iterate through the list of conditions, we first check if there are still items left (remember that an empty list `()` or **nil** evaluates to false). Then, we morph the first condition and concatenate it with the recursive output of the rest of the list.  In the end, we will have the same list of items in the same order, but all of them will have passed thru `morph-condition`.
+Recursion is the foundation of ChiaLisp and functions like these very commonly show up when writing it.  In order to iterate through the list of conditions, we first check if there are still items left (remember that an empty list `()` or **nil** evaluates to false). Then, we morph the first condition and concatenate it with the recursive output of the rest of the list.  In the end, we will have the same list of items in the same order, but all of them will have passed thru `morph-condition`.
 
 ```lisp
 ;; tweak `CREATE_COIN` condition by wrapping the puzzle hash, forcing it to be a password locked coin
@@ -260,6 +260,6 @@ However, all we care about is generating the correct *puzzle hash* for the next 
 
 And that's it!  When this coin is created, it can only be spent by a password that hashes to the curried in PASSWORD_HASH.  The inner puzzle can be anything that you want including other smart contracts that have their own inner puzzles.  Whatever coins get created as a result of that inner puzzle will be "wrapped" by this same outer puzzle ensuring that every child of this coin is locked by a password *forever*.
 
-We created a simple coin, but you can see the potential of this. You can enforce a set of rules not only on a coin that you lock up, but on *every* descendant coin.  Not only that, the rules can be enforced *on top of other smart contracts*.  In the Chialisp ecosystem, all smart contracts are interoperable with each other unless otherwise specified by a parent smart contract. The possibilities are endless and represent the vast programmability that Chialisp enables for coins.
+We created a simple coin, but you can see the potential of this. You can enforce a set of rules not only on a coin that you lock up, but on *every* descendant coin.  Not only that, the rules can be enforced *on top of other smart contracts*.  In the ChiaLisp ecosystem, all smart contracts are interoperable with each other unless otherwise specified by a parent smart contract. The possibilities are endless and represent the vast programmability that ChiaLisp enables for coins.
 
 In the next section, we'll talk about the standard transaction format on the Chia network.

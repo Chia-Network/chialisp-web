@@ -3,7 +3,7 @@ id: standard_transaction
 title: 6 - The Standard Transaction
 ---
 
-You should now be well versed in a number of ways to lock up a coin using a Chialisp puzzle.  We have all the tools we need now to talk about the standard transaction format on the Chia network.
+You should now be well versed in a number of ways to lock up a coin using a ChiaLisp puzzle.  We have all the tools we need now to talk about the standard transaction format on the Chia network.
 
 Before you go through this section, it may be worth it to check out this [blog post](https://www.chia.net/2021/05/27/Agrgregated-Sigs-Taproot-Graftroot.html) by Bram Cohen on why the standard transaction is the way it is.
 
@@ -40,7 +40,7 @@ We'll look at the code in a moment, but here's a few terms to know before you lo
 * **delegated puzzle**: a delegated puzzle, as in "graftroot", which should return the desired conditions.
 * **solution**: the solution to the delegated or hidden puzzle
 
-## The Chialisp
+## The ChiaLisp
 
 Here's the full source and then we'll break it down:
 
@@ -108,7 +108,7 @@ All of these terms are defined above.  When we solve this puzzle:
 * `delegated_puzzle` is the hidden puzzle if it's the hidden spend, or the delegated puzzle if it's the delegated spend
 * `solution` is the solution to whatever is passed into `delegated_puzzle`
 
-As with most Chialisp programs, we'll start looking at the implementation from the bottom:
+As with most ChiaLisp programs, we'll start looking at the implementation from the bottom:
 
 ```lisp
 (possibly_prepend_aggsig

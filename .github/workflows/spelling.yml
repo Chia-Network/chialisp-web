@@ -1,0 +1,34 @@
+name: Spell checking
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+        - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  hunspell:
+    name: 
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2.3.3
+
+    - name: install hunspell
+      run: sudo apt-get install hunspell
+
+    - name: run hunspell
+      run: |
+       cat hunspell/chialisp.dic hunspell/hex.dic hunspell/clvm-ops.dic >temp.dic
+       hunspell -d en_US -p temp.dic -l docs/*.md docs/ref/*.md >misspelled.txt
+       if [ -s misspelled.txt ]; then
+         echo 'spellcheck failed, fix words or add to dictionary:'
+         cat misspelled.txt
+         false
+       fi
+
