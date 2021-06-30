@@ -382,19 +382,23 @@ Both **ash** and **lsh** have a maximum |B| of 65536
 
 ## Strings
 
-**substr** `(substr S I1 I2)` return an atom containing bytes indexed from I1 to I2. The MSB of S is byte zero. If I1 == I2, returns nil.
+**substr** `(substr S I1 I2)` return an atom containing the bytes in range \[`I1`, `I2`). Index 0 refers to the first byte of the string `S`. `I2` must be greater than or equal to `I1`. Both `I1` and `I2` must be greater than or equal to 0, and less than or equal to one past the end of the string `S`.
+
+The third parameter to `substr` is optional. If omitted, the range \[`I1`, `(strlen S)`) is returned.
 
 ```
 (substr (q . "clvm") (q . 0) (q . 4)) => clvm
 (substr (q . "clvm") (q . 2) (q . 4)) => vm
 (substr (q . "clvm") (q . 4) (q . 4)) => ()
 
+(substr (q . "clvm") (q . 1)) =>"lvm"
+
 (substr (q . "clvm") (q . 4) (q . 5)) => FAIL
 (substr (q . "clvm") (q . 1) (q . 0)) => FAIL
 (substr (q . "clvm") (q . -1) (q . 4)) => FAIL
 ```
 
-**strlen** `(strlen S)` return the number of bytes in S.
+**strlen** `(strlen S)` return the number of bytes in `S`.
 
 ```
 (strlen (q . "clvm")) => 4
