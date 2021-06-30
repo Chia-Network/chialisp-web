@@ -338,8 +338,11 @@ $ brun '(/ (q . 3) (q . 2))'
 ```
 This means that `-a / b` is not always equal to `-(a / b)`
 
-**divmod** `(divmod A B)` takes two integers and returns a list containing the floored quotient and the remainder
-
+**divmod** `(divmod A B)` takes two integers and returns a cons-box containing the floored quotient and the remainder.
+```
+$ brun -n '(divmod (q . 10) (q . 3))'
+(3 . 1)
+```
 
 ## Bit Operations
 
