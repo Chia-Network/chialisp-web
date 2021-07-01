@@ -2,34 +2,34 @@
 // Converted automatically using ./tools/themeFromVsCode
 var theme = {
   plain: {
-    color: "#F8F8F2",
-    backgroundColor: "#282A36",
-    fontWeight: "bold",
+    color: "#383a42",
+    backgroundColor: "#fafafa",
+    fontWeight: "bold"
   },
   styles: [{
     types: ["keyword"],
     style: {
-      color: "rgb(189, 147, 249)"
+      color: "#990096",
     }
   }, {
     types: ["listop","class-name","quotes"],
     style: {
-      color: "rgb(80, 250, 123)"
+      color: "#006100"
     }
   }, {
     types: ["builtin"],
     style: {
-      color: "rgb(5, 227, 223)"
+      color: "#127EAF"
     }
   }, {
     types: ["number","hexadecimal","string","boolean"], //numbers and hexes must be the same color
     style: {
-      color: "rgb(255, 184, 108)"
+      color: "#B35C00"
     }
   }, {
     types: ["punctuation", "symbol"],
     style: {
-      color: "rgb(248, 248, 242)"
+      color: "#383a42"
     }
   }, {
     types: ["variable"],
@@ -39,12 +39,12 @@ var theme = {
   }, {
     types: ["comment"],
     style: {
-      color: "rgb(98, 114, 164)"
+      color: "#73737D"
     }
   }, {
     types: ["function","car"],
     style: {
-      color: "rgb(241, 250, 140)"
+      color: "#0045DB"
     }
   }]
 };

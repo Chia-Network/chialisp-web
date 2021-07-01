@@ -9,7 +9,8 @@ module.exports = {
   projectName: 'chialisp-web', // Usually your repo name.
   themeConfig: {
     prism: {
-      theme: require('./src/theme/prism-dark-theme-chialisp')
+      darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
+      theme: require('./src/theme/prism-light-theme-chialisp')
     },
     navbar: {
       title: 'Chialisp',
