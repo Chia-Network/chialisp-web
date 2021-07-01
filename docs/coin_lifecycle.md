@@ -31,7 +31,7 @@ This approach makes the database very light as the blockchain grows, but still a
 
 ## Farming Rewards
 
-As you probably know, farmers create the entirety of new value in Chia.  Every 18.75 seconds or so, a new block pops into existence that allows for a farmer to create a coin of thin air, in two amounts of a very specific ratio: 1 to 7 (farmer to pool).  Here are two actual farming rewards that were generated in block 10,000 of the blockchain:
+As you probably know, farmers create the entirety of new value in Chia.  Every 18.75 seconds or so, a new block pops into existence that allows for a farmer to create a coin out of thin air, in two amounts of a very specific ratio: 1 to 7 (farmer to pool).  Here are two actual farming rewards that were generated in block 10,000 of the blockchain:
 
 ```json
 [
