@@ -3,7 +3,7 @@ id: coins_spends_and_wallets
 title: 2 - Coins, Spends and Wallets
 ---
 
-This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
+This guide assumes knowledge of [the basics of CLVM](/docs/) so if you haven't read that page, please do so before reading this.
 
 This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
@@ -47,7 +47,7 @@ To spend a coin you need 3 pieces of information (and an optional 4th).
 3. A solution to the coin's puzzle
 4. (OPTIONAL) A collection of signatures grouped together, called an aggregated signature
 
-Remember the puzzle and solution is the same as we covered in part 1, except the puzzle has already been stored inside the coin and anybody can submit a solution.
+Remember the puzzle and solution is the same as we covered in the basics, except the puzzle has already been stored inside the coin and anybody can submit a solution.
 
 The network has no concept of coin ownership, anybody can attempt to spend any coin on the network.
 It's up to the puzzles to prevent coins from being stolen or spent in unintended ways.
@@ -57,7 +57,7 @@ By the end of the next section of the guide, hopefully it should be clear.
 
 ## Puzzles and Solutions in Practice
 
-So far in [part 1](/docs/) we have covered ChiaLisp programs that will evaluate to some result.
+So far we have covered ChiaLisp programs that will evaluate to some result.
 Remember the first part represents a puzzle which is committed to locking up a coin, and the second part is a solution anybody can submit:
 
 ```lisp
@@ -145,7 +145,7 @@ Otherwise you just have a valid spend that isn't returning any conditions, and t
 So we need to change the fail condition to be `(x "wrong password")` which means the transaction fails and the coin is not spent.
 
 If we're doing this then we should also change the `(i A B C)` pattern to `(a (i A (q . B) (q . C)) 1)`.
-The reason for this is explained in [part 3](/docs/deeper_into_clvm/). For now don't worry about why.
+The reason for this is explained in [a later section](/docs/deeper_into_clvm/). For now don't worry about why.
 
 Here is our completed password protected coin:
 

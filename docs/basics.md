@@ -6,7 +6,7 @@ sidebar_label: 1 - CLVM Basics
 
 CLVM is the compiled, minimal version of ChiaLisp that is used by the Chia network.
 Chialisp compiles into CLVM so it's important to understand how it works.
-The full set of operators is documented [here](https://chialisp.com/docs/ref/clvm).
+The full set of operators is documented [here](/docs/ref/clvm).
 
 This guide will cover the basics of the language and act as an introduction to the structure of programs.
 You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).  Follow the instructions in the README to install it.
@@ -352,10 +352,10 @@ $ brun '6' '(("deeper" "example") "data" "for" "test")'
 
 And so on.
 
-## End of Part 1
+## Conclusion
 
 This marks the end of this section of the guide.
 In this section we have covered many of the basics of using CLVM.
 It is recommended you play with using the information presented here for a bit before moving on.
 
-This guide has not covered all of the operators available in CLVM - try using some of the other ones listed [here](https://chialisp.com/docs/ref/clvm)!
+This guide has not covered all of the operators available in CLVM - try using some of the other ones listed [here](/docs/ref/clvm)!

@@ -3,14 +3,14 @@ id: deeper_into_clvm
 title: 3 - Deeper into CLVM
 ---
 
-This guide directly continues on from [part 1](/docs/) so if you haven't read that, please do so before reading this.
+This guide assumes knowledge of [the basics of CLVM](/docs/) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover how ChiaLisp relates to transactions and coins on the Chia network.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
 ## Lazy Evaluation in ChiaLisp
 
-As we saw in part 1, programs are often structured around `(i A B C)` to control flow.
+As we've seen in earlier sections, programs are often structured around `(i A B C)` to control flow.
 ChiaLisp evaluates programs as trees, where the leaves are evaluated first.
 This can cause unexpected problems if you are not aware of it.
 Consider the following program which uses `x` which immediately halts and throws an error if it is evaluated.
@@ -37,11 +37,11 @@ $ brun '(a (i (q . 1) (q . (q . 100)) (q . (x (q . "still being evaluated")))) 1
 
 It is worth keeping this in mind whenever you write an `(i A B C)`.
 
-If you're wondering how this works (and how the standard transaction from [part 2](/docs/coins_spends_and_wallets) worked), then allow me to introduce Evaluate.
+If you're wondering how this works (and how the [signature locked coin](/docs/coins_spends_and_wallets#example-signature-locked-coin) from before worked), then allow me to introduce Evaluate.
 
 ## Introduction to Evaluate
 
-In [Part 1](/docs/) we mentioned that a program is usually a list where the first element is an operator, and every subsequent element is a valid program.
+In [the introduction to CLVM](/docs/) we mentioned that a program is usually a list where the first element is an operator, and every subsequent element is a valid program.
 We can also run programs with new arguments inside a program.
 
 This looks like this:
