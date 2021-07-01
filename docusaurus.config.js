@@ -8,6 +8,9 @@ module.exports = {
   organizationName: 'Chia-Network', // Usually your GitHub org/user name.
   projectName: 'chialisp-web', // Usually your repo name.
   themeConfig: {
+    prism: {
+      theme: require('./src/theme/prism-dark-theme-chialisp')
+    },
     navbar: {
       title: 'Chialisp',
       logo: {

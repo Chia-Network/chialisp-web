@@ -4,7 +4,7 @@ Chialisp is a powerful and secure LISP-like language for encumbering and releasi
 This website is a consolidated place to learn about Chialisp, CLVM and the conditions language.
 
 Here's a sample:
-```
+```chialisp
 (mod (password new_puzhash amount)
   (defconstant CREATE_COIN 51)
 

@@ -9,7 +9,7 @@ When you start to write full smart contracts, you will start to realize that you
 
 If you want to import some functionality that you use frequently without having to copy/paste it between files, you can use `include`:
 
-```lisp
+```chialisp
 ;; condition_codes.clvm
 (
   (defconstant AGG_SIG_ME 50)
@@ -17,7 +17,7 @@ If you want to import some functionality that you use frequently without having 
 )
 ```
 
-```lisp
+```chialisp
 ;;main.clvm
 (mod (pubkey msg puzzle_hash amount)
 
@@ -38,7 +38,7 @@ When puzzles are hashed, they are not simply serialized and passed to sha256.  I
 
 Recall that every clvm program can be represented as a binary tree.  Every object is either an atom (a leaf of the tree) or a cons box (a branch of the tree).  When we hash the puzzle we start at the leaves of the tree and hash our way up, concatenating either a 1 or a 2 to denote that it's either an atom or a cons box.  Once a cons box is hashed, it becomes a new leaf to be hashed into its parent cons box and the process recurses.  Here's what that looks like in Chialisp:
 
-```lisp
+```chialisp
 (defun sha256tree1
    (TREE)
    (if (l TREE)
@@ -54,7 +54,7 @@ It is extremely useful to calculate tree hashes within a Chialisp puzzle.  You c
 
 Currying is an extremely important concept in Chialisp that is responsible for almost the entirety of how state is stored in coins.  The idea is to pass in arguments to a puzzle *before* it is hashed.  When you curry, you commit to solution values so that the individual solving the puzzle cannot change them.  Let's take a look at how this is implemented in Chialisp:
 
-```lisp
+```chialisp
 ;; utility function used by curry
 (defun fix_curry_args (items core)
  (if items
@@ -71,20 +71,20 @@ The reason this is so useful is because you may want to create the blueprint of 
 
 The above function may look complex, but all it's really doing is wrapping the function in an `a` and prepending the arguments to `1` which (when compiled to clvm) will refer the rest of the puzzle arguments.  Absent of all the quotes, the above code reduces to something like this:
 
-```lisp
+```chialisp
 (a func (c curry_arg_1 (c curry_arg_2 1)))
 ```
 
 You can also do the reverse operation.  Given a program, you can *uncurry* the list of arguments, with a simple `(f (r (r )))`:
 
-```lisp
+```chialisp
 (f (r (r curried_func)))
 ; (c curry_arg_1 (c curry_arg_2 1))
 ```
 
 Let's take our password locked coin example from earlier, this time as a Chialisp puzzle:
 
-```lisp
+```chialisp
 (mod (password new_puzhash amount)
   (defconstant CREATE_COIN 51)
 
@@ -103,7 +103,7 @@ Let's take our password locked coin example from earlier, this time as a Chialis
 
 You can see that the password hash is baked into the source of the puzzle.  This means every time that you want to lock up a coin with a new password, you have to recreate the file that contains the source of the code.  It would be much nicer if we fully generalized it:
 
-```lisp
+```chialisp
 (mod (PASSWORD_HASH password new_puzhash amount)
   (defconstant CREATE_COIN 51)
 
@@ -122,7 +122,7 @@ You can see that the password hash is baked into the source of the puzzle.  This
 
 However, now we have the problem that anyone can pass in whatever password/hash combo that they please and unlock this coin.  When we create this coin we need the password hash to be committed to. Before determining the puzzle hash of the coin we're going to create, we need to curry in the hash with something like this:
 
-```lisp
+```chialisp
 ; curry_password_coin.clvm
 (mod (password_hash password_coin_mod)
   (include "curry.clvm") ; From above
@@ -147,7 +147,7 @@ A common design pattern, and one of the most powerful features of Chialisp, is t
 
 For this example, we're going to continue with our password locking, but this time we're going to require that every time the coin is spent, it requires a new password to be set.  Let's look at all the code and then we'll break it down:
 
-```lisp
+```chialisp
 (mod (
     MOD_HASH        ;; curried in
     PASSWORD_HASH   ;; curried in
@@ -205,7 +205,7 @@ First, let's talk about the arguments.  When you create this puzzle for the firs
 
 Chialisp puzzles have the tendency to be read from the bottom up, so lets start with this chunk:
 
-```lisp
+```chialisp
 ; main
 (if (= (sha256 password) PASSWORD_HASH)
   (morph-conditions (a INNER_PUZZLE inner_solution) new_password_hash MOD_HASH)
@@ -215,7 +215,7 @@ Chialisp puzzles have the tendency to be read from the bottom up, so lets start 
 
 All that's happening here is that we're making sure the password is correct and, if it is, we're going to run the curried in `INNER_PUZZLE` with the passed in `inner_solution`.  This will return a list of conditions that we will pass to the next function along with the new password hash and `MOD_HASH`.
 
-```lisp
+```chialisp
 ;; tweak all `CREATE_COIN` conditions, enforcing created coins to be locked by passwords
 (defun morph-conditions (conditions new_password_hash MOD_HASH)
  (if conditions
@@ -230,7 +230,7 @@ All that's happening here is that we're making sure the password is correct and,
 
 Recursion is the foundation of Chialisp and functions like these very commonly show up when writing it.  In order to iterate through the list of conditions, we first check if there are still items left (remember that an empty list `()` or **nil** evaluates to false). Then, we morph the first condition and concatenate it with the recursive output of the rest of the list.  In the end, we will have the same list of items in the same order, but all of them will have passed thru `morph-condition`.
 
-```lisp
+```chialisp
 ;; tweak `CREATE_COIN` condition by wrapping the puzzle hash, forcing it to be a password locked coin
 (defun-inline morph-condition (condition new_password_hash MOD_HASH)
  (if (= (f condition) CREATE_COIN)
@@ -245,7 +245,7 @@ Recursion is the foundation of Chialisp and functions like these very commonly s
 
 This function is also pretty simple. We're first checking if the opcode (first item in the list) is CREATE_COIN.  If it's not, just return the condition as usual.  If it is, return a condition that is almost exactly the same, except we're passing the puzzle hash into a function that will modify it:
 
-```lisp
+```chialisp
 (defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash_hash inner_puzzle_hasr
    (puzzle-hash-of-curried-function
      MOD_HASH

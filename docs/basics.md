@@ -32,13 +32,13 @@ When interpreting atoms as integers, it's important to remember that they are si
 
 Cons boxes are represented as a parentheses with two elements separated by a `.`.
 For example:
-```
+```chialisp
 (200 . "hello")
 
 ("hello" . ("world" . "!!!"))
 ```
 Are legal cons boxes, but the following is not.
-```
+```chialisp
 (200 . 300 . 400)
 ```
 A cons box always has two elements.
@@ -49,17 +49,17 @@ However, we can chain cons boxes together to construct lists.
 Lists are enclosed by parentheses and each entry in the list is single spaced with no period between values.
 Lists are much more commonly used than cons boxes as they are more versatile.
 
-```
+```chialisp
 (200 300 "hello" "world")
 ```
 You can also nest lists.
-```
+```chialisp
 ("hello" ("nested" "list") ("world"))
 ```
 
 Remember a list is a representation of consecutive cons boxes terminated in a null atom `()`.
 The following expressions are equal:
-```
+```chialisp
 (200 . (300 . (400 . ())))
 
 (200 300 400)
@@ -69,7 +69,7 @@ The following expressions are equal:
 
 To interpret an atom as a value, rather than a program, it needs to be quoted with `q`. Quoted values form a cons box where the first item is the `q` operator.
 For example, this program is just the value `100`:
-```
+```chialisp
 (q . 100)
 ```
 
@@ -91,14 +91,14 @@ Programs are a subset of lists which can be evaluated using CLVM. **A program is
 
 Rule 2 is why literal values and non-program lists *must* be quoted using `q . `.
 
-```lisp
+```chialisp
 $ brun '(q . (80 90 100))'
 (80 90 100)
 ```
 
 And now that we know we can have programs inside programs we can create programs such as:
 
-```lisp
+```chialisp
 $ brun '(i (= (q . 50) (q . 50)) (+ (q . 40) (q . 30)) (q . 20))' '()'
 70
 ```
@@ -112,28 +112,28 @@ It is recommended that you create your programs in an editor with brackets match
 
 `f` returns the first element in a passed list.
 
-```lisp
+```chialisp
 $ brun '(f (q . (80 90 100)))'
 80
 ```
 
 `r` returns every element in a list except for the first.
 
-```lisp
+```chialisp
 $ brun '(r (q . (80 90 100)))'
 (90 100)
 ```
 
 `c` prepends an element to a list
 
-```lisp
+```chialisp
 $ brun '(c (q . 70) (q . (80 90 100)))'
 (70 80 90 100)
 ```
 
 And we can use combinations of these to access or replace any element we want from a list:
 
-```lisp
+```chialisp
 $ brun '(c (q . 100) (r (q . (60 110 120))))'
 (100 110 120)
 
@@ -147,7 +147,7 @@ There are no support for floating point numbers in CLVM, only integers. There is
 
 The math operators are `+`, `-`, `*`, and `/`.
 
-```lisp
+```chialisp
 $ brun '(- (q . 6) (q . 5))'
 1
 
@@ -163,7 +163,7 @@ $ brun '(/ (q . 20) (q . 11))'
 
 *Note that `/` returns the* ***floored*** *quotient. CLVM is also different from most languages in that it floors to negative infinity rather than zero.  This can create some unexpected results when trying to divide negative numbers.*
 
-```lisp
+```chialisp
 brun '(/ (q . 3) (q . 2))'
 1
 
@@ -183,7 +183,7 @@ This is because many operators can take a variable number of parameters.
 For non-commutative operations, `(- 100 30 20 5)` is equivalent to `(- 100 (+ 30 20 5))`.
 Similarly, `(/ 120 5 4 2)` is equivalent to `(/ 120 (* 5 4 2))`.
 
-```lisp
+```chialisp
 $ brun '(- (q . 5) (q . 7))'
 -2
 
@@ -194,14 +194,14 @@ $ brun '(+ (q . 3) (q . -8))'
 
 To use hexadecimal numbers, simply prefix them with `0x`.
 
-```lisp
+```chialisp
 $ brun '(+ (q . 0x000a) (q . 0x000b))'
 21
 ```
 
 The final mathematical operator is equal which acts similarly to == in other languages.
 
-```lisp
+```chialisp
 $ brun '(= (q . 5) (q . 6))'
 ()
 
@@ -216,7 +216,7 @@ As you can see above this language interprets some data as boolean values.
 In this language an empty list `()` evaluate to `False`.
 Any other value evaluates to `True`, though internally `True` is represented with `1`.
 
-```lisp
+```chialisp
 $ brun '(= (q . 100) (q . 90))'
 ()
 
@@ -226,7 +226,7 @@ $ brun '(= (q . 100) (q . 100))'
 
 The exception to this rule is `0` because `0` is  exactly the same as `()`.
 
-```lisp
+```chialisp
 $ brun '(= (q . 0) ())'
 1
 
@@ -238,7 +238,7 @@ $ brun '(+ (q . 70) ())'
 
 The `i` operator takes the form `(i A B C)` and acts as an if-statement that
 evaluates to `B` if `A` is True and `C` otherwise.
-```lisp
+```chialisp
 $ brun '(i (q . 0) (q . 70) (q . 80))'
 80
 
@@ -248,7 +248,7 @@ $ brun '(i (q . 1) (q . 70) (q . 80))'
 $ brun '(i (q . 12) (q . 70) (q . 80))'
 70
 
-$ brun '(i (q . ()) (q . 70) (q . 80))'
+$ brun '(i () (q . 70) (q . 80))'
 80
 ```
 
@@ -256,7 +256,7 @@ Note that both `B` and `C` are evaluated eagerly, just like all subexpressions.
 To defer evaluation until after the condition, `B` and `C` must be quoted (with
 `q`), and then evaluated with `(a)`.
 
-```lisp
+```chialisp
 $ brun '(a (i (q . 0) (q . (x (q . 1337) )) (q . 1)) ())'
 ```
 
@@ -272,7 +272,7 @@ This means that we need to be able to pass some information to the puzzle.
 A solution is a list of values passed to the puzzle.
 The solution can be referenced with `1`.
 
-```lisp
+```chialisp
 $ brun '1' '("this" "is the" "solution")'
 ("this" "is the" "solution")
 
@@ -285,7 +285,7 @@ $ brun '(r 1)' '(80 90 100 110)'
 
 And remember lists can be nested too.
 
-```lisp
+```chialisp
 $ brun '(f (f (r 1)))' '((70 80) (90 100) (110 120))'
 90
 
@@ -295,7 +295,7 @@ $ brun '(f (f (r 1)))' '((70 80) ((91 92 93 94 95) 100) (110 120))'
 
 These environment variables can be used in combination with all other operators.
 
-```lisp
+```chialisp
 $ brun '(+ (f 1) (q . 5))' '(10)'
 15
 
@@ -305,7 +305,7 @@ $ brun '(* (f 1) (f 1))' '(10)'
 
 This program checks that the second variable is equal to the square of the first variable.
 
-```lisp
+```chialisp
 $ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 25)'
 1
 
@@ -317,7 +317,7 @@ $ brun '(= (f (r 1)) (* (f 1) (f 1)))' '(5 30)'
 
 In the above examples we only used `1` which access the root of the tree and returns the entire solution list.
 
-```lisp
+```chialisp
 $ brun '1' '("example" "data" "for" "test")'
 ("example" "data" "for" "test")
 ```
@@ -326,7 +326,7 @@ However, every unquoted integer in the lower level language refers to a part of 
 
 You can imagine a binary tree of `f` and `r`, where each node is numbered.
 
-```lisp
+```chialisp
 $ brun '2' '("example" "data" "for" "test")'
 "example"
 
@@ -339,7 +339,7 @@ $ brun '5' '("example" "data" "for" "test")'
 
 And this is designed to work when there are lists inside lists too.
 
-```lisp
+```chialisp
 $ brun '4' '(("deeper" "example") "data" "for" "test")'
 "deeper"
 

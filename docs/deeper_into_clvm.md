@@ -15,7 +15,7 @@ ChiaLisp evaluates programs as trees, where the leaves are evaluated first.
 This can cause unexpected problems if you are not aware of it.
 Consider the following program which uses `x` which immediately halts and throws an error if it is evaluated.
 
-```lisp
+```chialisp
 $ brun '(i (q . 1) (q . 100) (x (q . "still being evaluated")))'
 FAIL: clvm raise (0x7374696c6c206265696e67206576616c7561746564)
 ```
@@ -24,13 +24,13 @@ This is because ChiaLisp evaluates both of the leaves even though it will only f
 
 To get around this we can use the following design pattern to replace (i A B C).
 
-```lisp
+```chialisp
 (a (i (A) (q . B) (q . C)) 1)
 ```
 
 Applying this to our above example looks like this:
 
-```lisp
+```chialisp
 $ brun '(a (i (q . 1) (q . (q . 100)) (q . (x (q . "still being evaluated")))) 1)'
 100
 ```
@@ -46,21 +46,20 @@ We can also run programs with new arguments inside a program.
 
 This looks like this:
 
-```lisp
-(a *(puzzle)* (*solution)*)
+```chialisp
+(a *puzzle* *solution*)
 ```
 
 Let's put this into practice.
 
 Here is a program that evaluates the program `(+ 2 (q . 5)))` and uses the list `(70 80 90)` or `(80 90 100)` as the solution.
 
-```lisp
+```chialisp
 $ brun '(a (q . (+ 2 (q . 5))) (q . (70 80 90)))' '(20 30 40)'
 75
 
 $ brun '(a (q . (+ 2 (q . 5))) (q . (80 90 100)))' '(20 30 40)'
 85
-
 ```
 
 Notice how the original solution `(20 30 40)` does not matter for the new evaluation environment.
@@ -69,7 +68,7 @@ In this example we use `q . ` to quote both the new puzzle and the new solution 
 A neat trick that we can pull is that we can define the new solution in terms of the outer solution.
 In this next example we will add the first element of the old solution to our new solution.
 
-```lisp
+```chialisp
 $ brun '(a (q . (+ 2 (q . 5))) (c 2 (q . (70 80 90))))' '(20 30 40)'
 25
 ```
@@ -83,14 +82,14 @@ It does, however, allow programs to be passed as parameters, which can be used f
 
 Here is a puzzle that executes the program contained in `2` (the first solution argument) with the solution `(12)`.
 
-```lisp
+```chialisp
 $ brun '(a 2 (q . (12)))' '((* 2 (q . 2)))'
 24
 ```
 
 Taking this further we can make the puzzle run a new evaluation that only uses parameters from its old solution:
 
-```lisp
+```chialisp
 $ brun '(a 2 1)' '((* 5 (q . 2)) 10)'
 20
 ```

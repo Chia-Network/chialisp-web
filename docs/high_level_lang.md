@@ -15,7 +15,7 @@ The first higher level feature you should be aware of is that **it is no longer 
 
 Compare `brun` and `run` here:
 
-```lisp
+```chialisp
 $ brun '(+ 200 200)'
 FAIL: first of non-cons ()
 $ run '(+ 200 200)'
@@ -29,7 +29,7 @@ Run also gives us access to a number of convenient high level operators, which w
 `list` takes any number of parameters and returns them put inside a list.
 This saves us from having to manually create nested `(c (A) (c (B) (q ())))` calls, which can get messy quickly.
 
-```lisp
+```chialisp
 $ run '(list 100 "test" 0xdeadbeef)'
 (100 "test" 0xdeadbeef)
 ```
@@ -38,7 +38,7 @@ $ run '(list 100 "test" 0xdeadbeef)'
 
 `if` automatically puts our `i` statement into the lazy evaluation form so we do not need to worry about the unused code path being evaluated.
 
-```lisp
+```chialisp
 $ run '(if 1 (q . "success") (x))' '(100)'
 "success"
 
@@ -57,7 +57,7 @@ However we will want to change 0xpubkey to a value passed to us through our solu
 
 **Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
 
-```lisp
+```chialisp
 $ run '(qq (c (c (q . 50) (c (q (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
 
 (c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) (a 5 11))
@@ -75,14 +75,14 @@ This is where `mod` comes in.
 
 Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program
 
-```lisp
+```chialisp
 $ run '(mod (arg_one arg_two) (list arg_one))'
 (c 2 ())
 ```
 
 As you can see it returns our program in compiled lower level form.
 
-```lisp
+```chialisp
 $ brun '(c 2 ())' '(100 200 300)'
 (100)
 ```
@@ -96,13 +96,13 @@ In the higher level language we can define functions, macros, and constants befo
 We can define as many of these as we like before the main source code.
 Usually a program will be structured like this:
 
-```lisp
+```chialisp
 (mod (arg_one arg_two)
   (defconstant const_name value)
-  (defun function_name (parameter_one parameter_two) (*function_code*))
-  (defun another_function (param_one param_two param_three) (*function_code*))
-  (defun-inline utility_function (param_one param_two) (*function_code*))
-  (defmacro macro_name (param_one param_two) (*macro_code*))
+  (defun function_name (parameter_one parameter_two) *function_code*)
+  (defun another_function (param_one param_two param_three) *function_code*)
+  (defun-inline utility_function (param_one param_two) *function_code*)
+  (defmacro macro_name (param_one param_two) *macro_code*)
 
   (main *program*)
 )
@@ -120,7 +120,7 @@ A few things to note:
 
 ## Factorial
 
-```lisp
+```chialisp
 (mod (arg_one)
   ; function definitions
   (defun factorial (input)
@@ -135,7 +135,7 @@ A few things to note:
 We can save these files to .clvm files which can be run from the command line.
 Saving the above example as `factorial.clvm` allows us to do the following.
 
-```lisp
+```chialisp
 $ run factorial.clvm
 (a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 (c 2 (c (- 5 (q . 1)) ()))) 5)) 1) 1))
 
@@ -154,8 +154,8 @@ This works at any place where you name parameters, and allows you to handle list
 
 Here we define a macro to square a parameter and then a function to square a list.
 
-```lisp
-(mod args
+```chialisp
+(mod (args)
 
   (defmacro square (input)
     (qq (* (unquote input) (unquote input)))
@@ -174,7 +174,7 @@ Here we define a macro to square a parameter and then a function to square a lis
 
 Compiling and running this code results in this:
 
-```lisp
+```chialisp
 $ run square_list.clvm
 (a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))
 

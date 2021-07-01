@@ -18,7 +18,7 @@ A coin's ID is constructed from 3 pieces of information.
 
 To construct a coin ID simply take the hash of these 3 pieces of information concatenated in order.
 
-```lisp
+```
 coinID == sha256(parent_ID + puzzlehash + amount)
 ```
 
@@ -60,7 +60,7 @@ By the end of the next section of the guide, hopefully it should be clear.
 So far in [part 1](/docs/) we have covered ChiaLisp programs that will evaluate to some result.
 Remember the first part represents a puzzle which is committed to locking up a coin, and the second part is a solution anybody can submit:
 
-```lisp
+```chialisp
 $ brun '(+ 2 5)' '(40 50)'
 90
 
@@ -96,7 +96,7 @@ Here is the complete list of conditions along with their format and behaviour.
 
 Conditions are returned as a list of lists in the form:
 
-```lisp
+```chialisp
 ((51 0xabcd1234 200) (50 0x1234abcd) (53 0xdeadbeef))
 ```
 
@@ -112,7 +112,7 @@ To implement this we would have the hash of the password committed into the puzz
 For the following example the password is "hello" which has the hash value 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824.
 The implementation for the above coin would be thus:
 
-```lisp
+```chialisp
 (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q . 51) (c 5 (c (q . 100) ()))) (q . "wrong password"))
 ```
 
@@ -127,7 +127,7 @@ Remember, anybody can attempt to spend this coin as long as they know the coin's
 
 Let's test it out using clvm_tools.
 
-```lisp
+```chialisp
 $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (c (q . 51) (c 5 (c (q . 100) ()))) (q ())) (q . "wrong password"))' '("let_me_in" 0xdeadbeef)'
 "wrong password"
 
@@ -149,13 +149,13 @@ The reason for this is explained in [part 3](/docs/deeper_into_clvm/). For now d
 
 Here is our completed password protected coin:
 
-```lisp
+```chialisp
 '(a (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q . (c (c (q . 51) (c 5 (c (q . 100) ()))) ())) (q . (x (q . "wrong password")))) 1)'
 ```
 
 Let's test it out using clvm_tools:
 
-```lisp
+```chialisp
 $ brun '(a (i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q . (c (c (q . 51) (c 5 (c (q . 100) ()))) ())) (q . (x (q . "wrong password")))) 1)' '("let_me_in" 0xdeadbeef)'
 FAIL: clvm raise ("wrong password")
 
@@ -170,13 +170,13 @@ Another way of phrasing this is "how much control over the output should the sol
 
 Suppose we lock a coin up using the following puzzle:
 
-```lisp
+```chialisp
 (q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))
 ```
 
 Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzlehash 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a and the amount 100.
 
-```lisp
+```chialisp
 $ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '(80 90 "hello")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 
@@ -189,7 +189,7 @@ Even though anybody could initiate the spend of the coin, the person that locked
 
 Conversely lets consider a coin locked up with the following puzzle:
 
-```lisp
+```chialisp
 1
 ```
 
@@ -198,7 +198,7 @@ This puzzle simply returns the entire solution.
 You can think about this in terms of power and control.
 The person that locked the coin up has given all the power to the person who provides the solution.
 
-```lisp
+```chialisp
 $ brun '1' '((51 0xf00dbabe 50) (51 0xfadeddab 50))'
 ((51 0xf00dbabe 50) (51 0xfadeddab 50))
 
@@ -211,12 +211,12 @@ This balance of power determines a lot of how puzzles are designed in ChiaLisp.
 
 For example, let's create a puzzle that lets the spender choose the output, but with one stipulation.
 
-```lisp
+```chialisp
   (c (q . (51 0xcafef00d 200)) 1)
 ```
 This will let the spender return any conditions they want via the solution but will always add the condition to create a coin with the puzzle hash 0xcafef00d and value 200.
 
-```
+```chialisp
 $ brun '(c (q . (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ((51 0xcafef00d 200) (51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
 ```
@@ -232,7 +232,7 @@ This means that the coin cannot be spent by anybody else, but the outputs are en
 
 We can construct the following smart transaction where AGG_SIG_UNSAFE is 50 and the recipient's pubkey is `0xfadedcab`.
 
-```lisp
+```chialisp
 (c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) 3)
 ```
 
@@ -241,7 +241,7 @@ This puzzle forces the resultant evaluation to contain `(50 pubkey *hash_of_firs
 Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
 The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadeddab.
 
-```lisp
+```chialisp
 $ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) 3)' '("hello" (51 0xcafef00d 200))'
 ((50 0xfadedcab 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824) (51 0xcafef00d 200))
 ```
@@ -289,7 +289,7 @@ We'll go more into SpendBundles and cohesion between coins in a later section.
 
 We can construct an even more powerful version of the signature locked coin:
 
-```lisp
+```chialisp
 (c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) (a 5 11))
 ```
 
@@ -304,13 +304,13 @@ We will cover in more detail how this works in the [next part](/docs/deeper_into
 
 A basic solution for this standard transaction might look like:
 
-```lisp
+```chialisp
 ("hello" (q . ((51 0xmynewpuzzlehash 50) (51 0xanothernewpuzzlehash 50))) ())
 ```
 
 Running that in the clvm_tools looks like this:
 
-```lisp
+```chialisp
 $ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) (a 5 11))' '("hello" (q . ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) ())'
 
 ((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (51 0xdeadbeef 50) (51 0xf00dbabe 50))
