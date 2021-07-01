@@ -7,7 +7,7 @@ When writing Chialisp, security concerns should be at the front of your mind.  T
 
 ## Signing and Asserting Solution Truth
 
-Remember from [our discussion of coin lifecycles](https://chialisp.com/docs/coin_lifecycle) that when you push a transaction, it gets gossiped to other nodes until it finds one who will put it into a block.  Every node chooses what will be passed on to the next node. If it likes, it can change some data before it forwards it.
+Remember from [our discussion of coin lifecycles](/docs/coin_lifecycle) that when you push a transaction, it gets gossiped to other nodes until it finds one who will put it into a block.  Every node chooses what will be passed on to the next node. If it likes, it can change some data before it forwards it.
 
 This is why the aggregated signature is part of the spend bundle.  It allows you to mark data as valid only if there is also a signature that vouches for its correctness.  Signatures are how you prevent nodes from changing your transaction in malicious ways; if they do, the spend will no longer be valid.
 
@@ -17,7 +17,7 @@ Sometimes, it is necessary to have solution values that logistically cannot be s
 
 ## Asserting Coin Information
 
-Signing is how you prevent nodes from messing with your own spends, but sometimes you want to create coins that will be traded around with specific rules.  As a result you don't know who will be spending the coin, and you don't know if they will be honest.  We saw in [our discussion of outer puzzles](https://chialisp.com/docs/common_functions#outer-and-inner-puzzles) that you can enforce rules on your child coins using currying and wrapping tree hashes, but there are times when you also want to enforce truths about yourself or your parent.
+Signing is how you prevent nodes from messing with your own spends, but sometimes you want to create coins that will be traded around with specific rules.  As a result you don't know who will be spending the coin, and you don't know if they will be honest.  We saw in [our discussion of outer puzzles](/docs/common_functions#outer-and-inner-puzzles) that you can enforce rules on your child coins using currying and wrapping tree hashes, but there are times when you also want to enforce truths about yourself or your parent.
 
 This is where the `ASSERT_MY_*` family of opcodes comes in.  When you need information (`parent_coin_info`, `puzzle_hash`, `amount`) about your coin to use in the puzzle, it cannot always be curried in by an honest party.  Sometimes, it will need to be passed in through the solution.  The solution should always be treated as if it is being solved by malicious or careless parties.  If any coin information is being passed in, it should be asserted with opcodes to ensure that the network, who can see that information, can confirm it.
 
@@ -39,7 +39,7 @@ Also keep in mind that if a parent coin is currying information to its child coi
 
 ## Password Locked Coin Security
 
-It's worth noting that the [password locked coin we've been building](https://chialisp.com/docs/common_functions#outer-and-inner-puzzles) is actually not very secure.  When you solve the puzzle, you have to reveal the password.  Since any full nodes whom you give your spend to will now be able to see your password, they can change the solution and pay themselves all the money instead!
+It's worth noting that the [password locked coin we've been building](/docs/common_functions#outer-and-inner-puzzles) is actually not very secure.  When you solve the puzzle, you have to reveal the password.  Since any full nodes whom you give your spend to will now be able to see your password, they can change the solution and pay themselves all the money instead!
 
 In order to fix it, it's probably best to curry in a public key that also has to sign for the solution.  The new puzzle will be able to be spent only with a password *and* only by the person who you have decided owns this coin. Of course, this is not particularly useful most of the time and is usually about as good as a signature locked coin with extra steps.  Signatures are by far the most secure way to lock up your coins.
 
