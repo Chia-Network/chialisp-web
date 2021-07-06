@@ -239,7 +239,7 @@ We can construct the following smart transaction where AGG_SIG_UNSAFE is 50 and 
 This puzzle forces the resultant evaluation to contain `(50 pubkey *hash_of_first_solution_arg*)` but then adds on all of the conditions presented in the solution.
 
 Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
-The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadeddab.
+The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadedcab.
 
 ```lisp
 $ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) 3)' '("hello" (51 0xcafef00d 200))'
