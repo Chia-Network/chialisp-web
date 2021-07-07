@@ -230,7 +230,7 @@ In the next exercise we will put everything we know together and create the "sta
 To 'send a coin to somebody' you simply create a puzzle that requires the recipient's signature, but then allows them to return any other conditions that they like.
 This means that the coin cannot be spent by anybody else, but the outputs are entirely decided by the recipient.
 
-We can construct the following smart transaction where AGG_SIG_UNSAFE is 50 and the recipient's pubkey is `0xfadedcab`.
+We can construct the following smart transaction where AGG_SIG_ME is 50 and the recipient's pubkey is `0xfadedcab`.
 
 ```lisp
 (c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) 3)
@@ -313,7 +313,7 @@ Running that in the clvm_tools looks like this:
 ```lisp
 $ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) (a 5 11))' '("hello" (q . ((51 0xdeadbeef 50) (51 0xf00dbabe 50))) ())'
 
-((50 0xfadeddab 0x1f82d4d4c6a32459143cf8f8d27ca04be337a59f07238f1f2c31aaf0cd51d153) (51 0xdeadbeef 50) (51 0xf00dbabe 50))
+((50 0xfadedcab 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824) (51 0xdeadbeef 50) (51 0xf00dbabe 50))
 ```
 
 ## Conclusions
