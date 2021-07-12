@@ -9,7 +9,7 @@ Due to the nature of Chialisp programs, it can often be difficult to determine w
 
 Both `run` and `brun` have a `-v` flag for printing verbose outputs.  This output is *very* verbose and shows every evaluation that the program made before it finished or exited.  Let take a look at an example:
 
-```
+```chialisp
 brun '(c (sha256 0xdeadbeef) ())' '()' -v
 
 FAIL: path into atom ()
@@ -29,7 +29,7 @@ FAIL: path into atom ()
 0xdeadbeef [()] => (didn't finish)
 ```
 
-Every program starts with `(a 2 3)` where 2 is the program, and 3 is the solution.  We can trace the appearances of `(didn't finish)` down until we find the deepest failure to evaluate.  In this example, we see that it is trying to run `0xdeadbeef` as a program to access a value in the solution.  The solution is just `()` which is obviously not deep enough, so it throws an error.  We should have quoted the atom before we passed it to `sha256`.
+Every verbose output starts with `(a 2 3)` which simply represents the whole puzzle being run with whole solution. If you're debugging, this will likely have an output of `(didn't finish)`. We can trace the appearances of `(didn't finish)` down until we find the deepest failure to evaluate.  In this example, we see that it is trying to run `0xdeadbeef` as a program to access a value in the solution.  The solution is just `()` which is obviously not deep enough, so it throws an error.  We should have quoted the atom before we passed it to `sha256`.
 
 ## Common errors
 
@@ -51,20 +51,20 @@ This error is fairly descriptive, but it is important to highlight when this mos
 
 Oftentimes, you would like to be able to see the values of a variable in the middle of a program execution.  Most languages have some sort of log statement with which to do this, but it's somewhat impossible to implement in Chialisp since it's evaluated rather than run.  One of the workarounds you can use is to wrap the statement you are looking to debug in `x`.  The raise operator takes an optional argument to log when it raises.  Let's say you are trying to debug this line of code:
 
-```lisp
+```chialisp
 (list CREATE_COIN_ANNOUNCEMENT (sha256tree (list coin-info coin-data)))
 ```
 
 You can try commenting out that line and creating a new raise to exit out with some information:
 
-```lisp
+```chialisp
 ; (list CREATE_COIN_ANNOUNCEMENT (sha256tree (list coin-info coin-data)))
 (x (list CREATE_COIN_ANNOUNCEMENT (sha256tree (list coin-info coin-data))))
 ```
 
 Keep in mind that evaluation will happen before the raise message gets created.  Sometimes it's better to just raise a list of the arguments:
 
-```lisp
+```chialisp
 ; (list CREATE_COIN_ANNOUNCEMENT (sha256tree (list coin-info coin-data)))
 (x (list coin-info coin-data))
 ```
@@ -81,21 +81,23 @@ Importantly, the symbol table will not be able to identify inline functions or m
 
 ## `opd` and `opc`
 
-There are two more commands in the [clvm_tools repository](https://github.com/Chia-Network/clvm_tools) that are particularly helpful once you're dealing with Chialisp in other languages like python.  Chialisp is generally handled by other code in its serialized format, and is nearly impossible for a human to read.  If you're debugging a spend bundle in python, you can print out the puzzle and solution that you are running and then use `opd` to **disassemble** the serialized clvm into something more readable:
+There are two more commands in the [clvm_tools repository](https://github.com/Chia-Network/clvm_tools) that are related to the serialization of CLVM.  When the program is run on the blockchain, it is run in its serialized form. It can sometimes be helpful to see that serialized compilation. For example, when the cost of a program is evaluated, it is charged cost for every byte in the puzzle reveal.  You are incentivized to make sure that puzzle reveal is as small as possible.
 
-```
-opd ff01ff8568656c6c6f85776f726c64
-(q "hello" . "world")
-```
+If you would like to see the serialized output, you can use `opc` to compile or **assemble** the CLVM:
 
-Conversely, if you would like to write a program and examine it's bytecode you can use `opc`
-
-```
+```chialisp
 opc '(q "hello" . "world")'
 ff01ff8568656c6c6f85776f726c64
 ```
 
-This can be particularly useful when trying to figure out the size of your coin's puzzle reveal.  You pay cost for every byte that is revealed so it's important to try and keep it as small as possible.
+In addition, other languages like Python usually also handle CLVM in its serialized format.  If you are writing driver code for your puzzles, you may need to debug a spend bundle that contains some serialized CLVM. In this scenario, it can be useful to **disassemble** the serialized program into the human readable form.
+
+```chialisp
+opd ff01ff8568656c6c6f85776f726c64
+(q "hello" . "world")
+```
+
+With large programs, it may not be much clearer in the human readable form, but you can often still distinguish certain patterns. Curried arguments, for example, are relatively easy to pick out and they can often give you the crucial information you need to debug your programs.
 
 ## Conclusion
 
