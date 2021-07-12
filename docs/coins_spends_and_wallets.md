@@ -52,7 +52,7 @@ Remember the puzzle and solution is the same as we covered in the basics, except
 The network has no concept of coin ownership, anybody can attempt to spend any coin on the network.
 It's up to the puzzles to prevent coins from being stolen or spent in unintended ways.
 
-If anybody can submit a solution for a coin, you maybe wondering how somebody can "own" a coin.
+If anybody can submit a solution for a coin, you may be wondering how somebody can "own" a coin.
 By the end of the next section of the guide, hopefully it should be clear.
 
 ## Puzzles and Solutions in Practice
@@ -78,7 +78,7 @@ Conditions are split into two categories: *"this spend is only valid if X"* and 
 Here is the complete list of conditions along with their format and behaviour.
 
 * **AGG_SIG_UNSAFE - [49] - (49 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID.
-* **AGG_SIG_ME - [50] - (50 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID.
+* **AGG_SIG_ME - [50] - (50 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID and the network's genesis challenge.
 * **CREATE_COIN - [51] - (51 puzzlehash amount)**: If this spend is valid, then create a new coin with the given puzzlehash and amount.
 * **ASSERT_FEE - [52] - (52 amount)**: This spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
 * **CREATE_COIN_ANNOUNCEMENT - [60] - (60 message)**: If this spend is valid, this creates an ephemeral announcement with an ID dependent on the coin that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
