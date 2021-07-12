@@ -24,7 +24,8 @@ var theme = {
   }, {
     types: ["number","hexadecimal","string","boolean"], //numbers and hexes must be the same color
     style: {
-      color: "rgb(255, 184, 108)"
+      color: "rgb(255, 184, 108)",
+      fontWeight: "normal",
     }
   }, {
     types: ["punctuation", "symbol"],
@@ -39,7 +40,8 @@ var theme = {
   }, {
     types: ["comment"],
     style: {
-      color: "rgb(98, 114, 164)"
+      color: "rgb(98, 114, 164)",
+      fontWeight: "normal",
     }
   }, {
     types: ["function","car"],
