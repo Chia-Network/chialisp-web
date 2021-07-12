@@ -44,7 +44,7 @@ We'll look at the code in a moment, but here's a few terms to know before you lo
 
 Here's the full source and then we'll break it down:
 
-```lisp
+```chialisp
 (mod
 
     (SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle solution)
@@ -54,7 +54,7 @@ Here's the full source and then we'll break it down:
     ; all of A0, A1, ... An must evaluate to non-null, or an exception is raised
     ; return the last item (if we get that far)
 
-    (defmacro assert items
+    (defmacro assert (items)
         (if (r items)
             (list if (f items) (c assert (r items)) (q . (x)))
             (f items)
@@ -98,7 +98,7 @@ Here's the full source and then we'll break it down:
 
 That's probably a lot to digest so let's break it down piece by piece.  First, let's talk about the arguments:
 
-```lisp
+```
 (SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle solution)
 ```
 
@@ -110,7 +110,7 @@ All of these terms are defined above.  When we solve this puzzle:
 
 As with most Chialisp programs, we'll start looking at the implementation from the bottom:
 
-```lisp
+```chialisp
 (possibly_prepend_aggsig
     SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle
     (a delegated_puzzle solution))
@@ -118,7 +118,7 @@ As with most Chialisp programs, we'll start looking at the implementation from t
 
 There's nothing much going on here, we're mostly just passing arguments to `possibly_prepend_aggsig` to start the program.  The only thing to note is that we're evaluating the delegated puzzle with the solution before passing it in.  This will result in a list of conditions that we will output as long as the rest of the puzzle checks out.
 
-```lisp
+```chialisp
 (defun-inline possibly_prepend_aggsig (SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle conditions)
   (if original_public_key
       (assert
@@ -134,7 +134,7 @@ This function is the main control flow logic that determines whether we're doing
 
 If the spend is the hidden spend, we pass most of our parameters to `is_hidden_puzzle_correct` and, as long as it doesn't fail, we just return whatever conditions are given to us.  If the spend is the delegated spend, we prepend a signature requirement from the curried in public key on the hash of the delegated puzzle.
 
-```lisp
+```chialisp
 (defun-inline is_hidden_puzzle_correct (SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle)
   (=
       SYNTHETIC_PUBLIC_KEY

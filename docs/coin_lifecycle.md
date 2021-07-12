@@ -9,7 +9,7 @@ You should now understand how to create Chialisp puzzles that lock up coins with
 
 Chia's model of how coins are stored is called the **coin set** model and is closely modelled after Bitcoin's UTXO model.  The idea is simple, every full node holds onto a database of **coin records**:
 
-```
+```python
 class Coin:
   parent_coin_info: bytes32
   puzzle_hash: bytes32
@@ -19,8 +19,8 @@ class CoinRecord:
   coin: Coin
   confirmed_block_index: uint32
   spent_block_index: uint32
-  spent: bool
-  coinbase: bool
+  spent: boolean
+  coinbase: boolean
   timestamp: uint64
 ```
 *Note that the `Coin` object is part of the blockchain format and cannot be changed, while the `CoinRecord` object is part of the full node and can be modified by alternative implementations*
@@ -51,7 +51,7 @@ _Fun fact: The genesis challenge is the hash of a bitcoin block around the time 
 
 Notice that the `parent_coin_info` for both is a little strange.  Because they are created out of thin air, the coins are assigned a special value as their parent coin: one half of the "genesis challenge", some filler zeroes, and the index of the block they are farmed in.
 
-```
+```python
 pool_parent_id = bytes32(genesis_challenge[:16] + block_height.to_bytes(16, "big"))
 farmer_parent_id = bytes32(genesis_challenge[16:] + block_height.to_bytes(16, "big"))
 ```
@@ -62,7 +62,7 @@ This information is usually not very relevant, but it is used.  For example, in 
 
 Alright, so you've received some XCH and you want to deploy your first smart contract.  To do that, you're first going to have to create a **spend bundle**.  This is sometimes referred to colloquially as a "transaction". A spend bundle is a simple construct.  It is an object that contains exactly two things: a list of coin spends and an aggregated signature.
 
-```
+```python
 class SpendBundle:
   coin_solutions: List[CoinSpend]
   aggregated_signature: G2Element
@@ -70,7 +70,7 @@ class SpendBundle:
 
 A **coin spend** contains exactly three things: The coin you are trying to spend (parent_coin_info, amount, puzzle_hash), the puzzle reveal (needs to tree hash to the puzzle hash), and the solution.
 
-```
+```python
 class CoinSolution:
   coin: Coin
   puzzle_reveal: SerializedProgram

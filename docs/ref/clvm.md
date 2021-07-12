@@ -221,17 +221,16 @@ which is not the same as a single zero byte.
 
 `"A"` is the same atom as `A`
 
-```
+```chialisp
 (q . "A") => 65
 (q . A) => 65
 (q . 65) => 65
 (q . 0x41) => 65
-
 ```
 
 However, the same is not true for Built-ins.
 `"q"` is not the same as `q`
-```
+```chialisp
 (q . q) => 1
 (q . "q") => 113
 ```
@@ -313,7 +312,7 @@ The arithmetic operators `+`, `-`, `*`, `/` and `divmod` treat their arguments a
 
 ### Rounding
 
-```
+```chialisp
 brun '(/ (q . 1)  (q . 2))' => ()
 brun '(/ (q . 2)  (q . 2))' => 1
 brun '(/ (q . 4)  (q . 2))' => 2
@@ -322,7 +321,7 @@ brun '(/ (q . 4)  (q . 2))' => 2
 ### Division of negative numbers
 
 The treatment of negative dividend and divisors is as follows:
-```
+```chialisp
 brun '(/ (q . -1)  (q .  1))' => -1
 brun '(/ (q .  1)  (q . -1))' => -1
 brun '(/ (q . -1)  (q . -1))' =>  1
@@ -330,7 +329,7 @@ brun '(/ (q . -1)  (q . -1))' =>  1
 
 ### Flooring of negative nubmers
 Note that a division with a remainder always rounds down, not toward zero.
-```
+```chialisp
 $ brun '(/ (q . -3) (q . 2))'
 -2
 $ brun '(/ (q . 3) (q . 2))'
@@ -359,7 +358,7 @@ The shorter atom is considered to be extended with zero bytes until equal in len
 
 **lognot** `(lognot A)` bitwise **NOT** of A. All bits are inverted.
 
-```
+```chialisp
 brun '(lognot (q . ()))'
 -1
 brun '(lognot (q . 1))'
@@ -386,7 +385,7 @@ Both **ash** and **lsh** have a maximum |B| of 65536
 
 The third parameter to `substr` is optional. If omitted, the range \[`I1`, `(strlen S)`) is returned.
 
-```
+```chialisp
 (substr (q . "clvm") (q . 0) (q . 4)) => clvm
 (substr (q . "clvm") (q . 2) (q . 4)) => vm
 (substr (q . "clvm") (q . 4) (q . 4)) => ()
@@ -400,7 +399,7 @@ The third parameter to `substr` is optional. If omitted, the range \[`I1`, `(str
 
 **strlen** `(strlen S)` return the number of bytes in `S`.
 
-```
+```chialisp
 (strlen (q . "clvm")) => 4
 (strlen (q . "0x0")) => 3
 (strlen (q . 0x0)) => 1
@@ -418,7 +417,7 @@ Example: `(concat (q . "Hello") (q . " ") (q . "world"))` => `"Hello world"`
 **sha256**
   `(sha256 A ...)` returns the sha256 hash (as a 32-byte blob) of the bytes of its parameters.
 
-```
+```chialisp
 (sha256 (q . "clvm")) => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
 (sha256 (q . "cl") (q . "vm")) => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
 ```
@@ -489,14 +488,14 @@ When used as a parameter that may be checked for nil, zero is interpreted as nil
 ## Detailed behaviour Notes
 
 **ash**
-```
+```chialisp
 (ash (q . 1) (q . 1)) => 2
 (ash (q . 1) (q . -1)) => 0
 ```
 
 Consecutive right shifts of negative numbers will result in a terminal value of -1.
 
-```
+```chialisp
 (ash -7 -1) ; -7 = . . . 111111111111111111111111111001
 (ash -4 -1) ; -4 = . . . 111111111111111111111111111100
 (ash -2 -1) ; -2 = . . . 111111111111111111111111111110
@@ -504,7 +503,7 @@ Consecutive right shifts of negative numbers will result in a terminal value of 
 ```
 
 That is, a right shift (negative shift count) of `-1` by any amount is `-1`:
-```
+```chialisp
 (ash (q . -1) (q . -99)) => -1
 ```
 
@@ -512,7 +511,7 @@ That is, a right shift (negative shift count) of `-1` by any amount is `-1`:
 
 lsh behaviour from the [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/elisp.pdf):
 
-```
+```chialisp
 (ash -7 -1) ; -7 = . . . 111111111111111111111111111001
           ⇒ -4 ; = . . . 111111111111111111111111111100
 
@@ -528,7 +527,7 @@ lsh behaviour from the [elisp manual](https://www.gnu.org/software/emacs/manual/
 
 A left shift of an atom with the high bit set will extend the atom left, and result in an allocation
 
-```
+```chialisp
 (lsh (q . -1) (q . 1)) => 0x01FE
 (strlen (lsh (q . -1) (q . 1))) => 2
 
@@ -538,13 +537,13 @@ A left shift of an atom with the high bit set will extend the atom left, and res
 
 A left arithmetic shift will only extend the atom length when more bits are needed
 
-```
+```chialisp
 (strlen (ash (q . -1) (q . 7))) => 1
 (strlen (ash (q . -1) (q . 8))) => 2
 ```
 
 
-```
+```chialisp
 (strlen (ash (q . 255) (q . 1))) => 2
 (strlen (ash (q . 128) (q . 1))) => 2
 (strlen (ash (q . 127) (q . 1))) => 2
