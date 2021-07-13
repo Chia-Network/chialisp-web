@@ -3,7 +3,7 @@ id: pooling
 title: Pooling
 ---
 
-The way that Chia Network does pooling is unlike any blockchain that has come before it. Pool operators actually rely on an on-chain smart contract to verify that they will be able to directly claim any potential pool rewards that farmers create.  This allows pools to trust farmers enough to pay them out, while still keeping the power of making the blocks in the hands of the farmer.  This means that the decentralization of the network remains the same, even as the rewards get concentrated to the pool!
+The way that Chia Network does pooling is unlike many blockchains that have come before it. Pool operators actually rely on an on-chain smart contract to verify that they will be able to directly claim any potential pool rewards that farmers create.  This allows pools to trust farmers enough to pay them out, while still keeping the power of making the blocks in the hands of the farmer.  This means that the decentralization of the network remains the same, even as the rewards get concentrated to the pool!
 
 In this section, we're going to break down how all of this works in Chialisp.  This section assumes you have already read the section about [singletons](https://chialisp.com/docs/puzzles/singletons) (or at least understand how they work) as that is the outer contract that wraps the pooling puzzles.
 
@@ -11,8 +11,8 @@ In this section, we're going to break down how all of this works in Chialisp.  T
 
 There are a few requirements that were set for how the pooling protocol would work on the Chia Network. Let's go over them now:
 
-* **The farmer still farms the blocks.** This is incredibly important for network decentralization. If this is not true, then the bigger a pool gets, the closer it is to gaining 51% of the network resources.  We still want the farmers to create the blocks, but we need some way to assure the pool that the farmer will give them the reward when they do.  We do this by creating plots that farm directly to a specific puzzle hash, and ensuring that puzzle hash is something that pool can claim.
-* **The farmer must still be able to change pools.** Initially, this seems to conflict with the first requirement.  Plots can be made to send rewards directly to a puzzle hash, but you cannot change that puzzle hash once they are plotted.  If you want to switch pools, you'll have to remake all of your plots! We solve this by having our plots create payments that a specific singleton (also called a "plot nft") can claim.  Then, we can lend partial control of that singleton to a pool, but still retain the ability to reclaim our singleton and lend it instead to a different pool.  Our plots will remain effective as long as we retain control of the singleton.
+* **The farmer farms the blocks, not the pool.** This is incredibly important for network decentralization. If this is not true, then the bigger a pool gets, the closer it is to gaining 51% of the network resources.  We still want the farmers to create the blocks, but we need some way to assure the pool that the farmer will give them the reward when they do.  We do this by creating plots that farm directly to a specific puzzle hash, and ensuring that puzzle hash is something that the pool can claim.
+* **The farmer must be able to change pools.** Initially, this seems to conflict with the first requirement.  Plots can be made to send rewards directly to a puzzle hash, but you cannot change that puzzle hash once they are plotted.  If you want to switch pools, you'll have to remake all of your plots! We solve this by having our plots create payments that a specific singleton (also called a "plot nft") can claim.  Then, we can lend partial control of that singleton to a pool, but still retain the ability to reclaim our singleton and lend it instead to a different pool.  Our plots will remain effective as long as we retain control of the singleton.
 * **The farmer cannot leave the pool immediately.** This requirement prevents attacks common to other blockchains where a miner will send partials to a pool until they win a block, then leave the pool immediately and claim that block for themselves.  To prevent this, we have implemented something called a **waiting room** puzzle which is nearly the same as the puzzle for farming to a pool, except that the farmer can reclaim their singleton after a specified amount of time (in blocks).
 
 ## The Pool Member
@@ -105,7 +105,7 @@ As always, let's begin with the arguments:
 
 `OWNER_PUBKEY` is the public key that will sign the decision to leave the pool.  This is likely owned by the farmer.
 
-`POOL_REWARD_PREFIX` is a bit of a unique argument.  On the chia mainnet, this will always be `ccd5bb71183532bff220ba46c268991a00000000000000000000000000000000`.  It is the beginning of the `parent_coin_info` that is assigned to the pool rewards since they do not have a parent.  That first half is followed by 32 zeroes to make it the length of a standard hash.  We'll talk more about why this is needed when we go over the segment of code that uses it.
+`POOL_REWARD_PREFIX` is a bit of a unique argument.  On the chia mainnet, this will always be `ccd5bb71183532bff220ba46c268991a00000000000000000000000000000000`.  It is the beginning of the `parent_coin_id` of pool reward coins. Because those coins do not have a parent, their ID is derived from a combination of the network ID in the left half of the ID, and an incrementing identifier in the right.  That first half is followed by 32 zeroes to make it the length of a standard hash.  We'll talk more about why this is needed when we go over the segment of code that uses it.
 
 `WAITINGROOM_PUZHASH` is the puzzle hash of the waiting room puzzle that we will go to when we attempt to leave the pool.  We will go over that puzzle later, but what's important to know is that we commit to the puzzle we leave to before we join the pool.  This is so the pool can have certain assurances about how long it will take you to leave.
 
@@ -114,10 +114,10 @@ As always, let's begin with the arguments:
 There are two spend cases for this puzzle.  The **absorb case** will most likely be triggered by the pool and is how they claim the rewards that the farmers receive.  The **escape case** will be initiated by the farmer to begin the process of leaving the pool by heading to the waiting room.  The following two arguments change depending on the case we are executing:
 
 `p1` is named the way it is because it is going to be different depending on the spend type we are using.  It is either:
- * The amount of the pool reward that is being claimed (1750000000000 in the first three years)
+ * The amount of the pool reward that is being claimed (1750000000000 during the first three years)
  * A list of key value pairs that is used to reveal important information to the blockchain for wallets to use (similar to the [singleton launcher](https://chialisp.com/docs/puzzles/singletons#the-launcher))
 
-`pool_reward_height` is also different depending on the spend case, but in the escape case it is just `()` so we leave it named the way it is.  In the absorb case, it is the height of the pool reward that is being absorbed.  This is used along with `POOL_REWARD_PREFIX` to calculate the `parent_coin_info` of the reward coin so that we can calculate its ID.
+`pool_reward_height` is also different depending on the spend case, but in the escape case it is just `()` so we leave it named the way it is.  In the absorb case, it is the height of the pool reward that is being absorbed.  This is used along with `POOL_REWARD_PREFIX` to calculate the `parent_coin_id` of the reward coin so that we can calculate its ID.
 
 Let's talk about our main entry point:
 
@@ -143,9 +143,9 @@ We are also calculating one additional piece of information.  Let's look at it n
 )
 ```
 
-This line may look complex, but it's doing something fairly simplistic.  It is calculating the coin ID of the reward coin it is claiming by manually calculating the parent info from the `POOL_REWARD_PREFIX` and `pool_reward_height`.
+This line may look complex, but it's doing something fairly simplistic.  It is calculating the coin ID of the reward coin it is claiming by manually calculating the parent id from the `POOL_REWARD_PREFIX` and `pool_reward_height`.
 
-Why do we have to do this? The manual calculation is due to the fact that this singleton may have other payments made to it.  Right now, since we are lending our singleton to the pool, we don't want the singleton to be able to claim those rewards. We specifically only want the pool to be able to claim pool rewards that are generated from farming.  Since we know these rewards have a `parent_coin_info` that is a [special format](https://chialisp.com/docs/coin_lifecycle#farming-rewards), we can manually calculate it to ensure that the pool can't lie to us and pass in the ID of a non-reward coin.
+Why do we have to do this? The manual calculation is due to the fact that this singleton may have other payments made to it.  Right now, since we are lending our singleton to the pool, we don't want the singleton to be able to claim those rewards. We specifically only want the pool to be able to claim pool rewards that are generated from farming.  Since we know these rewards have a `parent_coin_id` that is a [special format](https://chialisp.com/docs/coin_lifecycle#farming-rewards), we can manually calculate it to ensure that the pool can't lie to us and pass in the ID of a non-reward coin.
 
 Let's take a look at this section here:
 
@@ -153,9 +153,9 @@ Let's take a look at this section here:
 (logior POOL_REWARD_PREFIX (logand (- (lsh (q . 1) (q . 128)) (q . 1)) pool_reward_height))
 ```
 
-`(- (lsh (q . 1) (q . 128)) (q . 1))` is simply a way of generating a sequence of 32 `f`s. We then use `logand` on that with the pool reward height, which in an honest scenario should do absolutely nothing to it (more on this in a minute).  Finally, we use `logior` to combine the two values into one string.  Let's say we have a height of `abcdef`.  Our final product will be `ccd5bb71183532bff220ba46c268991a00000000000000000000000000abcdef`.
+`(- (lsh (q . 1) (q . 128)) (q . 1))` is simply a way of generating a sequence of 32 `f`s. We then use `logand` on that with the pool reward height, which in an honest scenario should leave it unchanged.  Finally, we use `logior` to combine the two values into one string.  Let's say we have a height of `abcdef`.  Our final product will be `ccd5bb71183532bff220ba46c268991a00000000000000000000000000abcdef`.
 
-Why do we need this extra `logand` with the string of `f`s?  It's to prevent a relatively obscure, but possible attack.  Remember that an attacker can pass whatever they want in through the solution.  For example, a 32 byte hex string.  If they passed through the right hex string, they could completely control the output of our calculation *except* for the bits that happen to be set to 1 in the genesis challenge half of the `POOL_REWARD_PREFIX` (62/128 of them).  The idea is that a pool could grind out a coin whose parent ID has all of those bits set, create the coin, and then use the singleton to claim it.  Why claim a coin that you already had control of? This will become more apparent in the waiting room puzzle, but they could hypothetically "freeze" the singleton in their pool if they were able to reset the puzzle.  It's not as important in the pool member puzzle, but it is still probably best to prevent the pool from spending the singleton in an unwanted way.  The `logand` ensures that only bits on the right can change, every bit on left gets set to 0 before it is evaluated with the `logior`.
+Why do we need this extra `logand` with the string of `f`s?  It's to prevent a relatively obscure, but possible attack.  Remember that an attacker can pass whatever they want in through the solution.  For example, a 32 byte hex string.  If they passed through the right hex string, they could completely control the output of our calculation *except* for the bits that happen to be set to 1 in the genesis challenge half of the `POOL_REWARD_PREFIX` (62/128 of them).  The idea is that a pool could grind out a coin whose parent ID has all of those bits set, create the coin, and then use the singleton to claim it.  Why claim a coin that you already had control of? This will become more apparent in the waiting room puzzle, but they could hypothetically "freeze" the singleton in their pool if they were able to reset the puzzle.  It's not as important in the pool member puzzle, but it is still probably best to prevent the pool from spending the singleton in an unintended way.  The `logand` ensures that only bits on the right can change, every bit on left gets set to 0 before it is evaluated with the `logior`.
 
 Okay let's move onto the conditions for the absorb spend case:
 
@@ -284,7 +284,7 @@ You may notice that is looks nearly identical to the one above.  Instead of brea
 
 We still have `POOL_PUZZLE_HASH`, `P2_SINGLETON_PUZZLE_HASH`, `OWNER_PUBKEY`, and `POOL_REWARD_PREFIX`.  However, now we also have a new curried in parameter called `RELATIVE_LOCK_HEIGHT`. This indicates the amount of time after entering this waiting room that we have to wait before we can spend away to something else.
 
-Note that relative lock heights are calculated from the time of the *current coin's creation*.  If the coin is spent as part of an absorb, this lock height resets.  Theoretically, with a large enough lock height and a big enough farmer who wins frequently, this singleton can be "frozen" until the farmer is lucky enough not to win a block within the specified timeframe.
+Note that relative lock heights are calculated from the time of the coin's creation.  If the coin is spent as part of an absorb, this lock height resets.  Theoretically, with a large enough lock height and a big enough farmer who wins frequently, this singleton can be "frozen" until the farmer is lucky enough not to win a block within the specified timeframe.
 
 We still have `Truths`, since this is still a singleton inner puzzle.  However, the final three arguments are almost completely different.
 

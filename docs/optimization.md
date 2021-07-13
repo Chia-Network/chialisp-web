@@ -38,21 +38,12 @@ Make sure to check out the [reference section](https://chialisp.com/docs/ref/clv
 For example, you may want to evaluate differently based on whether a number is even or odd:
 
 ```chialisp
-(if (= (r (divmod value 2)) 0)
-  ; do even things
-  ; do odd things
-)
-```
-
-The first step to simplifying this is to remember that `0 == ()` and evaluates to false. You can get rid of the `=` and switch the order of the if/else:
-
-```chialisp
 (if (r (divmod value 2))
-  ; do odd things
   ; do even things
+  ; do odd things
 )
 ```
-*Note that this technique is handy when recursing through lists too.  The last item in a list is always () which evaluates to false, so in that case you can break the recursion.*
+*Note that the if takes advantage of the fact that 0 == (). This technique is handy when recursing through lists too.  The last item in a list is always () which evaluates to false, so in that case you can break the recursion.*
 
 However, `divmod` is a pretty expensive operation, and we have to add an `r` to access the remainder once the operation has completed.  Instead, we can just use `logand` to evaluate just the last bit:
 
@@ -63,7 +54,7 @@ However, `divmod` is a pretty expensive operation, and we have to add an `r` to 
 )
 ```
 
-We have now saved ourselves at least 50% of the cost of this block!
+We have now saved ourselves at least 50% of the cost of this code block!
 
 ## Keep argument numbers small
 
@@ -136,7 +127,7 @@ This is much more concise, and we can rely on the solver to put the relevant dat
 
 ## Don't use functions by reflex
 
-Oftentimes, using a common function can become a matter of habit and you can end up using it where it actually creates more complexity than is necessary.  A good example is `sha256tree`.  Since the function works on either cons boxes or atoms, you may be tempted to use it on a single atom (maybe you're currying it into a function).  The function needs to work this way because it recurses and will always run into atoms as it does so.  However, using it to hash only an atom actually adds unnecessary cost to the program.  Not only do you add the function call overhead, but you also add the check to see if it's an atom or a list, even though you know its an atom!  A more cost effective method is to manually hash it like it would be hashed in a tree: `(sha256 1 some_atom)`.
+Oftentimes, using a common function can become a matter of habit and you can end up using it where it actually creates more complexity than is necessary.  A good example is [sha256tree](/docs/common_functions#sha256tree1).  Since the function works on either cons boxes or atoms, you may be tempted to use it on a single atom (maybe you're currying it into a function).  The function needs to work this way because it recurses and will always run into atoms as it does so.  However, using it to hash only an atom actually adds unnecessary cost to the program.  Not only do you add the function call overhead, but you also add the check to see if it's an atom or a list, even though you know its an atom!  A more cost effective method is to manually hash it like it would be hashed in a tree: `(sha256 1 some_atom)`.
 
 ## Conclusion
 
