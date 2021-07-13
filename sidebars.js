@@ -10,9 +10,11 @@ module.exports = {
       'coin_lifecycle',
       'security',
       'debugging',
+      'optimization',
       'glossary'
     ],
     CLVM: ['ref/clvm', 'ref/serialization'],
+    Puzzles: ['puzzles/singletons', 'puzzles/pooling'],
     FAQ: ['faq'],
   },
 };
