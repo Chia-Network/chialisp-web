@@ -275,7 +275,7 @@ Next, let's look at our main entry point:
 )
 ```
 
-The control flow here is very simple.  If we're not odd, we raise, if we are, we pass everything through to the next stage (with the additional hash of the inner puzzle).  One small thing to note is that the first singleton can actually be even, but it will never be able to be spent.  Either the person will pass in the true amount and the puzzle will raise, or they will pass in a phony amount and the ASSERT_MY_ID will fail.
+The control flow here is very simple.  If we're not odd, we raise, if we are, we pass everything through to the next stage (with the additional hash of the inner puzzle).  One small thing to note is that a singleton can actually be even, but it will never be able to be spent.  Either the person will pass in the true amount and the puzzle will raise, or they will pass in a phony amount and the ASSERT_MY_ID will fail. If an attacker were to launch an even singleton or create one as one the even children of the singleton, it would succeed, but be stuck forever.
 
 ```chialisp
 (defun stager_one (SINGLETON_STRUCT lineage_proof my_innerpuzhash my_amount INNER_PUZZLE inner_solution)

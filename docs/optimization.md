@@ -39,8 +39,8 @@ For example, you may want to evaluate differently based on whether a number is e
 
 ```chialisp
 (if (r (divmod value 2))
-  ; do even things
   ; do odd things
+  ; do even things
 )
 ```
 *Note that the if takes advantage of the fact that 0 == (). This technique is handy when recursing through lists too.  The last item in a list is always () which evaluates to false, so in that case you can break the recursion.*
