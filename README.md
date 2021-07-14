@@ -17,6 +17,14 @@ $ yarn start
 
 This command starts a local development server and open up a browser window. Most changes are reflected live without having to restart the server.
 
+### Docker Local Development
+
+```
+$ docker-compose up
+```
+
+You can also install and start local development server using Docker.
+
 ### Local Development notes
 
 `yarn` & `docusaurus` interpret text within angle-brackets, so be careful when using them, if you are editing the .md files directly.
