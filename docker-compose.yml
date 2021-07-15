@@ -4,9 +4,8 @@ services:
     container_name: chialisp-web
     build: .
     volumes:
-      - ./docs:/usr/src/app/docs:cached
-      - ./src:/usr/src/app/src:cached
-      - ./static:/usr/src/app/static:cached
+      - .:/usr/src/app:cached
+      - /usr/src/app/node_modules
     ports:
       - mode: host
         target: 3000
