@@ -15,7 +15,10 @@ module.exports = {
     ],
     CLVM: ['ref/clvm', 'ref/serialization'],
     Puzzles: ['puzzles/singletons', 'puzzles/pooling'],
-    Tutorials: ['tutorials/custom_puzzle_lock'],
+    Tutorials: [
+      'tutorials/custom_puzzle_lock',
+      'tutorials/coin_spend_rpc'
+    ],
     FAQ: ['faq'],
   },
 };
