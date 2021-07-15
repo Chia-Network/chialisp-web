@@ -257,7 +257,7 @@ To defer evaluation until after the condition, `B` and `C` must be quoted (with
 `q`), and then evaluated with `(a)`.
 
 ```chialisp
-$ brun '(a (q . (i (q . 0) (q . (x (q . 1337) )) (q . 1))) ())'
+$ brun '(a (q . (i (q . 0) (q . (x (q . 1337) )) (q . (q . 1)))) ())'
 ```
 
 More on this later.
