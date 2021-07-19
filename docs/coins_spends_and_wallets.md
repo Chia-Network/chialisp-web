@@ -206,7 +206,7 @@ $ brun '1' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))
 ```
 
-In this situation, not only can anybody can spend the coin, they can spend it however they like!
+In this situation, not only can anybody spend the coin, they can spend it however they like!
 This balance of power determines a lot of how puzzles are designed in ChiaLisp.
 
 For example, let's create a puzzle that lets the spender choose the output, but with one stipulation.
