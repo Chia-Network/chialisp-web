@@ -50,7 +50,7 @@ Paste your custom puzzle into the text area and hit **Compile**. The compiled ve
 
 ## Get puzzle hash from a puzzle
 ### Using [clvm_tools](https://github.com/Chia-Network/clvm_tools)
-You can get the hash of your Chialisp puzzle with the `opc -H <compiled_puzzle>` command included in official clvm_tools repository.
+You can get the hash of your Chialisp puzzle with the `opc -H <compiled_puzzle>` command included in the official clvm_tools repository.
 ```bash
 opc -H '(a (q 2 (i (= (sha256 5) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (q 4 (c 2 (c 11 (c 23 ()))) ()) (q 8)) 1) (c (q . 51) 1))'
 ```
@@ -90,9 +90,9 @@ A solution to this puzzle then needs to contain the compiled puzzle we want to h
 The resulting hash for this example puzzle is again `0x4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71`.
 
 ## Convert puzzle hash to a receive address
-You can convert puzzle hash to receive address and vice-versa. An address is just an encoded puzzle hash. And since a puzzle hash matches specific puzzle, it also means that a receive address matches a specific puzzle.
+You can convert a puzzle hash to a receive address and vice-versa. An address is just an encoded puzzle hash. And since a puzzle hash matches specific puzzle, it also means that a receive address matches a specific puzzle.
 
-You can use [Chia explorer's online tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter) for converting between puzzle hash to receive address and back. The puzzle hash is encoded to bech32m format with xch prefix to form a receive address. Receive address for puzzle hash `0x4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71` is `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`.
+You can use [Chia explorer's online tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter) for converting between puzzle hash to receive address. The puzzle hash is encoded to bech32m format with xch prefix to form a receive address. The receive address for the puzzle hash `0x4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71` is `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`.
 
 ## Send Chia to the receive address
 Use the Chia GUI or CLI to send a transaction as you would typically do with the amount you want. As a receive address, set the address from the previous step (password-locked coin example: `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`). That will lock your coin with a new puzzle.

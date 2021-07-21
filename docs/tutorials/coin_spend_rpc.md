@@ -4,20 +4,20 @@ title: How to spend a coin using an RPC call
 sidebar_label: Spend a coin using RPC
 ---
 
-This tutorial teaches you how to spend a coin with any puzzle using RPC calls. We're using the password-locked coin puzzle from [How to lock coin with a custom puzzle](custom_puzzle_lock) as an example.
+This tutorial teaches you how to spend a coin with any puzzle using RPC calls. We will be using the password-locked coin puzzle from [How to lock coin with a custom puzzle](custom_puzzle_lock) as an example.
 
 ## Get your coin's info (amount, puzzle hash & parent info)
 RPC call for spending a coin requires you to specify which coin you are spending. For unique identification, you need the coin's amount, puzzle hash, and parent info. Those three pieces of information are also enough to calculate the coin's ID.
 
 ### Using Chia explorer (by puzzle hash/receive address)
-If you know the puzzle hash or receive address of the coin you are looking for, you can [search for it using Chia explorer](https://www.chiaexplorer.com/blockchain/search). Chia explorer cannot search using puzzle hash, so if you have a puzzle hash, you first need to convert it to receive address using [Chia explorer's tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter).
+If you know the puzzle hash or receive address of the coin you are looking for, you can [search for it using Chia explorer](https://www.chiaexplorer.com/blockchain/search). Chia explorer cannot search using puzzle hash, so if you have a puzzle hash, you first need to convert it to receive address using [Chia explorer's tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter).  Remember that receive addresses are just encoded puzzle hashes and will still refer to the puzzle you are looking for.
 
 When you search for a receive address, you'll see all coins locked by the corresponding puzzle. Select the one you want to spend. That will get you the coin's amount, puzzle hash, and parent info.
 
 ## Get serialized puzzle and solution
-The next thing you need to know to spend the coin is the coin's puzzle and solution. Puzzles and solutions are provided in a serialized format, so we need to get that for each. The puzzle has to be compiled to low-level Chialisp and is serialized in "as is" format.
+The next thing you need to know to spend the coin is the coin's puzzle and solution. Puzzles and solutions are provided in a serialized format, so we need to get that for each. The puzzle has to be compiled to low-level Chialisp and is serialized as normal.
 
-To serialize the solution using same tools, you need to slightly modify solution format to make it valid Chialisp program. For that, you need to quote your solution. For example, in case of the solution `(hello 0x5f5767744f91c1c326d927a63d9b34fa7035c10e3eb838c44e3afe127c1b7675 2)` you need to change it to `(q . (hello 0x5f5767744f91c1c326d927a63d9b34fa7035c10e3eb838c44e3afe127c1b7675 2))` which makes it valid Chialisp program that can be compiled.
+To serialize the solution, you need to slightly modify the solution format to make it valid Chialisp program. For that, you need to quote your solution. For example, in case of the solution `(hello 0x5f5767744f91c1c326d927a63d9b34fa7035c10e3eb838c44e3afe127c1b7675 2)` you need to change it to `(q . (hello 0x5f5767744f91c1c326d927a63d9b34fa7035c10e3eb838c44e3afe127c1b7675 2))` which makes it valid Chialisp program that can be compiled.
 
 **Example for the password-locked coin:**
 
@@ -49,7 +49,7 @@ ff02ffff01ff02ffff03ffff09ffff0bff0580ffff01a02cf24dba5fb0a30e26e83b2ac5b9e29e1b
 
 Follow repository's README to set up a new project and serialize puzzle.
 
-In short (may change): paste your compiled puzzle/solution to your work file and call `chialisp build`. That will generate `.hex` files with a serialized version of your puzzle/solution (depending on your work file).
+In short: paste your compiled puzzle/solution to your work file and call `chialisp build`. That will generate `.hex` files with a serialized version of your puzzle/solution (depending on your work file).
 
 ### Serialization using [Chialisp web tool](https://clisp.surrealdev.com/)
 
@@ -75,10 +75,10 @@ curl --insecure --cert ~/.chia/mainnet/config/ssl/full_node/private_full_node.cr
         }}' -H "Content-Type: application/json" -X POST https://localhost:8555/push_tx
 ```
 
-The `spend_bundle` object contains an `aggregated_signature`, which we can later assert in the puzzle, and `coin_solutions` for all coins we spend. If `aggregated_signature` is not necessary for your puzzle, use 0xc followed by 191 zeros (as in the example above). However, it's worth noting that a puzzle that doesn't use a signature is usually unsafe and should be used only for testing purposes.
+The `spend_bundle` object contains an `aggregated_signature`, which we can later assert in the puzzle, and `coin_solutions`: a list of objects for all of the coins we are spending. If `aggregated_signature` is not necessary for your puzzle, use 0xc followed by 191 zeros (as in the example above). However, it's worth noting that a puzzle that doesn't use a signature is usually unsafe and should be used only for testing purposes.
 
-`coin_solution` contains information about the `coin` it is spending (`amount`, `parent_coin_info`, and  `puzzle_hash`). It also includes a serialized puzzle as a `puzzle_reveal` and serialized `solution`.
+The `coin_solution` contains information about the `coin` it is spending (`amount`, `parent_coin_info`, and  `puzzle_hash`). It also includes a serialized puzzle as a `puzzle_reveal` and serialized `solution`.
 
-If you fill in all your information correctly and send this request, your coin will be spent according to its provided solution, and the response `{"status": "SUCCESS", "success": true}` should be returned from RPC call.
+If you fill in all your information correctly and send this request, your coin will be spent according to its provided solution, and the response `{"status": "SUCCESS", "success": true}` should be returned from the RPC call.
 
 If your puzzle requires an aggregated signature, stay tuned for more tutorials.
