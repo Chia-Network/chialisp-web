@@ -73,7 +73,7 @@
 			lookbehind: true
 		},
     hexadecimal: {
-      pattern: /(?<![^0])x[0-9a-zA-Z]+/,
+      pattern: /x[0-9a-zA-Z]+/,
       lookbehind: true
     },
     brun: /(\$ )*(brun|run|opd|opc)/,
