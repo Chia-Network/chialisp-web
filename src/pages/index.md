@@ -40,8 +40,9 @@ Chialisp is also capable of any of the popularly available decentralized finance
 
 ## Introductory Material
 
-- Bram’s introductory post on [Chialisp](https://www.chia.net/2019/11/27/chialisp.en.html)
-- Bram’s introduction to our [MVP of Coloured coins](https://www.chia.net/2020/04/29/coloured-coins-launch.en.html)
+- The introductory post on [Chialisp](https://www.chia.net/2019/11/27/chialisp.en.html)
+- Introduction to our [MVP of Coloured coins](https://www.chia.net/2020/04/29/coloured-coins-launch.en.html)
+- A Vision for (DeFi in Chia)[https://www.chia.net/2021/07/13/a-vision-for-defi-in-chia.en.html]
 
 ## Developer Documentation
 
