@@ -20,7 +20,7 @@ There is a potential scenario where this is not true.  If you are using an inlin
 ```chialisp
 (defun-inline add_to_self (x) (+ x x))
 
-(foo (* 200 200))
+(add_to_self (* 200 200))
 ```
 
 The above code snippet will result in the following expansion:
