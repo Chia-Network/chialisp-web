@@ -14,10 +14,10 @@ YouTube live stream will be on [this channel](https://www.youtube.com/channel/UC
 
 # Schedule
 
-|Event|Webinar Link|Time (PST)|Time (GMT)|Time (China)
-|---|---|---|---|---|
-|Kickoff talk "Why Chialisp" with Bram Cohen and Richard Kiss | Zoom Link TBD | Aug 9 20:00 US PST | Aug 10 03:00 GMT | Aug 10 11:00 China|
-|Chialisp Q&A Session 1 with Matt Howard and Richard Kiss | Zoom Link TBD | Aug 10 11:00 US PST | Aug 10 18:00 GMT | Aug 11 02:00 China|
-|Chialisp Q&A Session 2 with Matt Hauff and Adam Kelly | Zoom Link TBD | Aug 10 17:00 US PST | Aug 11 00:00 GMT | Aug 11 08:00 China|
-|Chialisp Q&A Session 3 with Matt Hauff and Matt Howard | Zoom Link TBD | Aug 11 05:00 US PST | Aug 11 12:00 GMT | Aug 11 20:00 China|
-|Chialisp Q&A Session 4 with Adam Kelly and Richard Kiss | Zoom Link TBD | Aug 11 23:00 US PST | Aug 12 06:00 GMT | Aug 12 14:00 China|
+|Event|Speakers|Webinar Link|Americas|Europe|Asia
+|---|---|---|---|---|---|
+|Kickoff talk "Why Chialisp" | Bram Cohen, Richard Kiss | Zoom Link TBD | Aug 9 20:00 PDT | Aug 10 03:00 GMT | Aug 10 11:00 CST|
+|Chialisp Q&A Session 1 | Matt Howard, Richard Kiss | Zoom Link TBD | Aug 10 11:00 PDT | Aug 10 18:00 GMT | Aug 11 02:00 CST|
+|Chialisp Q&A Session 2 | Matt Hauff, Adam Kelly | Zoom Link TBD | Aug 10 17:00 PDT | Aug 11 00:00 GMT | Aug 11 08:00 CST|
+|Chialisp Q&A Session 3 | Matt Hauff, Matt Howard | Zoom Link TBD | Aug 11 05:00 PDT | Aug 11 12:00 GMT | Aug 11 20:00 CST|
+|Chialisp Q&A Session 4 | Adam Kelly, Richard Kiss | Zoom Link TBD | Aug 11 23:00 PDT | Aug 12 06:00 GMT | Aug 12 14:00 CST|
