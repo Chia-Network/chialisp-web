@@ -178,7 +178,7 @@ Compiling and running this code results in this:
 $ run square_list.clvm
 (a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))
 
-$ brun '(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))' '(10 9 8 7)'
+$ brun '(a (q 2 2 (c 2 (c 3 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))' '((10 9 8 7))'
 (100 81 64 49)
 ```
 
