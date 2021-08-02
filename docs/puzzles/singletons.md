@@ -292,7 +292,7 @@ Quite a bit isn't it?  Let's start with the arguments:
 
 The reason they are grouped into a single structure is because they are passed through almost every function. It increases readability and optimization if they are passed through as a single variable until it is time to deconstruct them.
 
-`INNER_PUZZLE` is the inner puzzle to this wrapper contract.
+`INNER_PUZZLE` is the inner puzzle to this wrapper puzzle.
 
 `lineage_proof` takes one of two formats:
 * `(parent_parent_coin_info parent_inner_puzzle_hash parent_amount)`

@@ -3,7 +3,7 @@ id: common_functions
 title: 5 - Common Functions in Chialisp
 ---
 
-When you start to write full smart contracts, you will start to realize that you will need certain common functionality in a lot of puzzles.
+When you start to write full smart coins, you will start to realize that you will need certain common functionality in a lot of puzzles.
 Let's go over how to include them and what some of them are:
 
 ## include
@@ -167,7 +167,7 @@ Let's look at one now.
 
 ## Outer and Inner puzzles
 
-A common design pattern, and one of the most powerful features of Chialisp, is the ability to have an outer smart contract the "wraps" an inner puzzle.
+A common design pattern, and one of the most powerful features of Chialisp, is the ability to have an outer puzzle that "wraps" an inner puzzle.
 This concept is extremely handy because it allows a coin to retain all of it's standard functionality and programmability within the inner puzzle, but be bound to an extra set of rules by the outer puzzle.
 
 For this example, we're going to continue with our password locking, but this time we're going to require that every time the coin is spent, it requires a new password to be set.
@@ -296,11 +296,11 @@ We can use `puzzle-hash-of-curried-function` which allows us to create the puzzl
 The implementation details of this library are a bit much to go into in this part of the tutorial but, in essence, it allows us to *resume* a tree hash that we have completed except for the last step.
 
 And that's it!  When this coin is created, it can only be spent by a password that hashes to the curried in PASSWORD_HASH.
-The inner puzzle can be anything that you want including other smart contracts that have their own inner puzzles.
+The inner puzzle can be anything that you want including other outer puzzles that have their own inner puzzles.
 Whatever coins get created as a result of that inner puzzle will be "wrapped" by this same outer puzzle ensuring that every child of this coin is locked by a password *forever*.
 
 We created a simple coin, but you can see the potential of this. You can enforce a set of rules not only on a coin that you lock up, but on *every* descendant coin.
-Not only that, the rules can be enforced *on top of other smart contracts*.
-In the Chialisp ecosystem, all smart contracts are interoperable with each other unless otherwise specified by a parent smart contract. The possibilities are endless and represent the vast programmability that Chialisp enables for coins.
+Not only that, the rules can be enforced *on top of other smart coins*.
+In the Chialisp ecosystem, all smart coins are interoperable with each other unless otherwise specified by one of the puzzles in the stack. The possibilities are endless and represent the vast programmability that Chialisp enables for coins.
 
 In the next section, we'll talk about the standard transaction format on the Chia network.

@@ -3,15 +3,15 @@ id: optimization
 title: 10 - Optimization
 ---
 
-Before you deploy a smart contract to the network, you should closely examine the code to find ways to optimize its execution.
+Before you deploy a smart coin to the network, you should closely examine the code to find ways to optimize its execution.
 Remember, the code you write is going to be deployed on millions of nodes; if it is slow, you slow down the whole network. This is why the block constraint on the Chia Network is dependent on the [program execution cost](https://chialisp.com/docs/ref/clvm/#costs) of Chialisp that has to be run in that block.
-If you want to write a bigger, slow running contract, you're going to need to pay more fees every time you want to spend it.
+If you want to write a bigger, slow running coin, you're going to need to pay more fees every time you want to spend it.
 Let's go over some techniques you can use to optimize your puzzles.
 
 ## Minimize the number spends
 
 At the end of the day, one of the biggest drains on cost is going to be how often you have to spend the coin.
-Quite commonly, you will find ways to build contracts where participants are required to spend the coin in order to interact with it.
+Quite commonly, you will find ways to build coins where participants are required to spend the coin in order to interact with it.
 The coin may traverse through multiple states as they do so.
 Every time the coin has to be spent, it acts as a multiplier for your base program cost.
 Even if you are not traversing an expensive path through the code, the full puzzle must still be revealed and there will most likely be `CREATE_COIN` and `AGG_SIG_ME` conditions which often represent a large chunk of the cost.
@@ -160,6 +160,6 @@ Not only do you add the function call overhead, but you also add the check to se
 ## Conclusion
 
 A lot of optimizations that you can make may seem silly for the small amount of cost that they save.
-However, if you expect your contract to become widely used, then there will be thousands of users paying for that in fees every day.
+However, if you expect your coin to become widely used, then there will be thousands of users paying for that in fees every day.
 Over time it can add up to a lot of money wasted.
 It's important to take the time to review your code and make sure that you can save as much cost as possible before you deploy it to the network.

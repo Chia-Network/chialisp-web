@@ -66,7 +66,7 @@ $ run '(qq (c (c (q . 50) (c (q (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))'
 
 ## Compiling to CLVM with Mod
 
-It is important to remember that in practice smart contracts will run using the lower level language, so none of the above operators will work on the network.
+It is important to remember that in practice smart coins will run using the lower level language, so none of the above operators will work on the network.
 What we *can* do however is compile them down to the lower level language.
 This is where `mod` comes in.
 `mod` is an operator that lets the runtime know that it needs to be compiling the code rather than actually running it.

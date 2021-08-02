@@ -11,7 +11,7 @@ If no argument tree is given on the command line, the default is an empty argume
 In ChiaLisp (the `run` command), integers are compiled to quoted atoms, which will give you the value you expected.
 ____
 
-**Q:** Is it possible to store data or maintain state in smart contracts?
+**Q:** Is it possible to store data or maintain state in smart coins?
 
 **A:** Yes, but probably not how you are thinking.
 Quite deliberately the ChiaLisp environment is designed so that state is stored exclusively in coins.
