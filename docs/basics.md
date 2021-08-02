@@ -9,7 +9,8 @@ Chialisp compiles into CLVM so it's important to understand how it works.
 The full set of operators is documented [here](/docs/ref/clvm).
 
 This guide will cover the basics of the language and act as an introduction to the structure of programs.
-You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).  Follow the instructions in the README to install it.
+You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).
+Follow the instructions in the README to install it.
 
 ## CLVM values
 
@@ -161,7 +162,8 @@ $ brun '(/ (q . 20) (q . 11))'
 1
 ```
 
-*Note that `/` returns the* ***floored*** *quotient. CLVM is also different from most languages in that it floors to negative infinity rather than zero.  This can create some unexpected results when trying to divide negative numbers.*
+*Note that `/` returns the* ***floored*** *quotient. CLVM is also different from most languages in that it floors to negative infinity rather than zero.
+This can create some unexpected results when trying to divide negative numbers.*
 
 ```chialisp
 brun '(/ (q . 3) (q . 2))'

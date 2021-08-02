@@ -10,7 +10,8 @@ This tutorial teaches you how to spend a coin with any puzzle using RPC calls. W
 RPC call for spending a coin requires you to specify which coin you are spending. For unique identification, you need the coin's amount, puzzle hash, and parent info. Those three pieces of information are also enough to calculate the coin's ID.
 
 ### Using Chia explorer (by puzzle hash/receive address)
-If you know the puzzle hash or receive address of the coin you are looking for, you can [search for it using Chia explorer](https://www.chiaexplorer.com/blockchain/search). Chia explorer cannot search using puzzle hash, so if you have a puzzle hash, you first need to convert it to receive address using [Chia explorer's tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter).  Remember that receive addresses are just encoded puzzle hashes and will still refer to the puzzle you are looking for.
+If you know the puzzle hash or receive address of the coin you are looking for, you can [search for it using Chia explorer](https://www.chiaexplorer.com/blockchain/search). Chia explorer cannot search using puzzle hash, so if you have a puzzle hash, you first need to convert it to receive address using [Chia explorer's tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter).
+Remember that receive addresses are just encoded puzzle hashes and will still refer to the puzzle you are looking for.
 
 When you search for a receive address, you'll see all coins locked by the corresponding puzzle. Select the one you want to spend. That will get you the coin's amount, puzzle hash, and parent info.
 

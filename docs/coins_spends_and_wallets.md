@@ -82,9 +82,11 @@ Here is the complete list of conditions along with their format and behaviour.
 * **CREATE_COIN - [51] - (51 puzzlehash amount)**: If this spend is valid, then create a new coin with the given puzzlehash and amount.
 * **ASSERT_FEE - [52] - (52 amount)**: This spend is only valid if there is unused value in this transaction equal to *amount*, which is explicitly to be used as the fee.
 * **CREATE_COIN_ANNOUNCEMENT - [60] - (60 message)**: If this spend is valid, this creates an ephemeral announcement with an ID dependent on the coin that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
-* **ASSERT_COIN_ANNOUNCEMENT - [61] - (61 announcementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.  The announcementID is the hash of the message that was announced concatenated with the coin ID of the coin that announced it `announcementID == sha256(coinID + message)`.
+* **ASSERT_COIN_ANNOUNCEMENT - [61] - (61 announcementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.
+The announcementID is the hash of the message that was announced concatenated with the coin ID of the coin that announced it `announcementID == sha256(coinID + message)`.
 * **CREATE_PUZZLE_ANNOUNCEMENT - [62] - (62 message)**: If this spend is valid, this creates an ephemeral announcement with an ID dependent on the puzzle that creates it. Other coins can then assert an announcement exists for inter-coin communication inside a block.
-* **ASSERT_PUZZLE_ANNOUNCEMENT - [63] - (63 announcementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.  The announcementID is the message that was announced concatenated with the puzzle hash of the coin that announced it `announcementID == sha256(puzzle_hash + message)`.
+* **ASSERT_PUZZLE_ANNOUNCEMENT - [63] - (63 announcementID)**: This spend is only valid if there was an announcement in this block matching the announcementID.
+The announcementID is the message that was announced concatenated with the puzzle hash of the coin that announced it `announcementID == sha256(puzzle_hash + message)`.
 * **ASSERT_MY_COIN_ID - [70] - (70 coinID)**: This spend is only valid if the presented coin ID is exactly the same as the ID of the coin that contains this puzzle.
 * **ASSERT_MY_PARENT_ID - [71] - (71 parentID)**: This spend is only valid if the presented parent coin info is exactly the same as the parent coin info of the coin that contains this puzzle.
 * **ASSERT_MY_PUZZLE_HASH - [72] - (72 puzzlehash)**: This spend is only valid if the presented puzzle hash is exactly the same as the puzzle hash of the coin that contains this puzzle.
@@ -212,7 +214,7 @@ This balance of power determines a lot of how puzzles are designed in ChiaLisp.
 For example, let's create a puzzle that lets the spender choose the output, but with one stipulation.
 
 ```chialisp
-  (c (q . (51 0xcafef00d 200)) 1)
+(c (q . (51 0xcafef00d 200)) 1)
 ```
 This will let the spender return any conditions they want via the solution but will always add the condition to create a coin with the puzzle hash 0xcafef00d and value 200.
 
@@ -281,7 +283,8 @@ You cannot create two coins of the same value, with the same puzzlehash, from th
 You can aggregate a bunch of smaller coins together into one large coin.
 To do this, you can create a SpendBundle which groups together one or more spends with a single aggregated signature.
 
-SpendBundles are particularly important when the using announcements.  Since created announcements are only good for the block they are created in, you want to make sure that the coins that are asserting those announcements get spent alongside the announcing coins.
+SpendBundles are particularly important when the using announcements.
+Since created announcements are only good for the block they are created in, you want to make sure that the coins that are asserting those announcements get spent alongside the announcing coins.
 
 We'll go more into SpendBundles and cohesion between coins in a later section.
 
