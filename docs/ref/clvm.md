@@ -140,7 +140,10 @@ This type has the potential for multiple representations to be treated as the sa
 
 These integers are byte-aligned. For example, `0xFFF` is interpreted as the two bytes `0x0F`,`0xFF`, with value `4095`.
 
-This can also cause unexpected representations of numbers when they are expected to be interpreted as strings.  If a positive integer's first byte is >= `0x80` (the most significant bit is 1) then it will be prepended with a `0x00` when the operator output type is a signed integer. Without that prepended byte, a positive value would appear negative in the case that the high bit is set.  You are likely to encounter this when using the output of an int operation as the input of a string operation.
+This can also cause unexpected representations of numbers when they are expected to be interpreted as strings..
+
+If a positive integer's first byte is >= `0x80` (the most significant bit is 1) then it will be prepended with a `0x00` when the operator output type is a signed integer. Without that prepended byte, a positive value would appear negative in the case that the high bit is set.
+You are likely to encounter this when using the output of an int operation as the input of a string operation.
 
 ### BLS Point
 
@@ -235,13 +238,18 @@ However, the same is not true for Built-ins.
 (q . "q") => 113
 ```
 
-## Operators are atoms too
+## Operators are atoms too..
 
-When you write a program, the first argument in the list is interpreted as an operator.  However, this operator is also stored as an unsigned int.  This can lead to ambiguity and confusing outputs:
+
+
+When you write a program, the first argument in the list is interpreted as an operator.
+However, this operator is also stored as an unsigned int.
+This can lead to ambiguity and confusing outputs:
 
 `(r (q . (1 2 3)))` => `(a 3)`
 
-Since `2` is at the beginning of the list, `brun` assumes it is the operator and looks up its corresponding representation, which in this case is `a`. It is the correct output of the program, it is just displayed in an unexpected way.
+Since `2` is at the beginning of the list, `brun` assumes it is the operator and looks up its corresponding representation, which in this case is `a`.
+It is the correct output of the program, it is just displayed in an unexpected way.
 
 ## Errors
 
