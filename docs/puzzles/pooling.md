@@ -3,12 +3,12 @@ id: pooling
 title: Pooling
 ---
 
-The way that Chia Network does pooling is unlike many blockchains that have come before it. Pool operators actually rely on an on-chain smart contract to verify that they will be able to directly claim any potential pool rewards that farmers create.
+The way that Chia Network does pooling is unlike many blockchains that have come before it. Pool operators actually rely on an on-chain smart coin to verify that they will be able to directly claim any potential pool rewards that farmers create.
 This allows pools to trust farmers enough to pay them out, while still keeping the power of making the blocks in the hands of the farmer.
 This means that the decentralization of the network remains the same, even as the rewards get concentrated to the pool!
 
 In this section, we're going to break down how all of this works in Chialisp.
-This section assumes you have already read the section about [singletons](https://chialisp.com/docs/puzzles/singletons) (or at least understand how they work) as that is the outer contract that wraps the pooling puzzles.
+This section assumes you have already read the section about [singletons](https://chialisp.com/docs/puzzles/singletons) (or at least understand how they work) as that is the outer puzzle that wraps the pooling puzzles.
 
 ## Design Requirements
 

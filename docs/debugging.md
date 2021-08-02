@@ -145,4 +145,4 @@ Debugging Chialisp at times can be frustrating. Due to the nature of how lisp ha
 
 It is recommended that you have a strong grasp of CLVM since it underlies all of the processes that happen in Chialisp. It will make it easier to build the picture in your head of the evaluations that are happening and why they may be happening unexpectedly.
 
-Hopefully with these tricks you can save yourself a bit of time and get your smart contracts out quicker.
+Hopefully with these tricks you can save yourself a bit of time and get your smart coins out quicker.

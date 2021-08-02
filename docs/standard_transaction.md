@@ -182,4 +182,4 @@ When you use the Chia Network wallet software, it is crawling the blockchain loo
 The `SYNTHETIC_PUBLIC_KEY` it is looking for is actually using a hidden puzzle of `(=)` which is obviously invalid and fails immediately.
 This is because most users of Chia don't need the hidden puzzle functionality for vanilla transactions.
 But, by having the capabilities built in, it enables much cooler functionality later on.
-This puzzle also makes for a fantastic inner puzzle of any smart contracts you may write.
+This puzzle also makes for a fantastic inner puzzle of any smart coins you may write.
