@@ -17,6 +17,7 @@ module.exports = {
     Puzzles: ['puzzles/singletons', 'puzzles/pooling'],
     Tutorials: [
       'tutorials/tools_and_setup',
+      'tutorials/coin_lifecycle_and_testing',
       'tutorials/developing_applications',
       'tutorials/singletons',
       'tutorials/custom_puzzle_lock',
