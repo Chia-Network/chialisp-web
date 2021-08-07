@@ -8,7 +8,7 @@ hide_table_of_contents: true
 
 New training videos, presentation slides and sample code will be available on Aug 9, 2021.
 
-Zoom Webinar links will be available from this webpage on Aug 2, 2021.
+Zoom Webinar links will be available from this webpage on Aug 8, 2021.
 
 YouTube live stream will be on [this channel](https://www.youtube.com/channel/UChFkJ3OAUvnHZdiQISWdWPA)
 
