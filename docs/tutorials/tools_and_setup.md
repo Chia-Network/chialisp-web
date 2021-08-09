@@ -8,6 +8,6 @@ In this video, Chia developer Matt Hauff goes over what you need to set up so th
 
 ## 1 - Environment Setup
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/y8Thrrw25rQ" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/y8Thrrw25rQ" frameborder="0" width="100%" allowfullscreen frameborder="0"></iframe>
 </figure>
 
