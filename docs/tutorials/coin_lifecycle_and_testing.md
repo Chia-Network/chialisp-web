@@ -10,7 +10,7 @@ You can download the piggybank coin example files [here](/files/Piggybank_Exampl
 
 ## 2 - Start Writing Your First Smart Coin
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/uaANp4c-WRo" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/v1o7fRHGPpM" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
 
 ## 3 - Finish Writing Your First Smart Coin
