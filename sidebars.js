@@ -19,6 +19,7 @@ module.exports = {
       'tutorials/why_chia_is_great',
       'tutorials/developing_applications',
       'tutorials/tools_and_setup',
+      'tutorials/programming_chialisp',
       'tutorials/coin_lifecycle_and_testing',
       'tutorials/singletons',
       'tutorials/custom_puzzle_lock',

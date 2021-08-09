@@ -8,7 +8,7 @@ hide_table_of_contents: true
 
 ## Chialisp Tutorials
 
-You can find video tutorials from Chia developers on in the [Tutorials section in Docs](/docs/tutorials/why_chia_is_great).
+You can find video tutorials from Chia developers in the [Tutorials section in Docs](/docs/tutorials/why_chia_is_great).
 
 ## Live Q&A
 
