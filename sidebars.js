@@ -16,6 +16,7 @@ module.exports = {
     CLVM: ['ref/clvm', 'ref/serialization'],
     Puzzles: ['puzzles/singletons', 'puzzles/pooling'],
     Tutorials: [
+      'tutorials/why_chia_is_great',
       'tutorials/developing_applications',
       'tutorials/tools_and_setup',
       'tutorials/coin_lifecycle_and_testing',
