@@ -56,6 +56,19 @@ If you have good reason not to sign one of them, make sure you know what happens
 Furthermore, aggregated signatures can't be disaggregated into smaller signatures *unless* you have previously signed one of the smaller combinations of public key-message pairs in the bundle. The attacker can exclude the rest of the transactions that contain `AGG_SIG` conditions and reuse the smaller signature again on the remaining transactions.
 They can also calculate the remaining aggregated signature and perhaps sign every spend except the one the exclude. This is known as **signature subtraction** and is another great reason to use `AGG_SIG_ME` as much as possible.
 
+## The "Flash Loan from God" attack
+
+An interesting angle that also has to be considered during the building of your coins is how their security holds up if a party that is spending them has infinite money.
+This may seem ridiculous except that cryptocurrency enables **flash loans** to exist which are instant loans of money with no conditions except that they are returned to the owner within the same block.
+
+Take for example, a piggybank coin that only allows you to withdraw funds once the amount of the piggybank has grown to a determined savings goal.
+If a person wants to retrieve their funds early, they can borrow money equal to their savings goal, cash out the piggybank, and then return the money that they borrowed.
+
+There's also potential to use vast sums of borrowed money to influence the price of something, if that price is calculated programmatically.
+If you have enough money, you can singularly simulate a bunch of trades to influence the price calculation to the price you desire, make a transaction at that price, and then return all of the money you borrowed to simulate trading while keeping the profits.
+
+Fortunately, this attack has a relatively easy fix, and that is to add an `(ASSERT_HEIGHT_RELATIVE 1)` condition to prevent the money from being returned in the same block.
+
 ## Puzzle and Solution Reveals
 
 Remember to think about when puzzles and solutions are revealed.
