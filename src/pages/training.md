@@ -14,8 +14,6 @@ You can find video tutorials from Chia developers in the [Tutorials section in D
 
 There will be a series of live Q&A's with Chia developers the week of August 9, 2021.
 
-Live streaming of the Q&A's will be on the [Chia Youtube channel](https://www.youtube.com/channel/UChFkJ3OAUvnHZdiQISWdWPA).
-
 ### Schedule 
 
 |Event|Speakers|Webinar Link|Americas|Europe|Asia
