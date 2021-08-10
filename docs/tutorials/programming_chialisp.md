@@ -19,10 +19,4 @@ You will learn Chialisp basics, including:
 <iframe src="//www.youtube.com/embed/JcC1_igwSmA" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
 
-Test your understanding of the concepts in the video by printing out the full list of the lyrics of the song. It should look something like:
-
-```bash
-(venv) bash$ run i. nodes.clvm
-
-(q. "99 full nodes on the net, 99 full nodes on the net. Go out of town, your server goes down, 98 full nodes on the net." "98 full nodes on the net, 98 full nodes on the net. Go out of town, your server goes down, 97 full nodes on the net." "97 full nodes on the net, 97 full nodes on the net. Go out of town, your server goes down, 96 full nodes on the net." [...and so on, so forth...])
-
+Test your understanding of the concepts in the video by printing out the full list of the lyrics of the song. The lyrics start with: `99 full nodes on the net, 99 full nodes on the net. Go out of town, your server goes down, 98 full nodes on the net.`
