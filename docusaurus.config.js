@@ -79,6 +79,11 @@ module.exports = {
           ],
         },
       ],
+      logo: {
+        alt: 'Chialisp full logo',
+        src: 'img/full_logo_white.svg',
+        href: '/',
+      },
       copyright: `Copyright © ${new Date().getFullYear()} Chia Network Inc. Built with Docusaurus.`,
     },
   },
