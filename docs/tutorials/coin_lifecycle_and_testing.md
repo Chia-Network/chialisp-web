@@ -22,7 +22,7 @@ You can download the piggybank coin example files [here](/files/Piggybank_Exampl
 
 ## 4 - Securing a Smart Coin
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/PUCQXYjZzr0" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/_SBGfMZhRd8" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
 
 ## 5 - Currying
