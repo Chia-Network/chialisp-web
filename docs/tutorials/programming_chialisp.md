@@ -19,4 +19,22 @@ You will learn Chialisp basics, including:
 <iframe src="//www.youtube.com/embed/JcC1_igwSmA" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
 
-Test your understanding of the concepts in the video by printing out the full list of the lyrics of the song. The lyrics start with: `99 full nodes on the net, 99 full nodes on the net. Go out of town, your server goes down, 98 full nodes on the net.`
+Test your understanding of the concepts in the video by printing out the full list of the lyrics of the song. Your result should look similar to:
+
+```bash
+
+(q. "99 full nodes on the net, 99 full nodes on the net. 
+Go out of town, your server goes down, 98 full nodes on 
+the net." "98 full nodes on the net, 98 full nodes on the 
+net. Go out of town, your server goes down, 97 full nodes 
+on the net." "97 full nodes on the net, 97 full nodes on 
+the net. Go out of town, your server goes down, 96 full 
+nodes on the net." [...] "1 full nodes on the net, 1 full 
+nodes on the net. Go out of town, your server goes down, 
+0 full nodes on the net.")
+
+```
+
+---
+
+If you have further questions, join [Chia Network's public Keybase team](https://keybase.io/team/chia_network.public) and ask in the *#chialisp* channel.

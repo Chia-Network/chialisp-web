@@ -49,3 +49,7 @@ You can download the piggybank coin example files [here](/files/Piggybank_Exampl
 <figure class="video-container">
 <iframe src="//www.youtube.com/embed/KGC5zACBjkY" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
+
+---
+
+If you have further questions, join [Chia Network's public Keybase team](https://keybase.io/team/chia_network.public) and ask in the *#chialisp* channel.

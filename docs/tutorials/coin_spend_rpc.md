@@ -83,3 +83,7 @@ The `coin_solution` contains information about the `coin` it is spending (`amoun
 If you fill in all your information correctly and send this request, your coin will be spent according to its provided solution, and the response `{"status": "SUCCESS", "success": true}` should be returned from the RPC call.
 
 If your puzzle requires an aggregated signature, stay tuned for more tutorials.
+
+---
+
+If you have further questions, join [Chia Network's public Keybase team](https://keybase.io/team/chia_network.public) and ask in the *#chialisp* channel.

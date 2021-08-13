@@ -96,3 +96,7 @@ You can use [Chia explorer's online tool](https://www.chiaexplorer.com/tools/add
 
 ## Send Chia to the receive address
 Use the Chia GUI or CLI to send a transaction as you would typically do with the amount you want. As a receive address, set the address from the previous step (password-locked coin example: `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`). That will lock your coin with a new puzzle.
+
+---
+
+If you have further questions, join [Chia Network's public Keybase team](https://keybase.io/team/chia_network.public) and ask in the *#chialisp* channel.

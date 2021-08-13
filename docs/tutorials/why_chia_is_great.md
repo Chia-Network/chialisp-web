@@ -13,3 +13,7 @@ This video is a high level overview of the design decisions made in the Chia tha
 </figure>
 
 Watch the following videos to learn more about the mindset and basic skills needed to program in Chialisp.
+
+---
+
+If you have further questions, join [Chia Network's public Keybase team](https://keybase.io/team/chia_network.public) and ask in the *#chialisp* channel.
