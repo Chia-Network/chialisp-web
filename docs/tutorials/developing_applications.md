@@ -9,3 +9,7 @@ Chia developer Matthew Howard gives a high level overview of the concepts involv
 <figure class="video-container">
 <iframe src="//www.youtube.com/embed/lh9spX6Qv8I" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
+
+---
+
+If you have further questions, join [Chia Network's public Keybase team](https://keybase.io/team/chia_network.public) and ask in the *#chialisp* channel.
