@@ -292,8 +292,9 @@ Since we don't know the inner puzzle, only it's hash, it's impossible to curry i
 Furthermore, if we don't want to pass in the whole source of this current module every time that we spend it, we don't have a puzzle to curry things into either.
 
 However, all we care about is generating the correct *puzzle hash* for the next puzzle, and we do have the tree hashes for both this module and the inner puzzle.
-We can use `puzzle-hash-of-curried-function` which allows us to create the puzzle hash of a function given: a) the puzzle hash of that function and b) the puzzle hashes of all of its arguments in reverse order.
-The implementation details of this library are a bit much to go into in this part of the tutorial but, in essence, it allows us to *resume* a tree hash that we have completed except for the last step.
+We can use `puzzle-hash-of-curried-function` which allows us to create the puzzle hash of a function given: a) the puzzle hash of that function and b) the puzzle hashes of all of its arguments in reverse order _as though they were a part of a tree hash_.  This means that arguments that are atoms and numbers are expected to be in tree hash form, with a 1 prefix like ```(sha256 (q . 1) my-argument-value)``` and the output of `sha256tree` is suitable for anything involving cons cells.  It would be possible for `puzzle-hash-of-curried-function` to guess these if it took the parameter values themselves but that might require recomputation of expensive hashes.
+
+Other implementation details of this library are a bit much to go into in this part of the tutorial but, in essence, it allows us to *resume* a tree hash that we have completed except for the last step.
 
 And that's it!  When this coin is created, it can only be spent by a password that hashes to the curried in PASSWORD_HASH.
 The inner puzzle can be anything that you want including other outer puzzles that have their own inner puzzles.
