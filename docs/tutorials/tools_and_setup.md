@@ -4,7 +4,7 @@ title: Tools and Setup
 sidebar_label: Tools and Setup
 ---~~‌~~
 
-In this video, Chia developer Matt Hauff goes over what you need to set up so that you can start buildin in the next section: [Coin Lifecycle and Testing](coin_lifecycle_and_testing).
+In this video, Chia developer Matt Hauff goes over what you need to set up so that you can start building in the next section: [Coin Lifecycle and Testing](coin_lifecycle_and_testing).
 
 ## 1 - Environment Setup
 <figure class="video-container">
