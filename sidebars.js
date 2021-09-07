@@ -23,7 +23,8 @@ module.exports = {
       'tutorials/coin_lifecycle_and_testing',
       'tutorials/singletons',
       'tutorials/custom_puzzle_lock',
-      'tutorials/coin_spend_rpc'
+      'tutorials/coin_spend_rpc',
+      'tutorials/structure_of_a_chia_application'
     ],
     FAQ: ['faq'],
   },
