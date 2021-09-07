@@ -295,6 +295,8 @@ Example: `'(c (q . "A") (q . ()))'` => `(65)`
 **>s** *greater than bytes* `(>s A B)` returns 1 if `A` and `B` are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise `()`. Compare to strcmp.
 `(>s "a" "b")` => `()`
 
+**not** `(not A)` returns 1 if `A` evaluates to `()`. Otherwise, returns `()`.
+
 **all** `(all A B ...)` takes an arbitrary number of arguments (even zero). Returns `()` if any of the arguments evaluate to `()`. Otherwise, returns 1.
 
 **any** `(any A B ...)` takes an arbitrary number of arguments (even zero). Returns 1 if any of the arguments evaluate to something other than `()`. Otherwise, returns `()`.
