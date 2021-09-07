@@ -229,7 +229,7 @@ You may notice that we imported a new library called `curry-and-treehash`.
 We'll talk about that in a few steps.
 
 First, let's talk about the arguments.
-When you create this puzzle for the first time you need to curry in 3 things: `MOD_HASH` which is the tree hash of this code, `PASSWORD_HASH` which is the hash of the password that will unlock this coin, and `INNER_PUZZLE` which is a completely separate puzzle that will have its own rules about how the coin can be spent.
+When you create this puzzle for the first time you need to curry in 3 things: `MOD_HASH` which is the tree hash of this code with no curried arguments, `PASSWORD_HASH` which is the hash of the password that will unlock this coin, and `INNER_PUZZLE` which is a completely separate puzzle that will have its own rules about how the coin can be spent.
 
 Chialisp puzzles have the tendency to be read from the bottom up, so lets start with this chunk:
 
