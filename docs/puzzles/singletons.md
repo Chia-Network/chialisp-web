@@ -496,7 +496,7 @@ Let focus on just the conditions we are creating from the `claim_rewards` functi
 
 We are both asserting an announcement from the singleton and creating one for it.
 The assertion is fundamental to the fact that we only want to be claimed by a very specific singleton.
-Due to the launcher ID being curried into the singleton's puzzle hash, it will be unique to every singleton and can thereby only be claimed by the singleton who's launcher ID we specify.
+Due to the launcher ID being curried into the singleton's puzzle hash, it will be unique to every singleton and can thereby only be claimed by the singleton whose launcher ID we specify.
 We cannot use the singleton's coin ID, because if we curried that in, the singleton could spend and then this puzzle becomes unsolvable!
 
 The announcement that we create is simply for the singleton to assert that we are also being spent.
