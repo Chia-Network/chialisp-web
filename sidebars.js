@@ -24,6 +24,7 @@ module.exports = {
       'tutorials/singletons',
       'tutorials/high-level-tips-1',
       'tutorials/high-level-tips-2',
+      'tutorials/high-level-tips-3',
       'tutorials/custom_puzzle_lock',
       'tutorials/coin_spend_rpc',
       'tutorials/structure_of_a_chia_application'
