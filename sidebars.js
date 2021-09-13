@@ -22,6 +22,8 @@ module.exports = {
       'tutorials/programming_chialisp',
       'tutorials/coin_lifecycle_and_testing',
       'tutorials/singletons',
+      'tutorials/high-level-tips-1',
+      'tutorials/high-level-tips-2',
       'tutorials/custom_puzzle_lock',
       'tutorials/coin_spend_rpc',
       'tutorials/structure_of_a_chia_application'
