@@ -264,19 +264,17 @@ $ brun '(a (q . (i (q . 0) (q . (x (q . 1337) )) (q . (q . 1)))) ())'
 
 More on this later.
 
-## Solutions and Environment Variables
+## Environment Variables
 
-Up until now our programs have not had any input or variables, however CLVM does have support for a kind of variable which is passed in through a solution.
+Up until now our programs have not had any input or variables, however CLVM does have support for this.
 
-It's important to remember that the context for ChiaLisp is for use in locking up coins with a puzzle program.
-This means that we need to be able to pass some information to the puzzle.
-
-A solution is a list of values passed to the puzzle.
-The solution can be referenced with `1`.
+An environment is a list of values passed to the puzzle.
+You can only pass a single CLVM object as the environment, but this object can be an arbitrarily long list.
+The entire environment can be referenced with an unquoted `1`.
 
 ```chialisp
-$ brun '1' '("this" "is the" "solution")'
-("this" "is the" "solution")
+$ brun '1' '("this" "is the" "environement")'
+("this" "is the" "environment")
 
 $ brun '(f 1)' '(80 90 100 110)'
 80
@@ -326,7 +324,25 @@ $ brun '1' '("example" "data" "for" "test")'
 
 However, every unquoted integer in the lower level language refers to a part of the solution.
 
-You can imagine a binary tree of `f` and `r`, where each node is numbered.
+You can imagine a binary tree of `f` and `r`, where each node is numbered:
+
+```
+              1
+             / \
+            /   \
+           /     \
+          /       \
+         /         \
+        /           \
+       2             3
+      / \           / \
+     /   \         /   \
+    4      6      5     7
+   / \    / \    / \   / \
+  8   12 10  14 9  13 11  15
+
+etc.
+```
 
 ```chialisp
 $ brun '2' '("example" "data" "for" "test")'
