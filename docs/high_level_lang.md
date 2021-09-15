@@ -6,10 +6,19 @@ title: 4 - The High Level Language, Compiler, and Functions
 This guide assumes that you have already read the previous parts.
 It is highly recommended that you do so as the higher level language is built directly on top of the lower level language.
 
+## CLVM vs Chialisp
+
+Until now, we have been using what we call CLVM to write our programs.
+CLVM is what is serialized and stored directly on the blockchain and is a matter of consensus. It can never be changed.
+
+Normally, we will write a higher level language called **Chialisp** instead of CLVM.
+Chialisp compiles into CLVM, and since it is going through the compiler first, it can actually be changed to add more features.
+Chialisp shares a lot of the fundamentals of how programs work with CLVM, but also includes some helpful functionality to make writing large programs easier.
+
 ## Run
 
 The first difference you need to be aware of for the higher level language is that you should call `run` instead of `brun`.
-This lets the runtime know that it should be including higher level features.
+This lets the runtime know that it should be including higher level operators and behavior.
 
 The first higher level feature you should be aware of is that **it is no longer necessary to quote atoms!**
 

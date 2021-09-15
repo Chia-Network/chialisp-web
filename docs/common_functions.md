@@ -29,7 +29,12 @@ If you want to import some functionality that you use frequently without having 
 )
 ```
 
-When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for files.
+When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for includable files.
+If our condition_codes.clvm file was in the directory `./libraries/chialisp/` then you would pass that to `run` so that it knows where to find it:
+
+```
+run -i ./libraries/chialisp/ main.clvm
+```
 
 Also note that the include files are a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.
 You can then use any of those constants/functions when writing your program, without having to import each one individually.

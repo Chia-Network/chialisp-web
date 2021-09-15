@@ -8,12 +8,31 @@ This guide assumes knowledge of [the basics of CLVM](/docs/) so if you haven't r
 This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
+## Puzzles and Solutions
+
+When we refer Chialisp in the context of coins on the blockchain, we refer to the program as a **puzzle** and we refer to the environment or arguments as the **solution**.
+
+```
+brun <puzzle> <solution>
+```
+
+Whenever you want to spend a coin in Chia, you must reveal it's puzzle and the solution you would like to use to run that puzzle.
+If the puzzle runs without any errors and returns a valid list of **conditions** (more on conditions below) then the spend succeeds and the list of conditions is processed.
+
 ## Coins
 
-A coin's ID is constructed from 3 pieces of information.
+The body of a coin is made up of 3 pieces of information.
+Here is the actual code that defines a coin:
+
+```python
+class Coin:
+    parent_coin_info: bytes32
+    puzzle_hash: bytes32
+    amount: uint64
+```
 
 1. The ID of its parent
-2. The hash of its puzzle (AKA the puzzlehash)
+2. The tree hash of its puzzle (AKA the puzzlehash)
 3. The amount that it is worth
 
 To construct a coin ID simply take the hash of these 3 pieces of information concatenated in order.
@@ -24,16 +43,6 @@ coinID == sha256(parent_ID + puzzlehash + amount)
 
 This means that a coin's puzzle and amount are intrinsic parts of it.
 You cannot change a coin's puzzle or amount, you can only spend a coin.
-
-The body of a coin is also made up of these 3 pieces of information, but instead of being hashed, they are stored in full.
-Here is the actual code that defines a coin:
-
-```python
-class Coin:
-    parent_coin_info: bytes32
-    puzzle_hash: bytes32
-    amount: uint64
-```
 
 ## Spends
 
@@ -99,7 +108,7 @@ The announcementID is the message that was announced concatenated with the puzzl
 Conditions are returned as a list of lists in the form:
 
 ```chialisp
-((51 0xabcd1234 200) (50 0x1234abcd) (53 0xdeadbeef))
+((51 0xabcd1234 200) (50 0x1234abcd "hello") (60 0xdeadbeef))
 ```
 
 *Remember: this is what a puzzle should evaluate to when presented with a solution so that a full-node can understand it.*
@@ -225,7 +234,22 @@ $ brun '(c (q . (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15)
 
 This section is intended to demonstrate the point that conditions can come from both the recipient's solution and from the sender's puzzle, and how that represents trust and the balance of power.
 
-In the next exercise we will put everything we know together and create the "standard" transaction in Chia that underpins how wallets are able to send money to each other.
+In the next exercise we will put everything we know together and create a basic, secure transaction in Chia that underpins how wallets are able to send money to each other.
+Before we go there, let's explain signatures:
+
+## BLS Aggregated Signatures
+
+You may have seen that one of the conditions above allows you to require a **signature** from the spender of the coin.
+In Chia, we use [BLS Signatures](https://crypto.stanford.edu/~dabo/pubs/papers/BLSmultisig.html) to sign any relevant data.
+
+One helpful feature of BLS signatures is that they can be *non-interactively aggregated*.  You can take a signature from a party you don't trust, and combine it with another signature to produce a single signature that verifies the combination of all of the messages they were signing.
+
+For example, if a puzzle returns a set of conditions with multiple AGG_SIG conditions:
+```
+((AGG_SIG_UNSAFE <pubkey A> <msg A>) (AGG_SIG_UNSAFE <pubkey B> <msg B>))
+```
+the node processing this spend is going to look for an attached signature that is the **aggregation** of a signature from pubkey A on message A as well as a signature from pubkey B on message B.
+The spend will not pass unless there is exactly that combination of signatures.  No more, no less.
 
 ### Example: Signature Locked Coin
 
