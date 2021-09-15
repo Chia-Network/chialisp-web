@@ -239,6 +239,8 @@ Before we go there, let's explain signatures:
 
 ## BLS Aggregated Signatures
 
+If you don't have a fundamental understanding of cryptographic signatures, it will be good to [take a look at that](https://en.wikipedia.org/wiki/Digital_signature) before you continue.
+
 You may have seen that one of the conditions above allows you to require a **signature** from the spender of the coin.
 In Chia, we use [BLS Signatures](https://crypto.stanford.edu/~dabo/pubs/papers/BLSmultisig.html) to sign any relevant data.
 

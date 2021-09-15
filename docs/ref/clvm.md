@@ -58,7 +58,7 @@ If the the root of the program is a cons pair then all of the parameters (contai
 
 If the object in the leftmost position of a list being executed is an operator in a list, the operator is called without first evaluating the parameters.
 
-If the CLVM is running in "strict mode", an unknown opcode will abort the program. This is the mode CLVM is run in during mempool checking and block validation. During developer testing, the CLVM may be run in "non-strict" mode, which allows
+If the CLVM is running in "strict mode", an unknown opcode will abort the program. This is the mode CLVM is run in during mempool checking and block validation. During developer testing, the CLVM may be run in "non-strict" mode, which allows for unknown opcodes to be used and treated as no-ops.
 
 The quote opcode is special. When it is recognized by the interpreter, it causes whatever is on the right to be returned unevaluated. All other functions are passed the results of evaluating what's on the right first.
 
