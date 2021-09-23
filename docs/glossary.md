@@ -48,7 +48,7 @@ When full nodes validate the blockchain, they run the transaction generator and 
 
 * **Smart Coin** - A smart coin is a coin locked up with a specialized Chialisp puzzle that enables complex blockchain interactions. All coins in Chia are smart coins but this usually stands in for the term "smart contract" that most developers are familiar with.
 
-* **Coloured Coins** - Coloured Coins are a special kind of chia coin which are created by users. A coloured coin is a uniquely marked subset of chia which can't be forged and can be linked to other assets.
+* **Chia Asset Tokens** - *(Formerly named "Coloured Coins")* Chia Asset Tokens (CATs) are a special kind of chia coin which are created by users. A CAT is a uniquely marked subset of chia which can't be forged and can be linked to other assets. The Chia Asset Token standard is called *CAT1* and you can read more about it [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
 
 * **Authorized Payees** - Authorized Payees is a smart coin that means that Wallet A can give Wallet B some money, but Wallet B is only allowed to spend that money in ways that Wallet A has explicitly authorized.
 
