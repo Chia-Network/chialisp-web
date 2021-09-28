@@ -16,7 +16,7 @@ When we refer Chialisp in the context of coins on the blockchain, we refer to th
 brun <puzzle> <solution>
 ```
 
-Whenever you want to spend a coin in Chia, you must reveal it's puzzle and the solution you would like to use to run that puzzle.
+Whenever you want to spend a coin in Chia, you must reveal its puzzle and the solution you would like to use to run that puzzle.
 If the puzzle runs without any errors and returns a valid list of **conditions** (more on conditions below) then the spend succeeds and the list of conditions is processed.
 
 ## Coins
