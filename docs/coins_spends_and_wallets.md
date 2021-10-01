@@ -16,7 +16,7 @@ When we refer Chialisp in the context of coins on the blockchain, we refer to th
 brun <puzzle> <solution>
 ```
 
-Whenever you want to spend a coin in Chia, you must reveal it's puzzle and the solution you would like to use to run that puzzle.
+Whenever you want to spend a coin in Chia, you must reveal its puzzle and the solution you would like to use to run that puzzle.
 If the puzzle runs without any errors and returns a valid list of **conditions** (more on conditions below) then the spend succeeds and the list of conditions is processed.
 
 ## Coins
@@ -267,11 +267,11 @@ We can construct the following smart transaction where AGG_SIG_ME is 50 and the 
 This puzzle forces the resultant evaluation to contain `(50 pubkey *hash_of_first_solution_arg*)` but then adds on all of the conditions presented in the solution.
 
 Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
-The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xfadedcab.
+The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xcafef00d.
 
 ```chialisp
-$ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) 3)' '("hello" (51 0xcafef00d 200))'
-((50 0xfadedcab 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824) (51 0xcafef00d 200))
+$ brun '(c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) 3)' '("hello" (51 0xcafef00d 200))'
+((50 0xdeadbeef 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824) (51 0xcafef00d 200))
 ```
 
 Brilliant.
