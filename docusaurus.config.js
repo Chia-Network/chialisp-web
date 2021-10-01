@@ -20,6 +20,11 @@ module.exports = {
       },
       items: [
         {
+          href: 'https://github.com/Chia-Network/chialisp-web',
+          label: 'GitHub',
+          position: 'left',
+        },
+        {
           to: 'docs/',
           activeBasePath: 'docs',
           label: 'Docs',
@@ -27,13 +32,7 @@ module.exports = {
         },
   //      {to: 'blog', label: 'Blog', position: 'left'},
         {href: 'https://chialisp.com/training', label: 'Training', position:'left'},
-        {href: 'https://chia.net/blog', label: 'Blog', position: 'left'},
         {href: 'https://chia.net', label: 'Chia.net', position: 'left'},
-        {
-          href: 'https://github.com/Chia-Network/chialisp-web',
-          label: 'GitHub',
-          position: 'right',
-        },
       ],
     },
     footer: {
