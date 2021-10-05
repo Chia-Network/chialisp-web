@@ -15,6 +15,7 @@ Two CATs with the same TAIL program are of the same type.
 
 We will cover the TAIL program in more detail later, but firstly lets cover what the CAT layer does.
 
+
 ## Design choices
 
 * **CATs automatically turn their children into CATs with the same TAIL**  When an inner puzzle returns a CREATE_COIN condition the CAT layer will recognise this and change the condition to a CAT of the same type as itself.
@@ -71,8 +72,8 @@ This, in turn, guarantees that the whole ring is telling the truth and if the ri
 
 For a formal proof of this see [Lipa's paper](TODO: ADD LIPAS PAPER)
 
-## Extra Delta
 
+## Extra Delta
 
 There are a couple of exceptional cases for spends.
 - Minting coins
@@ -81,7 +82,9 @@ To allow for these cases we allow misreporting of your coin's delta if the amoun
 We the name for this permitted difference is called the **Extra Delta**.
 This is on of many parameters passed to the TAIL program, and it is up to the TAIL program to evaluate whether to permit it or fail out with an `(x)` call.
 
-If the Extra Delta value is not `0` and does not cause the TAIL program to fail then it is automatically added on to our reported Delta which we use in our announcement ring.
+If the Extra Delta value in the solution does not cause the TAIL program to fail then it is automatically added on to our reported Delta which we use in our announcement ring.
+For safety we force the TAIL program to be run in the case that Extra Delta is anything other than `0`.
+If the TAIL program is not revealed and Extra Delta is not `0` then the puzzle will fail.
 
 
 ## The Token and Asset Issuance Limiter (TAIL) Program
@@ -94,7 +97,17 @@ If the TAIL is not programmed correctly then tokens may be printed by attackers 
 The TAIL is passed in:
 - Truths
 - A flag of whether or not our parent has been validated to be a CAT of the same type as us
-- The optional proof that our parent is a CAT of the same type as us
+- The optional proof that our parent is a CAT of the same type as me
 - The Extra Delta value
 - The conditions returned by the inner puzzle
 - An optional list of opaque parameters called the TAIL solution which is passed into the coin's solution
+
+Although the TAIL is powerful, it is **NOT** run every time the coin is spent.
+It is run if it is revealed in the solution.
+It is required if extra_delta is not `0` or if the lineage_proof is not present.
+
+The TAIL should check diligently for the following things:
+- Is the Extra Delta minting or melting any coins, and if so do I approve?
+- If this coin's parent is not a CAT of the same as me, do I approve?
+- Do I want to add any conditions?
+- Do I want to change any of the conditions returned by the inner puzzle?
