@@ -54,7 +54,11 @@ The Truths are:
 Each coin has a truthful calculation of it's own "difference between my amount and my output amount", which is called **Delta** from here on.
 Each coin is also told what the sum total of everyone else's Deltas is.
 
-The CAT coins enforce the total Delta is zero using a complex method where they form a ring and communicate with the coin in front of them and behind them using coin announcements.
+The CAT coins enforce the total Delta is zero using a complex method where they form a ring.
+Each coin has a next and previous neighbour, and then their neighbour has a neighbour.
+This loops, so in a spend bundle with 2 coins Coin A would use Coin B as both its next and previous neighbour.
+
+In this ring they communicate with the coin in front of them and behind them using coin announcements.
 Coin Announcements implicitly contain the information about which coin created them, however for our usecase we want to also ensure that the announcement's message contains a coin ID of its intended recipient as a part of the message.
 This prevents attacks where coins can receive messages that weren't intended for them.
 
@@ -102,7 +106,7 @@ The TAIL is passed in:
 - The conditions returned by the inner puzzle
 - An optional list of opaque parameters called the TAIL solution which is passed into the coin's solution
 
-Although the TAIL is powerful, it is **NOT** run every time the coin is spent.
+Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent.
 It is run if it is revealed in the solution.
 It is required if extra_delta is not `0` or if the lineage_proof is not present.
 
