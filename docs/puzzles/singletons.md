@@ -4,11 +4,14 @@ title: Singletons
 ---
 
 One of the most important puzzles in the Chia ecosystem is the **singleton**.
-This is a puzzle that assures anyone who looks at can see that it has a unique ID that no other coin has.
-Parties can decide to accept messages or commitments from that unique ID with the assurance that the party who controls the singleton is not double dipping or impersonating someone else.
+This is a puzzle that assures anyone who looks at can see that it has a unique persistent ID that no other coin has.
+
+The singleton represents a minimal implementation of a **Nun-Fungible Token (NFT)** which contains the functionality ensuring it cannot be divided, copied, or split.
+
+The fact that singletons have provably unique persistent IDs memans that other coins can accept messages or commitments from a singleton's unique ID safe with the assurance that the party who controls that singleton is not double dipping, impersonating someone else or otherwise lying about their persisitent identity.
 
 This puzzle is an [outer puzzle](/docs/common_functions) and is used to wrap pooling puzzles, NFTs, and decentralized identities.
-Any inner puzzle can be wrapped with this puzzle if it has necessity for uniqueness.
+An inner puzzle can be wrapped with this puzzle if it has necessity for uniqueness.
 
 ## Design choices
 
