@@ -32,12 +32,9 @@ Using lisp programs like this allows you to have *layers of smart coins* in whic
 * **Interoperability.** Every smart coin in the Chia ecosystem, no matter how complex, is fundamentally a coin that is locked up with a Chialisp puzzle. The input to any puzzle will always be a lisp data structure, and the output will always be a list of **conditions** that all puzzles share. This means that everything in Chia interoperates with everything else.
 Any smart coin should be able to interact or communicate with any other smart coin, regardless of whether either coin was specifically designed to do so.
 
-## Coloured Coins
+## Chia Asset Tokens (CATs)
 
-The first Chialisp smart transaction that we integrated into chia-blockchain were Coloured Coins. Coloured coins allow you to create tokens on the Chia blockchain that are entirely controlled by you.
-This allows you to issue assets on the Chia blockchain that cannot be created or destroyed by others without your permission.
-This can be used for stable coins, stock issuance, voting shares, or anything else you can think of.
-Check out our [Non Technical Overview and Guide.](https://www.youtube.com/watch?v=YOlpmCBK8zY)
+The first Chialisp smart transaction that we integrated into chia-blockchain were CATs (formerly known as *coloured coins*). CATs allow you to create tokens on the Chia blockchain that are entirely controlled by you. This allows you to issue assets on the Chia blockchain that cannot be created or destroyed by others without your permission. This can be used for stable coins, stock issuance, voting shares, or anything else you can think of. Read more about the Chia Token Naming Standard, [CAT1](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
 
 ## Singletons
 
