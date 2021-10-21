@@ -284,7 +284,7 @@ If it's not, just return the condition as usual.
 If it is, return a condition that is almost exactly the same, except we're passing the puzzle hash into a function that will modify it:
 
 ```chialisp
-(defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash_hash inner_puzzle_hasr
+(defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash_hash inner_puzzle_hash
    (puzzle-hash-of-curried-function
      MOD_HASH
      inner_puzzle_hash new_password_hash_hash mod_hash_hash ; parameters must be passed in reverse order
