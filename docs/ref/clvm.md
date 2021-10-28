@@ -355,16 +355,44 @@ $ brun -n '(divmod (q . 10) (q . 3))'
 
 ## Bit Operations
 
-logand, logior and logxor operate on any number of arguments
+`logand`, `logior` and `logxor` operate on any number of arguments
 nil as an argument to these functions is treated as a zero.
 Fail if either A or B is not an atom.
-The shorter atom is considered to be extended with zero bytes until equal in length to the longer atom.
+The shorter atom is sign-extended to equal length as the longer atom.
 
-**logand** `(logand A B ...)` bitwise **AND** of one or more atoms. Given zero arguments, returns `-1`.
+The `logand`, `logior` and `logxor` accept 0 or more parameters.
+There is an implicit *identity* argument, which is the value all parameters will apply to.
+The identity will just be returned in case 0 arguments are given.
 
-**logior** `(logior A B ...)` bitwise logical **OR** of one or more atoms. Given zero arguments, returns zero.
+**logand** `(logand A B ...)` bitwise **AND** of one or more atoms. Identiy is `-1`.
 
-**logxor** `(logxor A B ...)` bitwise **XOR** of any number of atoms. Given zero arguments, returns zero.
+```chialisp
+brun '(logand (q . -128) (q . 0x7fffff))'
+0x7fff80
+```
+
+The first argument is `0x80` (since it's Two's complement). It is negative, it will be sign-extended with ones.
+Once sign-extended, the computation becomes `0xffff80` AND `0x7fffff` = `0x7fff80`.
+
+**logior** `(logior A B ...)` bitwise logical **OR** of one or more atoms. Identity is `0`.
+
+```chialisp
+brun '(logior (q . -128) (q . 0x7fffff))'
+-1
+```
+
+Sign extending the first argument becomes `0xffff80`, ORing that with `0x7fffff` becomes `0xffffff` which is -1 in Two's complement.
+Note that the resulting atom will use the minimal encoding of `-1`, i.e. `0xff`.
+
+**logxor** `(logxor A B ...)` bitwise **XOR** of any number of atoms. Identity is `0`.
+
+```chialisp
+brun '(logxor (q . -128) (q . 0x7fffff))'
+0x80007f
+```
+
+Sign extending the first argument becomes `0xffff80`, XORing that with `0x7fffff` becomes `0x80007f`.
+This is a negative number (in Two's complement) and it's also the minimal representation of it.
 
 **lognot** `(lognot A)` bitwise **NOT** of A. All bits are inverted.
 
@@ -373,10 +401,6 @@ brun '(lognot (q . ()))'
 -1
 brun '(lognot (q . 1))'
 -2
-brun '(concat (q . -2) (q . -2))'
--258
-brun '(concat (q . -2) (q . -2) (q . -2) (q . -2))'
-0xfefefefe
 brun '(lognot (lognot (q . 17)))'
 17
 ```
@@ -385,9 +409,9 @@ brun '(lognot (lognot (q . 17)))'
 
 **ash** `(ash A B)` if B is positive, return Arithmetic shift A << B. Else returns A >> |B|. *ash* sign extends.
 
-**lsh** `(lsh A B)` if B is positive, Logical shift A by B bits left. Else Logical shift A >> |B|. Zeros are inserted into the vacated bits.
+**lsh** `(lsh A B)` if B is positive, Logical shift left of A by B bits, else Logical shift right A by -B bits. Zeros are inserted into the vacated bits.
 
-Both **ash** and **lsh** have a maximum |B| of 65536
+For both **ash** and **lsh**, if |B| exceeds 65535, the operation fails.
 
 ## Strings
 
