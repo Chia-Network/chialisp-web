@@ -323,34 +323,32 @@ The arithmetic operators `+`, `-`, `*`, `/` and `divmod` treat their arguments a
 ### Rounding
 
 ```chialisp
-brun '(/ (q . 1)  (q . 2))' => ()
-brun '(/ (q . 2)  (q . 2))' => 1
-brun '(/ (q . 4)  (q . 2))' => 2
+(/ 1  2) => ()
+(/ 2  2) => 1
+(/ 4  2) => 2
 ```
 
 ### Division of negative numbers
 
 The treatment of negative dividend and divisors is as follows:
 ```chialisp
-brun '(/ (q . -1)  (q .  1))' => -1
-brun '(/ (q .  1)  (q . -1))' => -1
-brun '(/ (q . -1)  (q . -1))' =>  1
+(/ -1 1) => -1
+(/ 1 -1) => -1
+(/ -1 -1) =>  1
 ```
 
 ### Flooring of negative nubmers
 Note that a division with a remainder always rounds down, not toward zero.
 ```chialisp
-$ brun '(/ (q . -3) (q . 2))'
--2
-$ brun '(/ (q . 3) (q . 2))'
-1
+(/ -3 2) => -2
+(/ 3 2) => 1
 ```
 This means that `-a / b` is not always equal to `-(a / b)`
 
 **divmod** `(divmod A B)` takes two integers and returns a cons-box containing the floored quotient and the remainder.
-```
-$ brun -n '(divmod (q . 10) (q . 3))'
-(3 . 1)
+```chialisp
+(divmod 10 3)
+   => (3 . 1)
 ```
 
 ## Bit Operations
@@ -367,8 +365,8 @@ The identity will just be returned in case 0 arguments are given.
 **logand** `(logand A B ...)` bitwise **AND** of one or more atoms. Identiy is `-1`.
 
 ```chialisp
-brun '(logand (q . -128) (q . 0x7fffff))'
-0x7fff80
+(logand -128 0x7fffff)
+   => 0x7fff80
 ```
 
 The first argument is `0x80` (since it's Two's complement). It is negative, it will be sign-extended with ones.
@@ -377,8 +375,8 @@ Once sign-extended, the computation becomes `0xffff80` AND `0x7fffff` = `0x7fff8
 **logior** `(logior A B ...)` bitwise logical **OR** of one or more atoms. Identity is `0`.
 
 ```chialisp
-brun '(logior (q . -128) (q . 0x7fffff))'
--1
+(logior -128 0x7fffff)
+   => -1
 ```
 
 Sign extending the first argument becomes `0xffff80`, ORing that with `0x7fffff` becomes `0xffffff` which is -1 in Two's complement.
@@ -387,8 +385,8 @@ Note that the resulting atom will use the minimal encoding of `-1`, i.e. `0xff`.
 **logxor** `(logxor A B ...)` bitwise **XOR** of any number of atoms. Identity is `0`.
 
 ```chialisp
-brun '(logxor (q . -128) (q . 0x7fffff))'
-0x80007f
+(logxor -128 0x7fffff)
+   => 0x80007f
 ```
 
 Sign extending the first argument becomes `0xffff80`, XORing that with `0x7fffff` becomes `0x80007f`.
@@ -397,12 +395,9 @@ This is a negative number (in Two's complement) and it's also the minimal repres
 **lognot** `(lognot A)` bitwise **NOT** of A. All bits are inverted.
 
 ```chialisp
-brun '(lognot (q . ()))'
--1
-brun '(lognot (q . 1))'
--2
-brun '(lognot (lognot (q . 17)))'
-17
+(lognot ()) => -1
+(lognot 1) => -2
+(lognot (lognot 17)) => 17
 ```
 
 ## Shifts
@@ -420,57 +415,74 @@ For both **ash** and **lsh**, if |B| exceeds 65535, the operation fails.
 The third parameter to `substr` is optional. If omitted, the range \[`I1`, `(strlen S)`) is returned.
 
 ```chialisp
-(substr (q . "clvm") (q . 0) (q . 4)) => clvm
-(substr (q . "clvm") (q . 2) (q . 4)) => vm
-(substr (q . "clvm") (q . 4) (q . 4)) => ()
+(substr "clvm" 0 4) => "clvm"
+(substr "clvm" 2 4) => 30317 ; = "vm"
+(substr "clvm" 4 4) => ()
 
-(substr (q . "clvm") (q . 1)) => "lvm"
+(substr "clvm" 1) => "lvm"
 
-(substr (q . "clvm") (q . 4) (q . 5)) => FAIL
-(substr (q . "clvm") (q . 1) (q . 0)) => FAIL
-(substr (q . "clvm") (q . -1) (q . 4)) => FAIL
+(substr "clvm" 4 5) => FAIL
+(substr "clvm" 1 0) => FAIL
+(substr "clvm" -1 4) => FAIL
 ```
 
 **strlen** `(strlen S)` return the number of bytes in `S`.
 
 ```chialisp
-(strlen (q . "clvm")) => 4
-(strlen (q . "0x0")) => 3
-(strlen (q . 0x0)) => 1
-(strlen (q . "")) => ()
-(strlen (q . 0)) => ()
-(strlen (q . ())) => ()
+(strlen "clvm") => 4
+(strlen "0x0") => 3
+(strlen 0x0) => 1
+(strlen "") => ()
+(strlen 0) => ()
+(strlen ()) => ()
 (strlen ()) => ()
 ```
 
 **concat** `(concat A ...)` return the concatenation of any number of atoms.
 
-Example: `(concat (q . "Hello") (q . " ") (q . "world"))` => `"Hello world"`
+Example:
+
+```chialisp
+(concat "Hello" " " "world")
+   => "Hello world"
+```
 
 ## Streaming Operators
 **sha256**
   `(sha256 A ...)` returns the sha256 hash (as a 32-byte blob) of the bytes of its parameters.
 
 ```chialisp
-(sha256 (q . "clvm")) => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
-(sha256 (q . "cl") (q . "vm")) => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
+(sha256 "clvm")
+   => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
+(sha256 "cl" "vm")
+   => 0xcf3eafb281c0e0e49e19c18b06939a6f7f128595289b08f60c68cef7c0e00b81
 ```
 
 ## BLS12-381 operators
 
 `point_add` and `pubkey_for_exp` operate on G1 points of the BLS12-381 curve. These are represented as 48 bytes == 384 bits.
 
-`brun '(strlen (pubkey_for_exp (q . 1)))'` => `48`
+```chialisp
+(strlen (pubkey_for_exp 1))
+   => 48
+```
 
 **point_add**
   `(point_add a0 a1 ...)` takes an arbitrary number of [BLS12-381](https://electriccoin.co/blog/new-snark-curve/) G1 points and adds them.
 
-Example: `(point_add (pubkey_for_exp (q . 1)) (pubkey_for_exp (q . 2)))` => `0x89ece308f9d1f0131765212deca99697b112d61f9be9a5f1f3780a51335b3ff981747a0b2ca2179b96d2c0c9024e5224`
+Example:
+```chialisp
+(point_add (pubkey_for_exp 1) (pubkey_for_exp 2))
+   => 0x89ece308f9d1f0131765212deca99697b112d61f9be9a5f1f3780a51335b3ff981747a0b2ca2179b96d2c0c9024e5224
+```
 
 **pubkey_for_exp**
   `(pubkey_for_exp A)` turns the integer A into a BLS12-381 point on G1.
 
-`(pubkey_for_exp (q . 1))` => `0x97f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb`
+```chialisp
+(pubkey_for_exp 1)
+   => 0x97f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb
+```
 
 ## softfork
 
