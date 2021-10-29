@@ -338,7 +338,7 @@ brun '(/ (q . -1)  (q . -1))' =>  1
 ```
 
 ### Flooring of negative nubmers
-Note that a division with a remainder always rounds down, not toward zero.
+Note that a division with a remainder always rounds towards negative infinity, not toward zero.
 ```chialisp
 $ brun '(/ (q . -3) (q . 2))'
 -2
@@ -407,11 +407,83 @@ brun '(lognot (lognot (q . 17)))'
 
 ## Shifts
 
-**ash** `(ash A B)` if B is positive, return Arithmetic shift A << B. Else returns A >> |B|. *ash* sign extends.
+There are two variants of bit shift operators.
+Arithmetic shift (`ash`) and Logical shift (`lsh`). Both can be used to shift both left and right, the direction is determined by the sign of the *count* argument.
+A positive *count* shifts left, a negative *count* shifts right.
+For both **ash** and **lsh**, if |*count*| exceeds 65535, the operation fails.
+The resulting value is treated as a signed integer, and any redundant leading zero-bytes or `0xff` bytes are stripped.
 
-**lsh** `(lsh A B)` if B is positive, Logical shift left of A by B bits, else Logical shift right A by -B bits. Zeros are inserted into the vacated bits.
+**ash** `(ash A count)` if *count* is positive, return *A* shifted left *count* bits, else returns *A* shifted right by |*count*| bits, sign extended.
 
-For both **ash** and **lsh**, if |B| exceeds 65535, the operation fails.
+Arithmetic shift treats the value to be shifted (*A*) as a signed integer, and sign extends the left-most bits when when shifting right.
+
+When shifting left, any new bytes added to the left side of the value are also filled with the sign-extended bit. For example:
+
+```chialisp
+(ash -1 8) ; -1 = . . . 11111111
+   => -256 ; -256 = . . 1111111100000000
+```
+
+A arithmetic left shift will only extend the atom length when more bits are needed
+
+```chialisp
+(strlen (ash -1 7))
+   => 1
+(strlen (ash -1 8))
+   => 2
+(strlen (ash 255 1))
+  => 2
+(strlen (ash 128 1))
+  => 2
+(strlen (ash 127 1))
+  => 2
+```
+
+Consecutive right shifts of negative numbers will result in a terminal value of -1.
+
+```chialisp
+(ash -7 -1) ; -7 = . . . 11111001
+   => -4
+(ash -4 -1) ; -4 = . . . 11111100
+   => -2
+(ash -2 -1) ; -2 = . . . 11111110
+   => -1
+(ash -1 -1) ; -1 = . . . 11111111
+   => -1
+```
+
+A right shift of `-1` by any amount is still `-1`:
+```chialisp
+(ash -1 -99)
+   => -1
+```
+
+**lsh** `(lsh A count)` if *count* is positive, return *A* shifted left *count* bits, else returns *A* shifted right |*count*| bits, adding zero bits on the left.
+
+Logical shift treats the value to be shifted as an unsigned integer, and does not sign extend on right shift.
+
+```chialisp
+(lsh -7 -1) ; -7 = . . . 11111001
+   => 124   ;    = . . . 01111100
+
+(lsh -5 -2) ; -5 = . . . 11111011
+   => 62    ;    = . . . 00111110
+```
+
+A left shift of an atom with the high bit set will extend the atom left, and result in an allocation.
+
+```chialisp
+(lsh -1 1) ; -1 = . . . 11111111
+   => 510  ;    = . . . 0000000111111110
+(strlen (lsh -1 1))
+   => 2
+(strlen (lsh 255 1))
+  => 2
+(strlen (lsh 128 1))
+  => 2
+(strlen (lsh 127 1))
+  => 2
+```
 
 ## Strings
 
@@ -518,75 +590,6 @@ When used in an integer context, nil behaves as zero.
 ### Behaviour of zero when used as a value that may be checked for nil
 
 When used as a parameter that may be checked for nil, zero is interpreted as nil.
-
-## Detailed behaviour Notes
-
-**ash**
-```chialisp
-(ash (q . 1) (q . 1)) => 2
-(ash (q . 1) (q . -1)) => 0
-```
-
-Consecutive right shifts of negative numbers will result in a terminal value of -1.
-
-```chialisp
-(ash -7 -1) ; -7 = . . . 111111111111111111111111111001
-(ash -4 -1) ; -4 = . . . 111111111111111111111111111100
-(ash -2 -1) ; -2 = . . . 111111111111111111111111111110
-(ash -1 -1) ; -1 = . . . 111111111111111111111111111111
-```
-
-That is, a right shift (negative shift count) of `-1` by any amount is `-1`:
-```chialisp
-(ash (q . -1) (q . -99)) => -1
-```
-
-**lsh**
-
-lsh behaviour from the [elisp manual](https://www.gnu.org/software/emacs/manual/pdf/elisp.pdf):
-
-```chialisp
-(ash -7 -1) ; -7 = . . . 111111111111111111111111111001
-          ⇒ -4 ; = . . . 111111111111111111111111111100
-
-(lsh -7 -1)
-   ⇒ 536870908 ; = . . . 011111111111111111111111111100
-
-(ash -5 -2) ; -5 = . . . 111111111111111111111111111011
-          ⇒ -2 ; = . . . 111111111111111111111111111110
-
-(lsh -5 -2)
-   ⇒ 268435454 ; = . . . 001111111111111111111111111110
-```
-
-A left shift of an atom with the high bit set will extend the atom left, and result in an allocation
-
-```chialisp
-(lsh (q . -1) (q . 1)) => 0x01FE
-(strlen (lsh (q . -1) (q . 1))) => 2
-
-
-```
-
-
-A left arithmetic shift will only extend the atom length when more bits are needed
-
-```chialisp
-(strlen (ash (q . -1) (q . 7))) => 1
-(strlen (ash (q . -1) (q . 8))) => 2
-```
-
-
-```chialisp
-(strlen (ash (q . 255) (q . 1))) => 2
-(strlen (ash (q . 128) (q . 1))) => 2
-(strlen (ash (q . 127) (q . 1))) => 2
-
-(strlen (lsh (q . 255) (q . 1))) => 2
-(strlen (lsh (q . 128) (q . 1))) => 2
-(strlen (lsh (q . 127) (q . 1))) => 2
-```
-
 
 # Costs
 
