@@ -78,7 +78,7 @@ Here's the full source and then we'll break it down:
     )
 
     (include condition_codes.clvm)
-    (include sha256tree1.clvm)
+    (include sha256tree.clvm)
 
     ; "is_hidden_puzzle_correct" returns true iff the hidden puzzle is correctly encoded
 
@@ -87,7 +87,7 @@ Here's the full source and then we'll break it down:
           SYNTHETIC_PUBLIC_KEY
           (point_add
               original_public_key
-              (pubkey_for_exp (sha256 original_public_key (sha256tree1 delegated_puzzle)))
+              (pubkey_for_exp (sha256 original_public_key (sha256tree delegated_puzzle)))
           )
       )
     )
@@ -100,7 +100,7 @@ Here's the full source and then we'll break it down:
               (is_hidden_puzzle_correct SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle)
               conditions
           )
-          (c (list AGG_SIG_ME SYNTHETIC_PUBLIC_KEY (sha256tree1 delegated_puzzle)) conditions)
+          (c (list AGG_SIG_ME SYNTHETIC_PUBLIC_KEY (sha256tree delegated_puzzle)) conditions)
       )
     )
 
@@ -145,7 +145,7 @@ This will result in a list of conditions that we will output as long as the rest
           (is_hidden_puzzle_correct SYNTHETIC_PUBLIC_KEY original_public_key delegated_puzzle) ; hidden case
           conditions
       )
-      (c (list AGG_SIG_ME SYNTHETIC_PUBLIC_KEY (sha256tree1 delegated_puzzle)) conditions) ; delegated case
+      (c (list AGG_SIG_ME SYNTHETIC_PUBLIC_KEY (sha256tree delegated_puzzle)) conditions) ; delegated case
   )
 )
 ```
@@ -163,7 +163,7 @@ If the spend is the delegated spend, we prepend a signature requirement from the
       SYNTHETIC_PUBLIC_KEY
       (point_add
           original_public_key
-          (pubkey_for_exp (sha256 original_public_key (sha256tree1 delegated_puzzle)))
+          (pubkey_for_exp (sha256 original_public_key (sha256tree delegated_puzzle)))
       )
   )
 )
