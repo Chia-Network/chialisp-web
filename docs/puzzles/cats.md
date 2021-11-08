@@ -2,7 +2,7 @@
 id: cats
 title: Chia Asset Tokens (CATs)
 ---
-THIS IS A TEST
+
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
