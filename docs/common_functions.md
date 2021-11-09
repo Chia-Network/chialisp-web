@@ -40,7 +40,7 @@ Also note that the include files are a special format. Everything that is define
 You can then use any of those constants/functions when writing your program, without having to import each one individually.
 The compiler will only include things that you use, so don't worry about including a large library file when attempting to optimize the size of your program.
 
-## sha256tree1
+## sha256tree
 
 When puzzles are hashed, they are not simply serialized and passed to sha256.
 Instead, we take the *tree hash* of the puzzle.
@@ -52,10 +52,10 @@ Once a cons box is hashed, it becomes a new leaf to be hashed into its parent co
 Here's what that looks like in Chialisp:
 
 ```chialisp
-(defun sha256tree1
+(defun sha256tree
    (TREE)
    (if (l TREE)
-       (sha256 2 (sha256tree1 (f TREE)) (sha256tree1 (r TREE)))
+       (sha256 2 (sha256tree (f TREE)) (sha256tree (r TREE)))
        (sha256 1 TREE)
    )
 )
@@ -189,7 +189,7 @@ Let's look at all the code and then we'll break it down:
   )
 
   (include "condition_codes.clvm")
-  (include "sha256tree1.clvm")
+  (include "sha256tree.clvm")
   (include "curry-and-treehash.clvm")
 
   (defun pw-puzzle-hash (MOD_HASH mod_hash_hash new_password_hash_hash inner_puzzle_hash)
@@ -203,7 +203,7 @@ Let's look at all the code and then we'll break it down:
   (defun-inline morph-condition (condition new_password_hash MOD_HASH)
    (if (= (f condition) CREATE_COIN)
      (list CREATE_COIN
-       (pw-puzzle-hash MOD_HASH (sha256tree1 MOD_HASH) (sha256tree1 new_password_hash) (f (r condition)))
+       (pw-puzzle-hash MOD_HASH (sha256tree MOD_HASH) (sha256tree new_password_hash) (f (r condition)))
        (f (r (r condition)))
      )
      condition
@@ -271,7 +271,7 @@ In the end, we will have the same list of items in the same order, but all of th
 (defun-inline morph-condition (condition new_password_hash MOD_HASH)
  (if (= (f condition) CREATE_COIN)
    (list CREATE_COIN
-     (pw-puzzle-hash MOD_HASH (sha256tree1 MOD_HASH) (sha256tree1 new_password_hash) (f (r condition)))
+     (pw-puzzle-hash MOD_HASH (sha256tree MOD_HASH) (sha256tree new_password_hash) (f (r condition)))
      (f (r (r condition)))
    )
    condition
