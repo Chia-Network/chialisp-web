@@ -109,7 +109,7 @@ In order to create the `next_coin_id`, we wrap the next coin's inner puzzle with
 
 Because both coins follow the same CAT module code, they must comply with the same set of truths. This, in turn, guarantees that the whole ring is telling the truth. As long as the ring is connected, the total Delta must be zero.
 
-For a formal proof of this see [Lipa's paper](TODO: ADD LIPAS PAPER)
+For a formal proof of this see [white paper](https://github.com/Chia-Network/vdf-competition/blob/main/classgroups.pdf).
 
 
 ## Extra Delta
