@@ -6,7 +6,7 @@ title: Chia Asset Tokens (CATs)
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
-The CAT1 Standard is the first (and so far only) CAT Standard. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
+The CAT1 Standard is the first (and so far only) CAT Standard. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
 
     REMINDER: Fungible tokens can be split apart, or merged together.
     They can also be substituted for a token of equal value.
@@ -18,11 +18,11 @@ The CAT1 Standard is the first (and so far only) CAT Standard. More information 
 
 CATs have the property of being "marked" in a way that makes them unusable as regular XCH. However, it is usually possible to "melt" CATs back into XCH later. CATs are often used as credits, or tokens - kind of like casino chips.
 
-The chialisp code that **all CATs** share is [here](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/cat.clvm). Without following this puzzle format, wallets will not be able to recognize a token as a CAT.
+The chialisp code that **all CATs** share is [here](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/cat.clvm "cat.clvm - the source code that all CATs share"). Without following this puzzle format, wallets will not be able to recognize a token as a CAT.
 
 The entire purpose of the code linked above is to ensure that the supply of a specific CAT never changes unless a specific set of “rules of issuance” is followed. Each CAT has its own unique rules of issuance, **which is the only distinction between different types of CATs**. These issuance rules take the form of an arbitrary Chialisp program that follows a specific structure.  We call that program the **Token and Asset Issuance Limitations (TAIL)**.
 
-The CAT layer is an [outer puzzle](https://github.com/Chia-Network/chialisp-web/blob/main/docs/common_functions.md), which contains two curried parameters:
+The CAT layer is an [outer puzzle](https://chialisp.com/docs/common_functions#outer-and-inner-puzzles "Chilisp documentation for how to create outer and inner puzzles"), which contains two curried parameters:
 1. An inner puzzle, which controls the CAT's ownership.
 2. The puzzlehash of a TAIL, which defines three aspects of a CAT:
    * The CAT's type. (Two CATs with the same TAIL are of the same type, even if they contain different inner puzzles.)
@@ -164,17 +164,17 @@ It also means that if the set of rules is compromised, people may be able to min
 
 The CAT1 standard currently includes three example TAILs, though many more are possible.
 
-* One-Time Issuance
+* [One-Time Issuance](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Chialisp code for the One-Time Issuance TAIL")
 
   The default way in which we currently issue CATs is with a TAIL that only allows coin creation from a specific coin ID. In Chia, coins can only be spent once, so this results in a one-time issuance of a CAT. After this single issuance, there will never be any more or less of the CAT, and no one will be able to run the same TAIL ever again.
 
-* Everything With Signature
+* [Everything With Signature](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/everything_with_signature.clvm "Chialisp code for the Everything With Signature TAIL")
   
   The polar opposite of the TAIL above is the ability of the issuer to do whatever they want, as long as they provide a signature from their public key. This key is curried into the TAIL, which returns a single AGG_SIG_ME condition asking for a matching signature. If the issuer can provide that signature, the spend passes and any supply rules that were violated are ignored.
   
   Keep in mind that AGG_SIG_ME only allows the signature to work on a single coin. Therefore, the issuer cannot release a signature for everyone to use; instead they must personally sign every TAIL execution.
 
-* Delegated TAIL
+* [Delegated TAIL](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/delegated_genesis_checker.clvm "Chialisp code for the Delegated TAIL")
 
   This is the best balance of security and flexibility that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific coin, it requires a signature from a specific puzzlehash. When the puzzlehash has been signed, the issuer may run that puzzle in place of the TAIL.
   
