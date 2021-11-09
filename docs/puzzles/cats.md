@@ -6,10 +6,10 @@ title: Chia Asset Tokens (CATs)
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
-The CAT1 Standard is the first (and so far only) CAT Standard. More information on the naming conventions in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
+The CAT1 Standard is the first (and so far only) CAT Standard. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
 
     REMINDER: Fungible tokens can be split apart, or merged together.
-    They can also be substitued for a token of equal value.
+    They can also be substituted for a token of equal value.
     Some common examples include gold, oil, and dollars.
     
     Non-fungible tokens, on the other hand, are indivisible and cannot be merged.
@@ -22,7 +22,7 @@ The chialisp code that **all CATs** share is [here](https://github.com/Chia-Netw
 
 The entire purpose of the code linked above is to ensure that the supply of a specific CAT never changes unless a specific set of “rules of issuance” is followed. Each CAT has its own unique rules of issuance, **which is the only distinction between different types of CATs**. These issuance rules take the form of an arbitrary Chialisp program that follows a specific structure.  We call that program the **Token and Asset Issuance Limitations (TAIL)**.
 
-The CAT layer is an [outer puzzle](https://github.com/Chia-Network/chialisp-web/blob/main/docs/common_functions.md), which contains two curryed parameters:
+The CAT layer is an [outer puzzle](https://github.com/Chia-Network/chialisp-web/blob/main/docs/common_functions.md), which contains two curried parameters:
 1. An inner puzzle, which controls the CAT's ownership.
 2. The puzzlehash of a TAIL, which defines three aspects of a CAT:
    * The CAT's type. (Two CATs with the same TAIL are of the same type, even if they contain different inner puzzles.)
@@ -43,12 +43,12 @@ We will cover the TAIL program in more detail later, but first let's cover what 
 
 * **When a CAT is spent, any coins created automatically become CATs with the same TAIL**
   
-  When an inner puzzle returns a CREATE_COIN condition, the CAT layer will recognise this and change the condition to a CAT of the same type as itself.
+  When an inner puzzle returns a CREATE_COIN condition, the CAT layer will recognize this and change the condition to a CAT of the same type as itself.
   
   For example, let's say the inner puzzle returns the following CREATE_COIN condition:
 `(51 0xcafef00d amount)`
 
-  In this case, the CAT layer will calculate a puzzle hash for a CAT with the same TAIL as itself, and an inner puzzle of `0xcafef00d`.
+  In this case, the CAT layer will calculate a puzzlehash for a CAT with the same TAIL as itself, and an inner puzzle of `0xcafef00d`.
 
 * **If a CAT does not use a TAIL, then a SpendBundle of CATs must not gain or lose any value**
 
@@ -74,16 +74,16 @@ We use a group accounting trick to guarantee this, which we will cover in more d
   The Truths are:
   * My ID - The ID of the coin
   * My Parent's ID - The ID of the coin's parent
-  * My Full Puzzle Hash - The puzzle hash contained inside the coin
+  * My Full Puzzle Hash - The puzzlehash contained inside the coin
   * My Amount - The value of the coin
-  * My Inner Puzzle Hash - The puzzle hash of the inner puzzle inside this coin's CAT layer
+  * My Inner Puzzle Hash - The puzzlehash of the inner puzzle inside this coin's CAT layer
   * My Lineage Proof - (optional) Proof that the CAT's parent is of the same type as the CAT
   * My TAIL Solution - (optional) A list of parameters passed into the TAIL program
   * My CAT Struct
   * My Coin Info
-  * CAT Mod Hash - The hash of the CAT before anything is curryed
+  * CAT Mod Hash - The hash of the CAT before anything is curried
   * CAT Mod Hash Hash - The hash of the CAT Mod Hash
-  * CAT TAIL Program Hash - The hash of the TAIL program that was curryed into the CAT
+  * CAT TAIL Program Hash - The hash of the TAIL program that was curried into the CAT
 
 
 ## Spend Accounting
@@ -107,7 +107,7 @@ Where `+` represents concatenation of bytes, and announcement assertions take th
 
 In order to create the `next_coin_id`, we wrap the next coin's inner puzzle with the current coin's CAT information. This guarantees that the next_coin_id is a CAT of the same type as the current coin.
 
-Because both coins are CATs of the same type, they must comply with the same set of Truths. This, in turn, guarantees that the whole ring is telling the truth. As long as the ring is connected, the total Delta must be zero.
+Because both coins follow the same CAT module code, they must comply with the same set of truths. This, in turn, guarantees that the whole ring is telling the truth. As long as the ring is connected, the total Delta must be zero.
 
 For a formal proof of this see [Lipa's paper](TODO: ADD LIPAS PAPER)
 
@@ -144,16 +144,11 @@ Several parameters must be passed to a TAIL's solution:
   * inner_conditions - The conditions returned by the inner puzzle
   * tail_solution - (optional) A list of opaque parameters
 
-Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if:
-  * it is revealed in the solution
-  * extra_delta is not `0`
-  * lineage_proof is not present
+Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if a "magic" condition is created in the inner puzzle. This "magic" condition is required to prevent people who can spend the TAIL from intercepting the spend and changing it against the spender's will.
 
 The TAIL should check diligently for the following things:
   * Is the Extra Delta minting or melting any coins, and if so, do I approve?
   * If this coin's parent is not a CAT of the same type as me, do I approve?
-  * Do I want to add any conditions?
-  * Do I want to change any of the conditions returned by the inner puzzle?
 
 ## The limits of a TAIL's power
 
@@ -181,7 +176,7 @@ The CAT1 standard currently includes three example TAILs, though many more are p
 
 * Delegated TAIL
 
-  This is the best balance of security and flexibilty that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific key, it requires a signature from a specific puzzle hash. When the puzzle hash has been signed, the issuer may run that puzzle in place of the TAIL.
+  This is the best balance of security and flexibility that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific coin, it requires a signature from a specific puzzlehash. When the puzzlehash has been signed, the issuer may run that puzzle in place of the TAIL.
   
   This TAIL allows the issuer to create new TAILs that they can use with the CAT, even if those TAILs didn't exist during the initial issuance! For example, the issuer could create:
   
@@ -189,7 +184,7 @@ The CAT1 standard currently includes three example TAILs, though many more are p
   * A DID to mint new coins
   * Anything else they want!
   
-  Note that we use AGG_SIG_UNSAFE in order to make this signature work for all coins. The issuer can publish a valid signature, allowing owner of the CAT to run the TAIL on their own. One scenario where this is useful is in redemption schemes -- you want to allow people to melt their CATs into XCH as long as they follow certain rules when they do so.
+  Note that we use AGG_SIG_UNSAFE in order to make this signature work for all coins. The issuer can publish a valid signature, allowing any owner of the CAT to run the TAIL on their own. One scenario where this is useful is in redemption schemes -- you want to allow people to melt their CATs into XCH as long as they follow certain rules when they do so.
   
   There is another consideration to make when you are signing new Delegated TAILs. Once you sign it and publish the signature, it is out there forever. Be careful what permissions you grant because you can never take them back.
   
