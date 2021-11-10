@@ -8,13 +8,15 @@ title: Chia Asset Tokens (CATs)
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
 The CAT1 Standard is the first (and so far only) CAT Standard. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
 
-    REMINDER: Fungible tokens can be split apart, or merged together.
-    They can also be substituted for a token of equal value.
-    Some common examples include gold, oil, and dollars.
-    
-    Non-fungible tokens, on the other hand, are indivisible and cannot be merged.
-    They are unique, so they cannot be substituted.
-    Some common examples include cars, baseball cards, and cloakroom tickets.
+>**Reminder:**
+>
+>>**Fungible tokens** can be split apart, or merged together.
+>>They can also be substituted for a token of equal value.
+>>Some common examples include gold, oil, and dollars.
+>    
+>>**Non-fungible tokens**, on the other hand, are indivisible and cannot be merged.
+>>They are unique, so they cannot be substituted.
+>>Some common examples include cars, baseball cards, and cloakroom tickets.
 
 CATs have the property of being "marked" in a way that makes them unusable as regular XCH. However, it is usually possible to "melt" CATs back into XCH later. CATs are often used as credits, or tokens - kind of like casino chips.
 
@@ -30,7 +32,7 @@ The CAT layer is an [outer puzzle](https://chialisp.com/docs/common_functions#ou
    * The CAT's melting rules.
 
 Some examples of issuance requirements that different TAILs could accommodate include:
-  * Stablecoins - The issuer will want to issue tokens as they gain funds to back them.
+  * Stablecoins - The issuer will want to issue new tokens as they gain funds to back them.
   * Limited supply tokens - The issuer will want to run a single issuance, with the guarantee that no more tokens of the same type can ever be created.
   * Asset redemption tokens - The issuer will want to allow the CAT's owners to melt the tokens into standard XCH, as long as they follow certain rules.
 
@@ -109,8 +111,6 @@ In order to create the `next_coin_id`, we wrap the next coin's inner puzzle with
 
 Because both coins follow the same CAT module code, they must comply with the same set of truths. This, in turn, guarantees that the whole ring is telling the truth. As long as the ring is connected, the total Delta must be zero.
 
-For a formal proof of this see [white paper](https://github.com/Chia-Network/vdf-competition/blob/main/classgroups.pdf).
-
 
 ## Extra Delta
 
@@ -130,9 +130,9 @@ There are a few rules to ensure that extra coins are not minted or melted:
 
 The TAIL program is powerful and flexible. It has control over, and access to, many things. This gives a programmer a lot of control, but also a great deal of responsibility.
 
-    WARNING: If the TAIL is not programmed correctly,
-    then tokens may be minted by attackers,
-    rendering the asset worthless.
+>**Warning**: If the TAIL is not programmed correctly,
+>then tokens may be minted by attackers,
+>rendering the asset worthless.
 
 A TAIL should follow all of the conventional rules of security that any Chialisp program responsible for locking up money should follow.
 
