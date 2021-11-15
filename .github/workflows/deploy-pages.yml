@@ -12,7 +12,6 @@ jobs:
 
     - name: "Install deps"
       run: |
-        npm install --global yarn
         yarn
 
     - name: "yarn deploy"
