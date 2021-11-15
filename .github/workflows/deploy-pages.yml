@@ -17,4 +17,6 @@ jobs:
 
     - name: "yarn deploy"
       run: |
+        git config --global user.name 'ChiaAutomation'
+        git config --global user.email 'automation@chia.net'
         GIT_USER=${{ github.actor }} GIT_PASS=${{ github.token }} yarn deploy
