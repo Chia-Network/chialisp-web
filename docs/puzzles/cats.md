@@ -6,7 +6,7 @@ title: Chia Asset Tokens (CATs)
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
-The CAT1 Standard is the first (and so far only) CAT Standard. CAT1 is a draft standard as of Nov 16, 2021. After a comment period from the Chia community, CAT1 will be finalized. This may include additional capabilities, and may result in some breaking changes to existing CATs. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
+The CAT1 Standard is the first (and so far only) CAT Standard. CAT1 is a draft standard as of Nov 16, 2021. After a comment period from the Chia community, CAT1 will be finalized. This may include additional capabilities, and could result in some breaking changes to existing CATs. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
 
 >**Reminder:**
 >
