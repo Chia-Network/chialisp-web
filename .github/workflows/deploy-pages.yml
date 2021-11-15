@@ -12,6 +12,7 @@ jobs:
 
     - name: "Install deps"
       run: |
+        apk add python3
         yarn
 
     - name: "yarn deploy"
