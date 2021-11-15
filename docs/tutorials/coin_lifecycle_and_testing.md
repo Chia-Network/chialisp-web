@@ -24,7 +24,7 @@ You can download the piggybank coin example files [here](/files/Piggybank_Exampl
 <figure class="video-container">
 <iframe src="//www.youtube.com/embed/_SBGfMZhRd8" frameborder="0" allowfullscreen width="100%"></iframe>
 </figure>
-<a href="/static/files/tutorials/4-Securing_a_Smart_Coin_Slides-Chialisp.pdf" download>Video 4 Slides Download</a>
+<a href="/files/tutorials/4-Securing_a_Smart_Coin_Slides-Chialisp.pdf" download>Video 4 Slides Download</a>
 
 ## 5 - Currying
 <figure class="video-container">
