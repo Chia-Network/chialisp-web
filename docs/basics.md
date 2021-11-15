@@ -1,6 +1,7 @@
 ---
 id: basics
 title: 1 - CLVM Basics
+slug: /
 sidebar_label: 1 - CLVM Basics
 ---
 
