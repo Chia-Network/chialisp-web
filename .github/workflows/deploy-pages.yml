@@ -1,6 +1,9 @@
 name: Deploy to pages on trunk
 
-on: [push]
+on:
+  push:
+    branches:
+      - "main"
 
 jobs:
   deploy:
@@ -19,4 +22,4 @@ jobs:
       run: |
         git config --global user.name 'ChiaAutomation'
         git config --global user.email 'automation@chia.net'
-        GIT_USER=${{ github.actor }} GIT_PASS=${{ github.token }} yarn deploy
+        GIT_USER=ChiaAutomation GIT_PASS=${{ github.token }} yarn deploy
