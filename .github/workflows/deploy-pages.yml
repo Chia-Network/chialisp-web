@@ -17,4 +17,4 @@ jobs:
 
     - name: "yarn deploy"
       run: |
-        GIT_USER={{ github.actor }} GIT_PASS={{ github.token }} yarn deploy
+        GIT_USER=${{ github.actor }} GIT_PASS=${{ github.token }} yarn deploy
