@@ -1,0 +1,25 @@
+name: Deploy to pages on trunk
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container: node:17-alpine
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: "Install deps"
+      run: |
+        apk add python3 make g++ git
+        yarn
+
+    - name: "yarn deploy"
+      run: |
+        git config --global user.name 'ChiaAutomation'
+        git config --global user.email 'automation@chia.net'
+        GIT_USER=ChiaAutomation GIT_PASS=${{ github.token }} yarn deploy
