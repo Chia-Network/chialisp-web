@@ -14,7 +14,7 @@ module.exports = {
       'glossary'
     ],
     CLVM: ['ref/clvm', 'ref/serialization'],
-    Puzzles: ['puzzles/singletons', 'puzzles/pooling'],
+    Puzzles: ['puzzles/singletons', 'puzzles/pooling', 'puzzles/cats'],
     Tutorials: [
       'tutorials/why_chia_is_great',
       'tutorials/developing_applications',
