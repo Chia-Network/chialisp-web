@@ -29,7 +29,9 @@ module.exports = {
       'tutorials/coin_spend_rpc',
       'tutorials/structure_of_a_chia_application',
       'tutorials/CAT_Launch_Process_Linux_MacOS',
-      'tutorials/CAT_Launch_Process_Windows'
+      'tutorials/CAT_Launch_Process_Windows',
+      'tutorials/single_issuance_CAT',
+      'tutorials/multiple_issuance_CAT',
     ],
     FAQ: ['faq'],
   },
