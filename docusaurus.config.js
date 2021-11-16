@@ -1,12 +1,12 @@
 module.exports = {
   title: 'Chialisp',
   tagline: 'Developing with Chialisp',
-  url: 'https://staging.chialisp.com',
+  url: 'https://chialisp.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
   organizationName: 'Chia-Network', // Usually your GitHub org/user name.
-  projectName: 'staging-chialisp-web', // Usually your repo name.
+  projectName: 'chialisp-web', // Usually your repo name.
   themeConfig: {
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
@@ -37,7 +37,7 @@ module.exports = {
           position: 'left'
         },
         {
-          href: 'https://github.com/Chia-Network/staging-chialisp-web',
+          href: 'https://github.com/Chia-Network/chialisp-web',
           label: 'GitHub',
           position: 'left',
         }
@@ -106,7 +106,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/Chia-Network/staging-chialisp-web/edit/main/',
+            'https://github.com/Chia-Network/chialisp-web/edit/main/',
         },
 //        blog: {
 //          showReadingTime: true,
