@@ -32,9 +32,9 @@ The CAT layer is an [outer puzzle](https://chialisp.com/docs/common_functions#ou
    * The CAT's melting rules.
 
 Some examples of issuance requirements that different TAILs could accommodate include:
-  * Stablecoins - The issuer will want to issue new tokens as they gain funds to back them.
-  * Limited supply tokens - The issuer will want to run a single issuance, with the guarantee that no more tokens of the same type can ever be created.
-  * Asset redemption tokens - The issuer will want to allow the CAT's owners to melt the tokens into standard XCH, as long as they follow certain rules.
+  * Stablecoins - The creator will want to mint new tokens as they gain funds to back them.
+  * Limited supply tokens - The creator will want to run a single issuance, with the guarantee that no more tokens of the same type can ever be minted.
+  * Asset redemption tokens - The creator will want to allow the CAT's owners to melt the tokens into standard XCH, as long as they follow certain rules.
 
 In all of these cases, the TAIL program is run when a coin is spent to check if the issuance is valid.
 
@@ -54,12 +54,12 @@ We will cover the TAIL program in more detail later, but first let's cover what 
 
 * **If a CAT does not use a TAIL, then a SpendBundle of CATs must not gain or lose any value**
 
-  In order to ensure that a CAT cannot be printed or melted without official authentication, all CATs that do not use a TAIL program **MUST** be a part of a spendbundle that outputs the same amount of value as its input.
+  In order to ensure that a CAT cannot be minted or retired without official authentication, all CATs that do not use a TAIL program **MUST** be a part of a spendbundle that outputs the same amount of value as its input.
 We use a group accounting trick to guarantee this, which we will cover in more detail below.
 
 * **If a CAT is not approved by a TAIL program, then its parent must be a CAT of the same type**
 
-  Another way we prevent CAT tokens being printed in unapproved methods is to ensure that it has a valid lineage. Commonly this is done by asserting that the CAT coin's parent was also a CAT of the same type.
+  Another way we prevent CATs from being minted in unapproved methods is by ensuring that the tokens have a valid lineage. Commonly this is done by asserting that the CAT's parent was also a CAT of the same type.
 
   This is accomplished by passing in the coin's information, returning an `ASSERT_MY_ID` condition, and then passing in the parent information.
 
@@ -81,7 +81,6 @@ We use a group accounting trick to guarantee this, which we will cover in more d
   * My Inner Puzzle Hash - The puzzlehash of the inner puzzle inside this coin's CAT layer
   * My Lineage Proof - (optional) Proof that the CAT's parent is of the same type as the CAT
   * My TAIL Solution - (optional) A list of parameters passed into the TAIL program
-  * My CAT Struct
   * My Coin Info
   * CAT Mod Hash - The hash of the CAT before anything is curried
   * CAT Mod Hash Hash - The hash of the CAT Mod Hash
@@ -116,11 +115,11 @@ Because both coins follow the same CAT module code, they must comply with the sa
 
 There are two exceptions to the aforementioned zero-Delta rule:
   * Minting coins (creating CATs from XCH)
-  * Melting coins (returning CATs to their original XCH form)
+  * Retiring coins (melting CATs to their original XCH form)
 
 To account for these cases, the TAIL program may approve a misreporting of a CAT coin's Delta by a specific amount, called the **Extra Delta**. This is one of the parameters passed to the TAIL program.
 
-There are a few rules to ensure that extra coins are not minted or melted:
+There are a few rules to ensure that extra coins are not minted or retired:
   * If the Extra Delta is anything other than `0`, the TAIL program is forced to run. It must evaluate whether to permit the Extra Delta, or fail with an `(x)` call.
   * If the Extra Delta value in the solution does not cause the TAIL program to fail, then it is automatically added to the reported Delta, which is used in the announcement ring.
   * If the TAIL program is not revealed and the Extra Delta is not `0`, then the puzzle will fail.
@@ -147,7 +146,7 @@ Several parameters must be passed to a TAIL's solution:
 Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if a "magic" condition is created in the inner puzzle. This "magic" condition is required to prevent people who can spend the TAIL from intercepting the spend and changing it against the spender's will.
 
 The TAIL should check diligently for the following things:
-  * Is the Extra Delta minting or melting any coins, and if so, do I approve?
+  * Is the Extra Delta minting or retiring any coins, and if so, do I approve?
   * If this coin's parent is not a CAT of the same type as me, do I approve?
 
 ## The limits of a TAIL's power
@@ -158,33 +157,33 @@ In Chia, an issuer creates a TAIL, which lives inside all CATs of the same type,
 
 This decision adds some decentralization for users. It also adds some complexity. The importance of creating a well-constructed TAIL cannot be emphasized enough. Once you have distributed a CAT, it is no longer possible to change the TAIL across the entire token supply. The TAIL is locked into the same set of rules forever. To change the TAIL would be tantamount to replacing physical cash in circulation. You would have to offer an exchange for new tokens and eventually deprecate the old token, even if some people still carry it.
 
-It also means that if the set of rules is compromised, people may be able to mint or melt CATs maliciously. There’s no easy way to “patch” the TAIL, other than through the process above, which is obviously best avoided.
+It also means that if the set of rules is compromised, people may be able to mint or retire CATs maliciously. There’s no easy way to “patch” the TAIL, other than through the process above, which is obviously best avoided.
 
 ## TAIL Examples
 
 The CAT1 standard currently includes three example TAILs, though many more are possible.
 
-* [One-Time Issuance](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Chialisp code for the One-Time Issuance TAIL")
+* [One-Time Minting](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Chialisp code for the One-Time Minting TAIL")
 
-  The default way in which we currently issue CATs is with a TAIL that only allows coin creation from a specific coin ID. In Chia, coins can only be spent once, so this results in a one-time issuance of a CAT. After this single issuance, there will never be any more or less of the CAT, and no one will be able to run the same TAIL ever again.
+  The default way in which we currently issue CATs is with a TAIL that only allows coin creation from a specific coin ID. In Chia, coins can only be spent once, so this results in a one-time minting of a CAT. After the issuance, there will never be any more or less of the CAT, and no one will be able to run the same TAIL ever again.
 
 * [Everything With Signature](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/everything_with_signature.clvm "Chialisp code for the Everything With Signature TAIL")
   
-  The polar opposite of the TAIL above is the ability of the issuer to do whatever they want, as long as they provide a signature from their public key. This key is curried into the TAIL, which returns a single AGG_SIG_ME condition asking for a matching signature. If the issuer can provide that signature, the spend passes and any supply rules that were violated are ignored.
+  The polar opposite of the TAIL above is the ability of the creator to do whatever they want, as long as they provide a signature from their public key. This key is curried into the TAIL, which returns a single AGG_SIG_ME condition asking for a matching signature. If the creator can provide that signature, then the spend passes and any supply rules that were violated are ignored.
   
-  Keep in mind that AGG_SIG_ME only allows the signature to work on a single coin. Therefore, the issuer cannot release a signature for everyone to use; instead they must personally sign every TAIL execution.
+  Keep in mind that AGG_SIG_ME only allows the signature to work on a single coin. Therefore, the creator cannot release a signature for everyone to use; instead the creator must personally sign every TAIL execution.
 
 * [Delegated TAIL](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/delegated_genesis_checker.clvm "Chialisp code for the Delegated TAIL")
 
-  This is the best balance of security and flexibility that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific coin, it requires a signature from a specific puzzlehash. When the puzzlehash has been signed, the issuer may run that puzzle in place of the TAIL.
+  This is the best balance of security and flexibility that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific coin, it requires a signature from a specific puzzlehash. When the puzzlehash has been signed, the creator may run that puzzle in place of the TAIL.
   
-  This TAIL allows the issuer to create new TAILs that they can use with the CAT, even if those TAILs didn't exist during the initial issuance! For example, the issuer could create:
+  This TAIL allows the creator to create new TAILs that they can use with the CAT, even if those TAILs didn't exist during the initial issuance! For example, the creator could create:
   
-  * A one-time issuance
+  * A single minting
   * A DID to mint new coins
   * Anything else they want!
   
-  Note that we use AGG_SIG_UNSAFE in order to make this signature work for all coins. The issuer can publish a valid signature, allowing any owner of the CAT to run the TAIL on their own. One scenario where this is useful is in redemption schemes -- you want to allow people to melt their CATs into XCH as long as they follow certain rules when they do so.
+  Note that we use AGG_SIG_UNSAFE in order to make this signature work for all coins. The creator can publish a valid signature, allowing any owner of the CAT to run the TAIL on their own. One scenario where this is useful is in redemption schemes -- you want to allow people to melt their CATs into XCH as long as they follow certain rules when they do so.
   
   There is another consideration to make when you are signing new Delegated TAILs. Once you sign it and publish the signature, it is out there forever. Be careful what permissions you grant because you can never take them back.
   
