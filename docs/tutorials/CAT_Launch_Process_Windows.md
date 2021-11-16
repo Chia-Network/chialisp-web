@@ -1,6 +1,6 @@
 # How to create a Chia Asset Token (CAT)
 
-This tutorial is for users of Windows. The equivalent Linux/MacOS tutorial can be found [here](https://www.chialisp.com/docs/cats/CAT_Launch_Process_Linux_MacOS "Chia Asset Token tutorial for Linux and MacOs users").
+This tutorial is for users of Windows. The equivalent Linux/MacOS tutorial can be found [here](https://www.chialisp.com/docs/tutorials/CAT_Launch_Process_Linux_MacOS "Chia Asset Token tutorial for Linux and MacOs users").
 
 Contents:
 
@@ -20,7 +20,7 @@ Welcome to the world of CATs! We're excited to have you here, and we can't wait 
 
 This tutorial will help you jump right in and get started with issuing your own CATs. However, there are a few things you should know before we begin.
 
-The [CAT1 standard](https://chialisp.com/docs/cats/cat1 "CAT1 standard documentation") is currently in **draft** form. This means that anything you do here could potentially be invalidated later if we add any breaking changes to the final standard. **Proceed at your own risk**.
+The [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation") is currently in **draft** form. This means that anything you do here could potentially be invalidated later if we add any breaking changes to the final standard. **Proceed at your own risk**.
 
 As this still a draft standard, not all edge cases have been thoroughly tested. To minimize your risk of running into unexpected results, we recommend that you do following (each of these will be discussed in more detail later in the tutorial):
 
@@ -145,7 +145,7 @@ Your environment is now set up and you are ready to start issuing CATs.
 
 ## Creating a single-mint CAT
 
-> NOTE: This section will discuss Token Asset Issuance Limiters (TAILs), as well some technical details of CATs. For a refresher on CATs and TAILs, check out our [CAT1 standard](https://chialisp.com/docs/cats/cat1 "CAT1 standard documentation").
+> NOTE: This section will discuss Token Asset Issuance Limiters (TAILs), as well some technical details of CATs. For a refresher on CATs and TAILs, check out our [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation").
 
 To get started, you will create a single-mint CAT. This is the default way to issue a CAT. It's also the simplest. It contains a TAIL that only can be used on a specific XCH coin. In Chia the coins can only be spent once, so in this case, the CAT can only mint tokens once.
 
