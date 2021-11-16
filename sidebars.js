@@ -14,7 +14,7 @@ module.exports = {
       'glossary'
     ],
     CLVM: ['ref/clvm', 'ref/serialization'],
-    Puzzles: ['puzzles/singletons', 'puzzles/pooling'],
+    Puzzles: ['puzzles/singletons', 'puzzles/pooling', 'puzzles/cats'],
     Tutorials: [
       'tutorials/why_chia_is_great',
       'tutorials/developing_applications',
@@ -27,7 +27,9 @@ module.exports = {
       'tutorials/high-level-tips-3',
       'tutorials/custom_puzzle_lock',
       'tutorials/coin_spend_rpc',
-      'tutorials/structure_of_a_chia_application'
+      'tutorials/structure_of_a_chia_application',
+      'tutorials/CAT_Launch_Process_Linux_MacOS',
+      'tutorials/CAT_Launch_Process_Windows'
     ],
     FAQ: ['faq'],
   },
