@@ -1,6 +1,6 @@
 # How to create a Chia Asset Token (CAT)
 
-This tutorial is for users of Linux and MacOS. The equivalent Windows tutorial can be found [here](https://www.chialisp.com/XXXX "Chia Asset Token tutorial for Windows users").
+This tutorial is for users of Linux and MacOS. The equivalent Windows tutorial can be found [here](https://www.chialisp.com/docs/cats/CAT_Launch_Process_Windows "Chia Asset Token tutorial for Windows users").
 
 Contents:
 
