@@ -88,7 +88,7 @@ All right, time to get started!
 
     e. "Status: Syncing" should appear in the upper right corner of the GUI. Within a few minutes, this should change to "Status: Synced". This process doesn’t take long because the light wallet only requests and downloads the blocks that are required for that specific wallet.
 
-    f. If your Total Balance is 0, you can get some testnet10 txch from [our faucet](https://chia-faucet.com/testnet "testnet10 TXCH faucet"). Note that depending on when you read this, the faucet may only issue TXCH from an older testnet.
+    f. If your Total Balance is 0, you can get some testnet10 txch from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
 
 3. Sync your testnet10 full_node:
 
@@ -145,6 +145,8 @@ Your environment is now set up and you are ready to start issuing CATs.
 
 ## Creating a single-mint CAT
 
+If you're a visual learner, click [here](https://chialisp.com/docs/tutorials/single_issuance_CAT "Single-mint CAT video tutorial") for a video tutorial for creating a single-mint CAT.
+
 > NOTE: This section will discuss Token Asset Issuance Limiters (TAILs), as well some technical details of CATs. For a refresher on CATs and TAILs, check out our [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation").
 
 To get started, you will create a single-mint CAT. This is the default way to issue a CAT. It's also the simplest. It contains a TAIL that only can be used on a specific XCH coin. In Chia the coins can only be spent once, so in this case, the CAT can only mint tokens once.
@@ -194,6 +196,8 @@ You now have access to your CAT in the GUI. You can send and receive your new to
 -----
 
 ## Creating a multiple mint CAT
+
+If you're a visual learner, click [here](https://chialisp.com/docs/tutorials/multiple_issuance_CAT "Multiple mint CAT video tutorial") for a video tutorial for creating a multiple mint CAT.
 
 Next we’ll create a CAT capable of minting tokens multiple times. This CAT uses a delegated TAIL, which is much more flexible than the previous one. As long as you sign a puzzlehash that you specify, you can mint new tokens using whatever TAIL you want. This allows for features such as rebate offers and distributed minting and retiring of tokens.
 
