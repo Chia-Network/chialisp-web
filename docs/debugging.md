@@ -97,7 +97,7 @@ Sometimes it's better to just raise a list of the arguments:
 (x (list coin-info coin-data))
 ```
 
-There is also a caveat that occurs when you are trying to debug a series of spends that happen sequnetially.
+There is also a caveat that occurs when you are trying to debug a series of spends that happen sequentially.
 Maybe the puzzle runs the first time and fails the second time.
 If you raise during execution, you may cause your first puzzle error out too, which will not get you to the second puzzle.
 In scenarios like these, try to figure out a difference between the spends and wrap the raise in an `if` so that you can pass safely through the first puzzle.
