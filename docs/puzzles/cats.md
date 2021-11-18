@@ -3,6 +3,19 @@ id: cats
 title: Chia Asset Tokens (CATs)
 ---
 
+Contents:
+
+* [Introduction to CATs](#introduction-to-cats)
+* [Design choices](#design-choices)
+* [Spend Accounting](#spend-accounting)
+* [Extra Delta](#extra-delta)
+* [The Token and Asset Issuance Limiter (TAIL) Program](#the-token-and-asset-issuance-limiter-tail-program)
+* [The limits of a TAIL's power](#the-limits-of-a-tails-power)
+* [TAIL Examples](#tail-examples)
+* [CAT denominations, value, and retirement rules](#cat-denominations-value-and-retirement-rules)
+* [Conclusion](#conclusion)
+
+-----
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
@@ -187,6 +200,51 @@ The CAT1 standard currently includes three example TAILs, though many more are p
   
   There is another consideration to make when you are signing new Delegated TAILs. Once you sign it and publish the signature, it is out there forever. Be careful what permissions you grant because you can never take them back.
   
-  
+## CAT denominations, value, and retirement rules
+
+Some design decisions regarding the granularity and denomination of CATs versus XCH:
+
+* Most Chia wallets choose to display their value in XCH. However, this is a purely cosmetic choice because Chia's blockchain only knows about mojos. One XCH is equal to one trillion (1,000,000,000,000) mojos.
+* One CAT token is equal to 1000 XCH mojos.
+* Therefore, the melt value of a single token is 1000 mojos.
+* A token's face value and its melt value are not necessarily correlated, let alone matched.
+
+By analogy, on multiple occasions the US Treasury has floated the idea of minting a $1 trillion coin made from platinum. Leaving aside the practical implications of doing this, the magnitude of the difference between this hypothetical coin's face value and melt value would be similar to that of CATs and XCH. The coin would be worth $1 trillion dollars, but if someone melted it and sold the platinum, they'd only receive a minuscule fraction of that amount.
+
+On the other end of the spectrum, consider the US penny. Its base metals (97.5% zinc and 2.5% copper) are worth around two cents. So in theory, if you could melt a penny into zinc and copper while minimizing your costs, you could sell these metals for a sizable profit.
+
+**The value of XCH and CATs**
+
+The face value of both XCH and CATs is market-driven -- the coins are worth whatever someone is willing to pay for them.
+
+If a CAT achieves a certain level of financial success, its face value will be greater than its melt value, just like the $1 trillion coin would be worth more than the metal it was minted from. For example:
+
+* A meme token could trade for one-millionth of an XCH, or 1,000,000 mojos. The token is worth very little money, but it's still 1000 times more valuable than its melt value of 1000 mojos.
+* A dollar-backed stablecoin will have a face value of $1. Its melt value will be 1000 mojos.
+* A highly successful token could even sell for more than one XCH -- there are no rules preventing this from happening. Its melt value would still be 1000 mojos.
+
+One real-world analogy for these three cases is that you could start with a piece of metal and mint a coin worth a fraction of a cent, or $1, or $10,000, or really any other value. But no matter the face value, the melt value would always remain the same.
+
+**CAT retirement use cases and rules**
+
+Why would someone want to retire a CAT? Let's consider two cases, one involving the token's current owner and one involving its creator.
+
+If a CAT is not financially successful, its melt value could exceed its face value, in the same way that the metals that compose a US penny are worth more than one cent. In this case, it might make financial sense for the CAT's owner to retire the token by melting it into 1000 XCH mojos.
+
+However, it's important to keep in mind that a CAT's TAIL (and nothing else) decides the rules for retirement, _if_ it allows retirement at all. For example, our single-mint TAIL only works with a specific coin, so it does not allow retirement. CATs that use this TAIL can never be melted, no matter how small their face value.
+
+Our delegated TAIL leaves it entirely up to the CAT's creator whether -- and how -- retirement can happen. In many cases (for example, stablecoins and redemption tokens), retirement will be allowed, but only by the _creator_. In the case of a stablecoin, the creator may need to remove some tokens from circulation if backing funds are reduced. For redemption tokens, the owner may exchange their token with the creator for something of value. The token no longer has any face value, so its creator will retire it, in order to both take it out of circulation, and gain its melt value.
+
+In both of these cases, the CAT's creator must also be the current owner of the tokens in order to melt them.
+
+It's worth stressing this point. TAILs _can_ have nearly limitless functionality, but typically, if a TAIL allows retirement at all, two rules must be followed:
+
+1. The CAT's creator is the only person who can melt the tokens.
+2. The CAT's creator must be in possession of the tokens in order to melt them.
+
+There may be some use cases where the creator will want the owners to be able to retire their own tokens, but we expect these occasions to be rare.
+
+
 ## Conclusion
+
 The CAT1 standard is an exciting addition to Chia's ecosystem. It allows near-limitless functionality for issuing fungible tokens. We're excited to see what kind of creative ideas the Chia community comes up with!
