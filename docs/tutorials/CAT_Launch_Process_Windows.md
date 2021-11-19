@@ -1,6 +1,6 @@
 # CAT creation tutorial (Windows)
 
-This tutorial is for creating Chia Asset Tokens (CATS) on Windows. We also have made available a version of [this tutorial for Linux and MacOS users](https://www.chialisp.com/docs/tutorials/CAT_Launch_Process_Linux_MacOS "Chia Asset Token tutorial for Linux and MacOs users").
+This tutorial is for creating Chia Asset Tokens (CATS) on Windows. We also have made available a version of [this tutorial for Linux and MacOS users](https://www.chialisp.com/docs/tutorials/CAT_Launch_Process_Linux_MacOS "Chia Asset Token tutorial for Linux and MacOS users").
 
 Contents:
 
@@ -40,8 +40,9 @@ For any questions regarding this tutorial, head over to the #chialisp channel on
 CAT denominations, as well as the rules behind minting and melting, can take some getting used to. Here are a few things to keep in mind before you issue your CATs:
 
 * Most Chia wallets choose to display their value in XCH. However, this is a purely cosmetic choice because Chia's blockchain only knows about mojos. One XCH is equal to one trillion (1,000,000,000,000) mojos.
-* One CAT token is equal to 1000 XCH mojos.
-* Therefore, the melt value of a single token is 1000 mojos. This is true regardless of the token's face value or its circulating supply.
+* In a similar vein, a default decision was made to map 1 CAT to 1000 CAT mojos. By default, this ratio will be the same for all CATs.
+* It is possible to set the CAT:mojo ratio to something other than 1:1000 for a specific CAT, but doing so could negatively affect interoperability between tokens. We recommend that you use the default setting unless you have a good reason to do otherwise.
+* Therefore, the default melt value of a single token is 1000 mojos. This remains true regardless of the token's face value or its circulating supply.
 * A token's face value and its melt value are not necessarily correlated, let alone matched.
 
 With one XCH, you can mint 1 billion CATs. The face value of these tokens could be zero, or multiple XCH, or anywhere in between. This value is decided by the market -- it's worth whatever someone is willing to pay for it. The value of the tokens has nothing to do with the underlying XCH, other than their 1000-mojo melt value.
@@ -104,7 +105,7 @@ All right, time to get started!
 
     e. "Status: Syncing" should appear in the upper right corner of the GUI. Within a few minutes, this should change to "Status: Synced". This process doesn’t take long because the light wallet only requests and downloads the blocks that are required for that specific wallet.
 
-    f. If your Total Balance is 0, you can get some testnet10 txch from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
+    f. If your Total Balance is 0, you can get some testnet10 TXCH from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
 
 3. Sync your testnet10 full_node:
 
