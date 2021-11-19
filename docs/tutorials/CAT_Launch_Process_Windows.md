@@ -40,7 +40,7 @@ For any questions regarding this tutorial, head over to the #chialisp channel on
 CAT denominations, as well as the rules behind minting and melting, can take some getting used to. Here are a few things to keep in mind before you issue your CATs:
 
 * Most Chia wallets choose to display their value in XCH. However, this is a purely cosmetic choice because Chia's blockchain only knows about mojos. One XCH is equal to one trillion (1,000,000,000,000) mojos.
-* In a similar vein, a default decision was made to map 1 CAT to 1000 CAT mojos. By default, this ratio will be the same for all CATs.
+* In a similar vein, a default decision was made to map 1 CAT to 1000 XCH mojos. By default, this ratio will be the same for all CATs.
 * It is possible to set the CAT:mojo ratio to something other than 1:1000 for a specific CAT, but doing so could negatively affect interoperability between tokens. We recommend that you use the default setting unless you have a good reason to do otherwise.
 * Therefore, the default melt value of a single token is 1000 mojos. This remains true regardless of the token's face value or its circulating supply.
 * A token's face value and its melt value are not necessarily correlated, let alone matched.
