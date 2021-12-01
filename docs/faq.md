@@ -79,4 +79,4 @@ ____
 
 ### Q: How can I get my CAT listed in Chia's wallet GUI?
 
-**A:** Sometime in the first half of 2022, we plan to release an application to get your CAT listed in our wallet GUI. Keep in mind that this will be a tightly-controlled process, where few CATs be accepted. But don't let that stop you from creating your own CATs -- they will still work, even if they are not listed in our GUI.
+**A:** Sometime in the first half of 2022, we plan to release a process to apply for your CAT to be listed in our wallet GUI. Keep in mind that this will be a tightly-controlled process, where few CATs be accepted. But don't let that stop you from creating your own CATs -- they will still work, even if they are not listed in our GUI.
