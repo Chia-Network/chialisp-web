@@ -603,7 +603,7 @@ When used in an integer context, nil behaves as zero.
 
 When used as a parameter that may be checked for nil, zero is interpreted as nil.
 
-# Costs
+## Costs
 
 When a clvm program is run, a cost is attributed to it. The minimum program cost is 40. After each opcode is run, its cost is added to the total program cost. When the cost exceeds a threshold, the program is terminated, and no value is returned. Also, if the number of atoms or pairs exceeds 2^31, the program is terminated and no value is returned.
 
