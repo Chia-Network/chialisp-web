@@ -1,10 +1,11 @@
 # CAT creation tutorial (Windows)
 
-This tutorial is for creating Chia Asset Tokens (CATS) on Windows. The equivalent Linux/MacOS tutorial can be found [here](https://www.chialisp.com/docs/tutorials/CAT_Launch_Process_Linux_MacOS "Chia Asset Token tutorial for Linux and MacOs users").
+This tutorial is for creating Chia Asset Tokens (CATS) on Windows. We also have made available a version of [this tutorial for Linux and MacOS users](https://www.chialisp.com/docs/tutorials/CAT_Launch_Process_Linux_MacOS "Chia Asset Token tutorial for Linux and MacOS users").
 
 Contents:
 
 * [Introduction](#introduction)
+* [CAT issuance granularity](#cat-issuance-granularity)
 * [Setting up your Chia environment](#setting-up-your-chia-environment)
 * [Creating a single-mint CAT](#creating-a-single-mint-cat)
 * [Creating a multiple mint CAT](#creating-a-multiple-mint-cat)
@@ -31,6 +32,22 @@ As this still a draft standard, not all edge cases have been thoroughly tested. 
 * Test thoroughly on testnet before issuing your CAT to mainnet.
 
 For any questions regarding this tutorial, head over to the #chialisp channel on our [Keybase](https://keybase.io/team/chia_network.public "Chia's Keybase forum") forum, where there are lots of friendly folks who can help you.
+
+-----
+
+## CAT issuance granularity
+
+CAT denominations, as well as the rules behind minting and melting, can take some getting used to. Here are a few things to keep in mind before you issue your CATs:
+
+* Most Chia wallets choose to display their value in XCH. However, this is a purely cosmetic choice because Chia's blockchain only knows about mojos. One XCH is equal to one trillion (1,000,000,000,000) mojos.
+* In a similar vein, a default decision was made to map 1 CAT to 1000 XCH mojos. By default, this ratio will be the same for all CATs.
+* It is possible to set the CAT:mojo ratio to something other than 1:1000 for a specific CAT, but doing so could negatively affect interoperability between tokens. We recommend that you use the default setting unless you have a good reason to do otherwise.
+* Therefore, the default melt value of a single token is 1000 mojos. This remains true regardless of the token's face value or its circulating supply.
+* A token's face value and its melt value are not necessarily correlated, let alone matched.
+
+With one XCH, you can mint 1 billion CATs. The face value of these tokens could be zero, or multiple XCH, or anywhere in between. This value is decided by the market -- it's worth whatever someone is willing to pay for it. The value of the tokens has nothing to do with the underlying XCH, other than their 1000-mojo melt value.
+
+These concepts are discussed in greater detail in our [CAT1 standard](https://chialisp.com/docs/puzzles/cats#cat-denominations-value-and-retirement-rules "CAT1 standard documentation").
 
 -----
 
@@ -88,7 +105,7 @@ All right, time to get started!
 
     e. "Status: Syncing" should appear in the upper right corner of the GUI. Within a few minutes, this should change to "Status: Synced". This process doesn’t take long because the light wallet only requests and downloads the blocks that are required for that specific wallet.
 
-    f. If your Total Balance is 0, you can get some testnet10 txch from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
+    f. If your Total Balance is 0, you can get some testnet10 TXCH from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
 
 3. Sync your testnet10 full_node:
 
@@ -145,7 +162,7 @@ Your environment is now set up and you are ready to start issuing CATs.
 
 ## Creating a single-mint CAT
 
-If you're a visual learner, click [here](https://chialisp.com/docs/tutorials/single_issuance_CAT "Single-mint CAT video tutorial") for a video tutorial for creating a single-mint CAT.
+If you're a visual learner, please see our [video tutorial for creating a single-mint CAT](https://chialisp.com/docs/tutorials/single_issuance_CAT "Single-mint CAT video tutorial").
 
 > NOTE: This section will discuss Token Asset Issuance Limiters (TAILs), as well some technical details of CATs. For a refresher on CATs and TAILs, check out our [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation").
 
@@ -197,7 +214,7 @@ You now have access to your CAT in the GUI. You can send and receive your new to
 
 ## Creating a multiple mint CAT
 
-If you're a visual learner, click [here](https://chialisp.com/docs/tutorials/multiple_issuance_CAT "Multiple mint CAT video tutorial") for a video tutorial for creating a multiple mint CAT.
+If you're a visual learner, please see our [video tutorial for creating a multiple mint CAT](https://chialisp.com/docs/tutorials/multiple_issuance_CAT "Multiple mint CAT video tutorial").
 
 Next we’ll create a CAT capable of minting tokens multiple times. This CAT uses a delegated TAIL, which is much more flexible than the previous one. As long as you sign a puzzlehash that you specify, you can mint new tokens using whatever TAIL you want. This allows for features such as rebate offers and distributed minting and retiring of tokens.
 
@@ -245,7 +262,7 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
     a. Switch to your light wallet GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It won’t show up in your transactions, though. That feature has not yet been implemented.
 
-    b. Now you can add a wallet ID for your new CAT. In the upper left corner, click "+ ADD TOKEN", then click "+ Custom". Enter the name of your CAT (it can be anything) in the Name field. For the Token and Asset Issuance Limitations field, paste the &lt;Asset ID&gt; you saved from a few steps ago. Click ADD.
+    b. Now you can add a wallet ID for your new CAT. In the upper left corner, click "+ ADD TOKEN", then click "+ Custom". Enter the name of your CAT (it can be anything) in the first text field. For the second text field, paste the &lt;Asset ID&gt; you saved from a few steps ago. Click ADD.
 
     c. You will now be taken to your new CAT wallet. The balance should show the number of XCH mojos you chose to use, divided by 1000. This is because CAT mojos by default are one-thousandth of a CAT.
     
