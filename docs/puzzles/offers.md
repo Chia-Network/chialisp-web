@@ -27,7 +27,7 @@ The Maker and Taker don't need to trust each other. Any attempts to modify the o
 A clique of classical jazz enthusiasts creates a new token in Chia's ecosystem called "CAT King Cole" (CKC). Alice has 1 XCH in her wallet, and she wants to join the CKC club. The current exchange rate is 251 CKC per XCH.
 
 <figure>
-<img src="./offers_img/1_alice_1_xch.jpg" alt="Alice wallet before offer"/>
+<img src="../../static/img/offers_img/offers/1_alice_1_xch.jpg" alt="Alice wallet before offer"/>
 <figcaption>
 <em>Alice's wallet before creating the offer.</em>
 </figcaption>
@@ -36,7 +36,7 @@ A clique of classical jazz enthusiasts creates a new token in Chia's ecosystem c
 Alice likes those numbers, so she uses her Chia wallet to generate an _offer file_ with the following conditions, to be enacted upon the offer's acceptance.
 
 <figure>
-<img src="./offers_img/2_offer_1_xch_251_ckc.jpg" alt="offer details"/>
+<img src="../../static/img/offers_img/offers/2_offer_1_xch_251_ckc.jpg" alt="offer details"/>
 <figcaption>
 <em>Alice's offer: 1 XCH for 251 CKC.</em>
 </figcaption>
@@ -49,7 +49,7 @@ Alice scours the internet and finds a message board where fans of CKC like to sh
 The offer is not left dangling for long. After just a few seconds, Bob (who's more of a Cat Stevens fan) opens the offer file in his Chia wallet, which asks if he would like to exchange 251 CKC for 1 XCH. Bob accepts the offer, and his wallet automatically creates the other half of the transactions that Alice had started.
 
 <figure>
-<img src="./offers_img/3_bob_view_xch_ckc_offer.jpg" alt="offer Bob view"/>
+<img src="../../static/img/offers_img/offers/3_bob_view_xch_ckc_offer.jpg" alt="offer Bob view"/>
 <figcaption>
 <em>Bob's view of the offer.</em>
 </figcaption>
@@ -62,14 +62,14 @@ Alice didn't trust Bob, and Bob didn't trust Alice. They never had to meet or in
 That's music to Alice and Bob's ears.
 
 <figure>
-<img src="./offers_img/4_alice_251_ckc.jpg" alt="Alice post offer wallet"/>
+<img src="../../static/img/offers_img/offers/4_alice_251_ckc.jpg" alt="Alice post offer wallet"/>
 <figcaption>
 <em>Alice's wallet after the offer has been accepted.</em>
 </figcaption>
 </figure>
 
 <figure>
-<img src="./offers_img/5_bob_1_xch.jpg" alt="Bob post offer wallet"/>
+<img src="../../static/img/offers_img/offers/5_bob_1_xch.jpg" alt="Bob post offer wallet"/>
 <figcaption>
 <em>Bob's wallet after the offer has been accepted.</em>
 </figcaption>
