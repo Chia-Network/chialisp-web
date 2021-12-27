@@ -132,7 +132,7 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
 <br/>
 
    7. Your offer has now been shared on Offer Bin, a website dedicated to sharing Chia offers. Offer Bin is not affiliated with Chia Network Inc.
-   <br/><br/>You now have the option to either view your offer on Offer Bin, copy the URL to share in more locations, or simply wait for someone to accept your offer.
+   <br/><br/>You now have the option to view your offer on Offer Bin, copy the URL to share in more locations, or simply wait for someone to accept your offer.
 
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_create/7_view_on_offer_bin.png" alt="View on offer bin"/>
@@ -152,7 +152,7 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
 </figure>
 <br/>
 
-Congratulations! You have created an offer. There are a few things to note:
+Congratulations! You have created an offer. A few things to note:
 * Your wallet has reserved the coin(s) necessary to complete the offer.
 * The blockchain has not recorded this offer.
 * You can distribute the offer file wherever you want.
@@ -294,7 +294,8 @@ You can cancel any offer you created, as long as it has not been accepted alread
 <br/>
 
    3. The "Cancel Offer" dialog will appear. The default option is to cancel on the blockchain. This option will use your wallet to buy the coins you offered. This will ensure that nobody can accept your offer in the future.
-   * You should usually use this option. Do not uncheck the checkbox if you have copied your offer file to another computer or website.
+   
+   >You should usually use this option. Do not uncheck the checkbox if you have copied your offer file to another computer or website.
 
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/cancel/3_cancel_on_chain.png" alt="Cancel on chain"/>
@@ -304,9 +305,7 @@ You can cancel any offer you created, as long as it has not been accepted alread
 </figure>
 <br/>
 
-   4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept your offer. The advantages of this option are that it will cancel your offer instantly, and for no fee.
-<br/><br/>
-   If your offer file has been copied to another computer or website, you should not use this option.
+   4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept it. The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
 
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/cancel/4_cancel_off_chain.png" alt="Cancel off chain"/>
@@ -376,7 +375,7 @@ It's easy to create an offer with multiple tokens, on one or both ends of the tr
 -----
 
 ## Accept a multiple-token offer
-   1. The process to accept a multiple token offer is the same as it for a single token offer.
+   1. The process to accept a multiple token offer is the same as for a single token offer.
 
    You don't need to have a wallet for all tokens being offered. In this case, you should verify that the asset ID matches the CAT you want to receive.
 

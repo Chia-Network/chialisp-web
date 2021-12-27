@@ -124,9 +124,9 @@ Use chia wallet get_offers --id 62260d78a563620818a43c2cf837a8fca13a808f20ce62f4
 ```
 <br/>
 
-After running this command and confirmation, the offer file `~/0.1_xch_for_10_usds.offer` will be created.
+After running and confirming this command, the offer file `~/offers/0.1_xch_for_10_usds.offer` will be created.
 
-To view the status, run `chia wallet get_offers` specifying your offer's ID and your wallet's fingerprint:
+To view the status, run `chia wallet get_offers`, specifying your offer's ID and your wallet's fingerprint:
 
 ```bash
 (venv) $ chia wallet get_offers --id 62260d78a563620818a43c2cf837a8fca13a808f20ce62f4e42064f46f4c5a91 -f 123456789
@@ -141,7 +141,7 @@ Status: PENDING_ACCEPT
 ```
 <br/>
 
-Congratulations! You have created an offer. There are a few things to note:
+Congratulations! You have created an offer. A few things to note:
 * Your wallet has reserved the coin(s) necessary to complete the offer.
 * The blockchain has not recorded this offer.
 * You can distribute the offer file wherever you want.
@@ -165,9 +165,9 @@ Wallet ID 1 type STANDARD_WALLET Chia Wallet
    -Pending Total Balance: 0.0 xch (0 mojo)
    -Spendable: 0.0 xch (0 mojo)
 Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589)
-   -Total Balance: 1.0  (1000 mojo)
-   -Pending Total Balance: 1.0  (1000 mojo)
-   -Spendable: 1.0  (1000 mojo)
+   -Total Balance: 10.0  (10000 mojo)
+   -Pending Total Balance: 10.0  (10000 mojo)
+   -Spendable: 10.0  (10000 mojo)
 ```
 <br/>
 
@@ -234,7 +234,8 @@ You can cancel any offer you created, as long as it has not been accepted alread
 <br/>
 
 Start by listing all of your current offers:
-```(venv) $ chia wallet get_offers
+```bash
+(venv) $ chia wallet get_offers
 
 Record with id: 47fa10e11c743b03bb1d182a6f915de1e563f40c5e6adf24698cbeb7732baa5f
 ---------------
@@ -244,6 +245,7 @@ Accepted at: N/A
 Status: PENDING_ACCEPT
 ---------------
 ```
+<br/>
 
 Cancel an offer with a Status of PENDING_ACCEPT:
 ```bash
@@ -268,8 +270,9 @@ Are you sure you wish to cancel offer with ID: 47fa10e11c743b03bb1d182a6f915de1e
 Cancelled offer with ID 47fa10e11c743b03bb1d182a6f915de1e563f40c5e6adf24698cbeb7732baa5f
 Use chia wallet get_offers --id 47fa10e11c743b03bb1d182a6f915de1e563f40c5e6adf24698cbeb7732baa5f -f 123456789 to view cancel status
 ```
+<br/>
 
-To view the status of the cancellation, run `chia wallet get_offers` specifying your offer's ID and your wallet's fingerprint:
+To view the status of the cancellation, run `chia wallet get_offers`, specifying your offer's ID and your wallet's fingerprint:
 
 ```bash
 (venv) $ chia wallet get_offers --id 47fa10e11c743b03bb1d182a6f915de1e563f40c5e6adf24698cbeb7732baa5f -f 123456789
@@ -282,18 +285,17 @@ Accepted at: N/A
 Status: CANCELLED
 ---------------
 ```
+<br/>
 
-Note that this command canceled the offer on the blockchain by buying the coins that had been offered. This method of cancellations ensured that nobody could accept your offer in the future. This is the default option, and the option that you should use if you have copied your offer file to another computer or website.
+Note that this command canceled the offer on the blockchain by buying the coins that had been offered. This method of cancellation ensures that nobody could accept your offer in the future. This is the default option, and the option that you should use if you have copied your offer file to another computer or website.
 
-If you have not sent the offer file elsewhere, you can cancel the offer by running the same command with the `--insecure` flag, which will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept your offer. The advantages of this option are that it will cancel your offer instantly, and for no fee.
+If you have not sent the offer file elsewhere, you can cancel the offer by running the same command with the `--insecure` flag, which will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept it. The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
 
 -----
 
 ## Create a multiple-token offer
 
-It's easy to create an offer with multiple tokens, on one or both ends of the trade.
-
-To create an offer for with multiple tokens, simply add `-o` (offer) and `-r` (request) flags as desired. For example:
+To create an offer with multiple tokens, simply add `-o` (offer) and `-r` (request) flags to the `make_offer` command as needed. For example:
 
 ```bash
 (venv) $ chia wallet make_offer -o 2:10 -o 3:10000 -r 1:0.1 -r 4:9000 -p ~/offers/10usds_10kckc_for_100bmojos_9ksbx.offer
@@ -312,6 +314,7 @@ Use chia wallet get_offers --id 9f624c95b81ed3428f74cbe2e400d0d8cccbfe6169fe8e58
 ```
 
 <br/>
+
 To view the offer with a summary of the tokens being offered, use the `-s` flag:
 
 ```bash
