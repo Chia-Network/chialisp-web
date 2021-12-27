@@ -6,19 +6,20 @@ title: Offers, GUI Tutorial
 
 ## Contents:
 
-* ### [Add a new CAT wallet](#add-a-new-cat-wallet-1)
-* ### [Create a single-token offer](#create-a-single-token-offer-1)
-* ### [Accept a single-token offer](#accept-a-single-token-offer-1)
-* ### [Cancel an offer](#cancel-an-offer-1)
-* ### [Create a multiple-token offer](#create-a-multiple-token-offer-1)
-* ### [Accept a multiple-token offer](#accept-a-multiple-token-offer-1)
-* ### [Common issues](#common-issues-1)
+* [Add a new CAT wallet](#add-a-new-cat-wallet)
+* [Create a single-token offer](#create-a-single-token-offer)
+* [Accept a single-token offer](#accept-a-single-token-offer)
+* [Cancel an offer](#cancel-an-offer)
+* [Create a multiple-token offer](#create-a-multiple-token-offer)
+* [Accept a multiple-token offer](#accept-a-multiple-token-offer)
+* [Common issues](#common-issues)
 -----
 
 ## Add a new CAT wallet
 
-### In order to create an offer, you must have a wallet for any Chia Asset Tokens (CATs) you want to acquire. If you don't have such a wallet, it's easy to add one.
-### For example, here's how to add the USDS token:
+In order to create an offer, you must have a wallet for any Chia Asset Tokens (CATs) you want to acquire. If you don't have such a wallet, it's easy to add one.
+
+For example, here's how to add the USDS token:
 <br/>
 
    1. Click "+ ADD TOKEN".
@@ -64,7 +65,7 @@ title: Offers, GUI Tutorial
 
 ## Create a single-token offer
 
-### In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
+In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
 <br/>
 
    1. Click "MANAGE OFFERS".
@@ -161,7 +162,7 @@ Congratulations! You have created an offer. There are a few things to note:
 
 ## Accept a single-token offer
 
-### If you see an offer you want to accept, the process is straighforward. Keep in mind, offers are accepted on a first-come, first-served basis.
+This example will use a different computer to accept the offer that was created in the previous example. Keep in mind, offers are accepted on a first-come, first-served basis.
 <br/>
    1. From your light wallet's main dialog, click "MANAGE OFFERS".
 
@@ -268,7 +269,7 @@ Congratulations! You have created an offer. There are a few things to note:
 
 ## Cancel an offer
 
-### You can cancel any offer you created, as long as it has not been accepted already.
+You can cancel any offer you created, as long as it has not been accepted already.
 <br/>
 
    1. In the "Manage Offers" dialog, locate the offer you want to cancel. It must be in the "Pending Accept" state.
@@ -303,7 +304,7 @@ Congratulations! You have created an offer. There are a few things to note:
 </figure>
 <br/>
 
-   4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file somewhere else, someone could still accept your offer. The advantages of this option are that it will cancel your offer instantly, and for no fee.
+   4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept your offer. The advantages of this option are that it will cancel your offer instantly, and for no fee.
 <br/><br/>
    If your offer file has been copied to another computer or website, you should not use this option.
 
@@ -338,6 +339,7 @@ Congratulations! You have created an offer. There are a few things to note:
 -----
 
 ## Create a multiple-token offer
+
 It's easy to create an offer with multiple tokens, on one or both ends of the trade.
 <br/>
 
@@ -405,3 +407,4 @@ edge cases
 -- maker doesn't have enough money
 -- taker doesn't have enough money
 -- offer no longer valid
+-- coinset issues, 1 coin for whole wallet is already reserved
