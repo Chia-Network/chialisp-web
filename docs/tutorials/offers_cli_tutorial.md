@@ -404,3 +404,94 @@ Wallet ID 4 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
 
 ## Common issues
 
+### Taker wallet doesn't have enough money
+
+Let's say the Taker has a brand new wallet:
+
+```bash
+(venv) $ chia wallet show
+Wallet height: 1336730
+Sync status: Synced
+Balances, fingerprint: 1384001194
+Wallet ID 1 type STANDARD_WALLET Chia Wallet 
+   -Total Balance: 0.0 xch (0 mojo)
+   -Pending Total Balance: 0.0 xch (0 mojo)
+   -Spendable: 0.0 xch (0 mojo)
+```
+<br/>
+
+And there's an outstanding offer requesting 0.1 XCH for 10,000 CKC:
+```bash
+(venv) $ chia wallet take_offer -e ~/offers/10kckc_for_0.1xch.offer 
+Summary:
+  OFFERED:
+    - CAT King Cole (Wallet ID: None): 10000 (10000000 mojos)
+  REQUESTED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+Fees: 0
+```
+<br/>
+
+The Taker will get an error when attempting to accept the offer:
+```bash
+(venv) $ chia wallet take_offer ~/offers/10kckc_for_0.1xch.offer 
+Summary:
+  OFFERED:
+    - CAT King Cole (Wallet ID: None): 10000 (10000000 mojos)
+  REQUESTED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+Fees: 0
+Would you like to take this offer? (y/n): y
+Exception from 'wallet' {'error': 'insufficient funds in wallet 1', 'success': False}
+```
+
+### Taker doesn't have correct CAT wallet
+
+Let's say a potential Taker has 0.1 XCH and 10,000 CKC in their wallet.
+
+```bash
+(venv) $ chia wallet show
+Wallet height: 1336860
+Sync status: Synced
+Balances, fingerprint: 1384001194
+Wallet ID 1 type STANDARD_WALLET Chia Wallet 
+   -Total Balance: 0.1 xch (100000000000 mojo)
+   -Pending Total Balance: 0.1 xch (100000000000 mojo)
+   -Spendable: 0.1 xch (100000000000 mojo)
+Wallet ID 2 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369aced2c8887b02b84e95592c3dc006d82a145adf349a)
+   -Total Balance: 10000.0  (10000000 mojo)
+   -Pending Total Balance: 10000.0  (10000000 mojo)
+   -Spendable: 10000.0  (10000000 mojo)
+
+```
+<br/>
+
+There is an offer of 0.25 Shibe (an unknown CAT) in exchange for 0.1 XCH. Here's the offer from the Taker's perspective:
+```bash
+(venv) $ chia wallet take_offer -e ~/offers/0.25_Shibe_for_0.1_XCH.offer
+Summary:
+  OFFERED:
+    - a2cadb541cb01c67c3bcddc73ecf33c8ffa37b0d013688904b2747cede020477 (Wallet ID: Unknown): 0.25 (250 mojos)
+  REQUESTED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+```
+<br/>
+
+The Taker decides to accept the offer:
+```bash
+(venv) $ chia wallet take_offer ~/offers/0.25_Shibe_for_0.1_XCH.offer 
+Summary:
+  OFFERED:
+    - a2cadb541cb01c67c3bcddc73ecf33c8ffa37b0d013688904b2747cede020477 (Wallet ID: Unknown): 0.25 (250 mojos)
+  REQUESTED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+Fees: 0
+Would you like to take this offer? (y/n): y
+Accepted offer with ID 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f
+Use chia wallet get_offers --id 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f -f 1384001194 to view its status
+```
+
+edge cases
+-- maker doesn't have enough money
+-- offer no longer valid
+-- coinset issues, 1 coin for whole wallet is already reserved
