@@ -13,7 +13,7 @@ title: Offers, GUI Tutorial
 * [Cancel an offer](#cancel-an-offer)
 * [Create a multiple-token offer](#create-a-multiple-token-offer)
 * [Accept a multiple-token offer](#accept-a-multiple-token-offer)
-* [Common issues](#common-issues)
+* [Potential issues](#potential-issues)
 -----
 
 ## Note about Windows
@@ -402,7 +402,45 @@ Wallet ID 4 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
 
 -----
 
-## Common issues
+## Potential issues
+
+### Maker wallet doesn't have enough money
+
+Let's say a Maker has wallets for XCH and CKC, with no money in either of them.
+
+```bash
+(venv) $ chia wallet show
+Wallet height: 1344432
+Sync status: Synced
+Balances, fingerprint: 1234567890
+Wallet ID 1 type STANDARD_WALLET Chia Wallet 
+   -Total Balance: 0.0 xch (0 mojo)
+   -Pending Total Balance: 0.0 xch (0 mojo)
+   -Spendable: 0.0 xch (0 mojo)
+Wallet ID 2 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369aced2c8887b02b84e95592c3dc006d82a145adf349a)
+   -Total Balance: 0.0  (0 mojo)
+   -Pending Total Balance: 0.0  (0 mojo)
+   -Spendable: 0.0  (0 mojo)
+```
+
+<br/>
+
+The maker attempts to make an ambitious offer: 100 XCH for 1 million CKC. However, the Maker does not have enough money do create this offer:
+
+```bash
+(venv) $ chia wallet make_offer -o 2:1000000 -r 1:100 -p ~/offers/100xch_for_1mckc.offer
+Creating Offer
+--------------
+
+OFFERING:
+  - 1000000 CAT King Cole (1000000000 mojos)
+REQUESTING:
+  - 100 XCH (100000000000000 mojos)
+Confirm (y/n): y
+Exception from 'wallet' {'error': 'Error creating offer: insufficient funds in wallet 2', 'success': False}
+```
+
+-----
 
 ### Taker wallet doesn't have enough money
 
@@ -412,7 +450,7 @@ Let's say the Taker has a brand new wallet:
 (venv) $ chia wallet show
 Wallet height: 1336730
 Sync status: Synced
-Balances, fingerprint: 1384001194
+Balances, fingerprint: 1234567890
 Wallet ID 1 type STANDARD_WALLET Chia Wallet 
    -Total Balance: 0.0 xch (0 mojo)
    -Pending Total Balance: 0.0 xch (0 mojo)
@@ -445,24 +483,23 @@ Would you like to take this offer? (y/n): y
 Exception from 'wallet' {'error': 'insufficient funds in wallet 1', 'success': False}
 ```
 
-### Taker doesn't have correct CAT wallet
+-----
 
-Let's say a potential Taker has 0.1 XCH and 10,000 CKC in their wallet.
+### Taker accepts an unknown CAT offer
+
+There is a possibility of a scam with _unknown_ CATs, where a Taker thinks an offer is for a valuable token, but it's actually for a worthless one.
+
+Let's say a potential Taker has 0.1 XCH in their wallet.
 
 ```bash
 (venv) $ chia wallet show
 Wallet height: 1336860
 Sync status: Synced
-Balances, fingerprint: 1384001194
+Balances, fingerprint: 1234567890
 Wallet ID 1 type STANDARD_WALLET Chia Wallet 
    -Total Balance: 0.1 xch (100000000000 mojo)
    -Pending Total Balance: 0.1 xch (100000000000 mojo)
    -Spendable: 0.1 xch (100000000000 mojo)
-Wallet ID 2 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369aced2c8887b02b84e95592c3dc006d82a145adf349a)
-   -Total Balance: 10000.0  (10000000 mojo)
-   -Pending Total Balance: 10000.0  (10000000 mojo)
-   -Spendable: 10000.0  (10000000 mojo)
-
 ```
 <br/>
 
@@ -488,10 +525,260 @@ Summary:
 Fees: 0
 Would you like to take this offer? (y/n): y
 Accepted offer with ID 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f
-Use chia wallet get_offers --id 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f -f 1384001194 to view its status
+Use chia wallet get_offers --id 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f -f 1234567890 to view its status
 ```
 
-edge cases
--- maker doesn't have enough money
--- offer no longer valid
--- coinset issues, 1 coin for whole wallet is already reserved
+The offer goes through, but the Taker should be aware that there is a risk associated with accpeting an offer for an unknown CAT. The offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertantly accepted an offer for a worthless token!
+
+There is a simple to avoid this scam: always cross-reference the unknown CAT's ID before accepting the offer. In this case, the Taker should verify from a trusted source that `4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f` indeed corresponds to Shibe.
+
+Chia does install a list of known CATs by default, so this scam should be rare, but you should always be diligent in scrutinizing offers for unknown CATs.
+
+-----
+
+### Taker attempts to accept an invalid offer
+
+If the Maker has canceled the offer on the blockchain, or a Taker has already taken the offer, it is no longer valid.
+
+Any potential Takers will receive an Exception upon attempting to take the offer. For example:
+```bash
+(venv) $ chia wallet take_offer ~/offers/0.1_xch_for_10_usds.offer 
+Summary:
+  OFFERED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+  REQUESTED:
+    - Stably USD (Wallet ID: 2): 10 (10000 mojos)
+Fees: 0
+Would you like to take this offer? (y/n): y
+Exception from 'wallet' {'error': 'This offer is no longer valid', 'success': False}
+```
+
+-----
+
+### Maker cancels an offer locally, Taker accepts the offer
+
+This example will demonstrate that if you need to cancel an offer, you should always do so on-chain unless you are certain the offer file has not left your computer.
+
+Let's say a Maker has 0.1 XCH and 1 USDS:
+```bash
+(venv) $ chia wallet show
+Wallet height: 1344792
+Sync status: Synced
+Balances, fingerprint: 9876543210
+Wallet ID 1 type STANDARD_WALLET Chia Wallet
+   -Total Balance: 0.1 xch (100000000000 mojo)
+   -Pending Total Balance: 0.1 xch (100000000000 mojo)
+   -Spendable: 0.1 xch (100000000000 mojo)
+Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589)
+   -Total Balance: 1.0  (1000 mojo)
+   -Pending Total Balance: 1.0  (1000 mojo)
+   -Spendable: 1.0  (1000 mojo)
+```
+<br/>
+
+The Maker offers 0.1 XCH in exchange for 10 USDS:
+```bash
+(venv) $ chia wallet make_offer -o 1:0.1 -r 2:10 -p ~/offers/0.1xch_for_10usds.offer
+Creating Offer
+--------------
+
+OFFERING:
+  - 0.1 XCH (100000000000 mojos)
+REQUESTING:
+  - 10 Stably USD (10000 mojos)
+Confirm (y/n): y
+Created offer with ID af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69
+Use chia wallet get_offers --id af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69 -f 9876543210 to view status
+```
+<br/>
+
+The Maker then decides to cancel the offer, but not on-chain (using the `--insecure` flag):
+```bash
+(venv) $ chia wallet cancel_offer -id af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69 --insecure
+
+Record with id: af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69
+---------------
+Created at: 2021-12-29 10:03:10
+Confirmed at: 0
+Accepted at: N/A
+Status: PENDING_ACCEPT
+Summary:
+  OFFERED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+  REQUESTED:
+    - Stably USD (Wallet ID: 2): 10 (10000 mojos)
+Pending Balances:
+    - XCH (Wallet ID: 1): 0.0 (0 mojos)
+    - Stably USD (Wallet ID: 2): 11 (11000 mojos)
+Fees: 0
+---------------
+Are you sure you wish to cancel offer with ID: af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69? (y/n): y
+Cancelled offer with ID af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69
+```
+<br/>
+
+The Maker then verifies that the offer has indeed been canceled:
+```bash
+(venv) $ chia wallet get_offers -id af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69
+
+Record with id: af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69
+---------------
+Created at: 2021-12-29 10:03:10
+Confirmed at: 0
+Accepted at: N/A
+Status: CANCELLED
+---------------
+```
+<br/>
+
+After the offer has been canceled, a taker notices the offer file and decides to take it:
+
+```bash
+(venv) $ chia wallet take_offer ~/offers/0.1xch_for_10usds.offer 
+Summary:
+  OFFERED:
+    - XCH (Wallet ID: 1): 0.1 (100000000000 mojos)
+  REQUESTED:
+    - Stably USD (Wallet ID: 2): 10 (10000 mojos)
+Fees: 0
+Would you like to take this offer? (y/n): y
+Accepted offer with ID 8592e2f96b13cf7eee0e1c5bdbf1ef523ee25e6aaf64214c80b9a6ddda17e4da
+Use chia wallet get_offers --id 8592e2f96b13cf7eee0e1c5bdbf1ef523ee25e6aaf64214c80b9a6ddda17e4da -f 2987410941 to view its status
+```
+<br/>
+
+Later, the Maker notices that the offer has gone through, despite being canceled:
+
+```bash
+(venv) PS $ chia wallet show
+Wallet height: 1344854
+Sync status: Synced
+Balances, fingerprint: 9876543210
+Wallet ID 1 type STANDARD_WALLET Chia Wallet
+   -Total Balance: 0.0 xch (0 mojo)
+   -Pending Total Balance: 0.0 xch (0 mojo)
+   -Spendable: 0.0 xch (0 mojo)
+Wallet ID 4 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589)
+   -Total Balance: 11.0  (11000 mojo)
+   -Pending Total Balance: 11.0  (11000 mojo)
+   -Spendable: 11.0  (11000 mojo)
+```
+
+If the offer had been canceled on-chain, the reserved coins would have been spent. At that point, even if someone else had gotten access to the offer file, the offer itself would've been invalid.
+
+-----
+
+### Whole coins must be reserved
+
+Under the coin set model, coins can be of any value. When an offer is created, the wallet must reserve enough coins to meet the requirements of the offer. 
+
+The coin set model [has many advantages](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model") over the account model, but it can create some situations that take some time to understand.
+
+For example, let's say a Maker has 1 XCH and 0 USDS:
+
+```bash
+(venv) $ chia wallet show
+Wallet height: 1345098
+Sync status: Synced
+Balances, fingerprint: 9876543210
+Wallet ID 1 type STANDARD_WALLET Chia Wallet 
+   -Total Balance: 1.0 xch (1000000000000 mojo)
+   -Pending Total Balance: 1.0 xch (1000000000000 mojo)
+   -Spendable: 1.0 xch (1000000000000 mojo)
+Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589)
+   -Total Balance: 0.0  (0 mojo)
+   -Pending Total Balance: 0.0  (0 mojo)
+   -Spendable: 0.0  (0 mojo)
+```
+<br/>
+
+The Maker received the XCH in one lump sum, so there is a single coin worth 1 XCH in the Maker's wallet.
+
+The Maker creates an offer of 0.1 XCH for 10 USDS:
+
+```bash
+(venv) $ chia wallet make_offer -o 1:0.1 -r 2:10 -p ~/offers/0.1xch_for_10usds.offer 
+Creating Offer
+--------------
+
+OFFERING:
+  - 0.1 XCH (100000000000 mojos)
+REQUESTING:
+  - 10 Stably USD (10000 mojos)
+Confirm (y/n): y
+Created offer with ID 5708209d4502049b556d3e00782e36259651eb4fdc0da94f177916bca8e83c1b
+Use chia wallet get_offers --id 5708209d4502049b556d3e00782e36259651eb4fdc0da94f177916bca8e83c1b -f 125588179 to view status
+```
+<br/>
+
+While the offer is pending, the Maker attempts to send 0.1 XCH to another address:
+```bash
+(venv) $ chia wallet send -i 1 -a 0.1 -t xchxxxxxxxxxxxxxxxxx
+Submitting transaction...
+Exception from 'wallet' {'error': "Can't send more than 0 in a single transaction", 'success': False}
+```
+<br/>
+
+This should be possible -- even after the offer gets accepted, the maker still will have 0.9 XCH. The reason for the Excpetion is because the Maker only has a single coin worth 1 XCH, and that coin has already been reserved for the offer. It's similar to owning a $1 bill and buying something for 10 cents. While the transaction is in progress, you can't buy anything else. You have to wait for your change.
+
+The Maker can work around this issue by canceling the offer and breaking the single large coin into multiple small ones. The easiest way for the Maker to do this would be to send some money to his/herself:
+
+```bash
+(venv) $ chia wallet send -i 1 -a 0.1 -t xch-makers-obfuscated-address
+```
+<br/>
+
+The Maker's wallet looks identical to before:
+
+```bash
+(venv) $ chia wallet show
+Wallet height: 1345200
+Sync status: Synced
+Balances, fingerprint: 9876543210
+Wallet ID 1 type STANDARD_WALLET Chia Wallet 
+   -Total Balance: 1.0 xch (1000000000000 mojo)
+   -Pending Total Balance: 1.0 xch (1000000000000 mojo)
+   -Spendable: 1.0 xch (1000000000000 mojo)
+Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589)
+   -Total Balance: 0.0  (0 mojo)
+   -Pending Total Balance: 0.0  (0 mojo)
+   -Spendable: 0.0  (0 mojo)
+```
+<br/>
+
+Even though the Maker has the same amount of money as before, there are now two coins that sum to 1 XCH. The maker can now recreate the old offer:
+
+```bash
+(venv) $ chia wallet make_offer -o 1:0.1 -r 2:10 -p ~/offers/0.1xch_for_10usds.offer 
+Creating Offer
+--------------
+
+OFFERING:
+  - 0.1 XCH (100000000000 mojos)
+REQUESTING:
+  - 10 Stably USD (10000 mojos)
+Confirm (y/n): y
+Created offer with ID 7344ac4ee584725552d3f5a0c713aba2c4eeb1619525753b835c568e89de1274
+Use chia wallet get_offers --id 7344ac4ee584725552d3f5a0c713aba2c4eeb1619525753b835c568e89de1274 -f 125588179 to view status
+```
+<br/>
+
+This time if the Maker attempts to send 0.1 XCH to the same wallet as before, the transaction will succeed:
+
+```bash
+(venv) $ chia wallet send -i 1 -a 0.1 -t xchxxxxxxxxxxxxxxxxx
+Submitting transaction...
+Transaction submitted to nodes:
+```
+<br/>
+
+On of the Maker's coins has been reserved for the offer, and the other has been sent to another wallet. The Maker can further break apart the large coin as needed.
+
+-----
+
+## Further reading
+
+* [Offers blog entry]()
+* [Offers details]()
+* [GUI tutorial]()
+* [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/ "Coin set model")
