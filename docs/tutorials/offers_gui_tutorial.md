@@ -4,6 +4,10 @@ title: Offers, GUI Tutorial
 
 # Offers tutorial (GUI)
 
+This tutorial covers Chia offers using the offical wallet's graphical user interface.
+
+We also have a [command line tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial") and a [reference document](../puzzles/offers.md "Offers reference").
+
 ## Contents:
 
 * [Add a new CAT wallet](#add-a-new-cat-wallet)
@@ -13,6 +17,8 @@ title: Offers, GUI Tutorial
 * [Create a multiple-token offer](#create-a-multiple-token-offer)
 * [Accept a multiple-token offer](#accept-a-multiple-token-offer)
 * [Common issues](#common-issues)
+* [Further reading](#further-reading)
+
 -----
 
 ## Add a new CAT wallet
@@ -399,11 +405,48 @@ It's easy to create an offer with multiple tokens, on one or both ends of the tr
 
 -----
 
-## Common issues
+## Potential issues
 
-edge cases
--- accepter wallet doesn't have cat wallet for cat offered
--- maker doesn't have enough money
--- taker doesn't have enough money
--- offer no longer valid
--- coinset issues, 1 coin for whole wallet is already reserved
+This section will detail a non-comprehensive list of issues you might encounter while making or taking offers.
+
+## Contents:
+
+* [Maker wallet doesn't have enough money](#maker-wallet-doesnt-have-enough-money)
+* [Taker wallet doesn't have enough money](#taker-wallet-doesnt-have-enough-money)
+* [Taker accepts an unknown CAT offer](#taker-accepts-an-unknown-cat-offer)
+* [Taker attempts to accept an invalid offer](#taker-attempts-to-accept-an-invalid-offer)
+* [Maker cancels an offer locally, Taker accepts the offer](#maker-cancels-an-offer-locally-taker-accepts-the-offer)
+* [Whole coins must be reserved](#whole-coins-must-be-reserved)
+
+-----
+
+### Maker wallet doesn't have enough money
+
+-----
+
+### Taker wallet doesn't have enough money
+
+-----
+
+### Taker accepts an unknown CAT offer
+
+-----
+
+### Taker attempts to accept an invalid offer
+
+-----
+
+### Maker cancels an offer locally, Taker accepts the offer
+
+-----
+
+### Whole coins must be reserved
+
+-----
+
+## Further reading
+
+* [Offers blog entry]()
+* [Offers reference](../puzzles/offers.md "Offers reference")
+* [CLI tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial")
+* [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model")

@@ -4,9 +4,14 @@ title: Offers, GUI Tutorial
 
 # Offers tutorial (CLI)
 
+This tutorial covers Chia offers using the command line interface.
+
+We also have a [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial") and a [reference document](../puzzles/offers.md "Offers reference").
+
 ## Contents:
 
 * [Note about Windows](#note-about-windows)
+* [CLI commands and reference](#cli-commands-and-reference)
 * [Add a new CAT wallet](#add-a-new-cat-wallet)
 * [Create a single-token offer](#create-a-single-token-offer)
 * [Accept a single-token offer](#accept-a-single-token-offer)
@@ -14,11 +19,13 @@ title: Offers, GUI Tutorial
 * [Create a multiple-token offer](#create-a-multiple-token-offer)
 * [Accept a multiple-token offer](#accept-a-multiple-token-offer)
 * [Potential issues](#potential-issues)
+* [Further reading](#further-reading)
+
 -----
 
 ## Note about Windows
 
-If you are running on Windows, many of the commands from this tutorial will result in an exception that is outside of Chia's control. You can safely ignore it.
+**Important** -- If you are running on Windows, many of the commands from this tutorial will result in an exception that is outside of Chia's control. You can safely ignore it.
 
 ```bash
 Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x000001EACD142CA0>
@@ -35,6 +42,98 @@ RuntimeError: Event loop is closed
 ```
 
 For more info, see [https://github.com/aio-libs/aiohttp/issues/4324](https://github.com/aio-libs/aiohttp/issues/4324 "Info about event loop exception").
+
+-----
+## CLI commands and reference
+
+Chia's command line interface provides a set of commands to make, take, cancel, and list offers. To use offers on the command line, make sure you are using a virtual environment.
+
+The relevant commands can all be found under the `chia wallet` command:
+
+```bash
+(venv) $ chia wallet -h
+```
+
+### Commands
+
+* [`make_offer`](#make_offer)
+* [`take_offer`](#take_offer)
+* [`cancel_offer`](#cancel_offer)
+* [`get_offers`](#get_offers)
+
+### Reference
+
+### `make_offer`
+
+Functionality: Create an offer of XCH/CATs for XCH/CATs.
+
+Usage: `chia wallet make_offer [OPTIONS]`
+
+Options:
+
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -wp | --wallet-rpc-port | INTEGER | False | Set the port where the Wallet is hosting the RPC interface. See the rpc_port under wallet in config.yaml|
+| -f  | --fingerprint     | INTEGER | False | Set the fingerprint to specify which wallet to use
+| -o  | --offer           | TEXT    | True  | A wallet id to offer and the amount to offer (formatted like wallet_id:amount)
+| -r  | --request         | TEXT    | True  | A wallet id of an asset to receive and the amount you wish to receive (formatted like wallet_id:amount)
+| -p  | --filepath        | TEXT    | True  | The path to write the generated offer file to
+| -m  | --fee             | TEXT    | False | A fee to add to the offer when it gets taken
+| -h  | --help            | None    | False | Show a help message and exit
+
+---
+### **`take_offer`**
+
+Functionality: Examine or take an offer.
+
+Usage: `chia wallet take_offer [OPTIONS] PATH_OR_HEX`
+
+Options:
+
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -wp | --wallet-rpc-port | INTEGER | False | Set the port where the Wallet is hosting the RPC interface. See the rpc_port under wallet in config.yaml
+| -f  | --fingerprint     | INTEGER | False | Set the fingerprint to specify which wallet to use
+| -e  | --examine-only    | None    | False | Print the summary of the offer file but do not take it
+| -m  | --fee             | TEXT    | False | The fee to use when pushing the completed offer
+| -h  | --help            | None    | False | Show a help message and exit
+
+---
+### **`cancel_offer`**
+
+Functionality: Cancel an existing offer. Must be the offer's Maker.
+
+Usage: `chia wallet cancel_offer [OPTIONS]`
+
+Options:
+
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -wp | --wallet-rpc-port | INTEGER | False | Set the port where the Wallet is hosting the RPC interface. See the rpc_port under wallet in config.yaml
+| -f  | --fingerprint     | INTEGER | False  | Set the fingerprint to specify which wallet to use
+| -id | --id              | TEXT    | True  | The offer ID that you wish to cancel
+| N/A | --insecure        | None    | False | Don't make an on-chain transaction, simply mark the offer as canceled
+| -m  | --fee             | TEXT    | False | The fee to use when canceling the offer securely
+| -h  | --help            | None    | False | Show a help message and exit
+
+---
+### **`get_offers`**
+
+Functionality: Get the status of existing offers. Must be the offer's Maker.
+
+Usage: `chia wallet get_offers [OPTIONS]`
+
+Options:
+
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -wp | --wallet-rpc-port | INTEGER | False | Set the port where the Wallet is hosting the RPC interface. See the rpc_port under wallet in config.yaml
+| -f  | --fingerprint     | INTEGER | False | Set the fingerprint to specify which wallet to use
+| -id | --id              | TEXT    | False | The ID of the offer that you wish to examine
+| -p  | --filepath        | TEXT    | False | The path to rewrite the offer file to (must be used in conjunction with --id)
+| -ia | --include-all     | None    | False | Include offers that have already been confirmed/canceled
+| -s  | --summaries       | None    | False | Show the assets being offered and requested for each offer
+| -h  | --help            | None    | False | Show a help message and exit
 
 -----
 
@@ -58,13 +157,13 @@ In order to create an offer, you must have a wallet for any Chia Asset Tokens (C
 The asset IDs for Chia's main CATs are stored in:
 `chia-blockchain/chia/wallet/cc_wallet/cat_constants.py`
 
-The ID for USDS, which we'll use for this example, is:
+The ID for Stably USD (USDS), which we'll use for this example, is:
 `6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589`
 
 Here's the command to add a Stably USD wallet:
 ```bash
 (venv) $ chia wallet add_token -n "Stably USD" -id 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589
-Successfully added Stably USD with wallet id 2 on key 123456788
+Successfully added Stably USD with wallet id 2 on key 123456789
 ```
 <br/>
 
@@ -85,7 +184,7 @@ Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
    -Spendable: 0.0  (0 mojo)
 ```
 <br/>
-You now have a Stably USD wallet, in addition to your standard Chia wallet.
+You should have a Stably USD wallet, in addition to your standard Chia wallet.
 
 -----
 
@@ -99,6 +198,7 @@ A few assumptions:
 * There is only one wallet fingerprint installed locally. (If you have more than one fingerprint, use the `-f` flag to specify which one to use.)
 * Wallet ID 1 is a standard Chia wallet.
 * Wallet ID 2 is a Stably USD wallet.
+* We won't add a fee to the offer (if you want to add a fee, use the `-m` flag).
 <br/><br/>
 
 Three flags are required to create the offer file:
@@ -403,6 +503,19 @@ Wallet ID 4 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
 -----
 
 ## Potential issues
+
+This section will detail a non-comprehensive list of issues you might encounter while making or taking offers.
+
+## Contents:
+
+* [Maker wallet doesn't have enough money](#maker-wallet-doesnt-have-enough-money)
+* [Taker wallet doesn't have enough money](#taker-wallet-doesnt-have-enough-money)
+* [Taker accepts an unknown CAT offer](#taker-accepts-an-unknown-cat-offer)
+* [Taker attempts to accept an invalid offer](#taker-attempts-to-accept-an-invalid-offer)
+* [Maker cancels an offer locally, Taker accepts the offer](#maker-cancels-an-offer-locally-taker-accepts-the-offer)
+* [Whole coins must be reserved](#whole-coins-must-be-reserved)
+
+-----
 
 ### Maker wallet doesn't have enough money
 
@@ -779,6 +892,6 @@ On of the Maker's coins has been reserved for the offer, and the other has been 
 ## Further reading
 
 * [Offers blog entry]()
-* [Offers details]()
-* [GUI tutorial]()
-* [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/ "Coin set model")
+* [Offers reference](../puzzles/offers.md "Offers reference")
+* [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial")
+* [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model")

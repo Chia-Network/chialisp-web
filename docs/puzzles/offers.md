@@ -77,6 +77,10 @@ That's music to Alice and Bob's ears.
 
 The rest of this document will go into the details of offers -- why they're valuable, how the offer files are created, design decisions, and some of the exciting possibilities that lie ahead.
 
+If you want to start using offers right away, you can check out our tutorials:
+* [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial")
+* [CLI tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial")
+
 -----
 ## Advantages
 
@@ -338,121 +342,10 @@ Options:
 | -s  | --summaries       | None    | False | Show the assets being offered and requested for each offer
 | -h  | --help            | None    | False | Show a help message and exit
 
-----
-### Command line usage
+-----
+### CLI examples
 
-Let's say the Maker has a wallet with XCH and SBX.
-
-Show the wallet's status:
-```bash
-(venv) $ chia wallet show
-Wallet height: 1290801
-Sync status: Synced
-Balances, fingerprint: 0123456789
-Wallet ID 1 type STANDARD_WALLET Chia Wallet
-   -Total Balance: 3.65486e-07 xch (365486 mojo)
-   -Pending Total Balance: 3.65486e-07 xch (365486 mojo)
-   -Spendable: 3.65486e-07 xch (365486 mojo)
-Wallet ID 2 type COLOURED_COIN Spacebucks (Asset ID: 78ad32a8c9ea70f27d73e9306fc467bab2a6b15b30289791e37ab6e8612212b1)
-   -Total Balance: 1000  (1000000 mojo)
-   -Pending Total Balance: 1000  (1000000 mojo)
-   -Spendable: 13029.997  (1000000 mojo)
-```
-
-<br/>
-
-### Example -- Offer 1500 XCH mojos for 1 SBX
-
-Create the offer (Maker's machine):
-```bash
-(venv) $ chia wallet make_offer -o 1:0.0000000015 -r 2:1 -p ./1500_XCH_mojos_for_1_SBX.offer
-Creating Offer
---------------
-
-OFFERING:
-  - 0.0000000015 XCH (1500 mojos)
-REQUESTING:
-  - 1 Spacebucks (1000 mojos)
-Confirm (y/n): y
-Created offer with ID xxxxxxxxxxx
-Use chia wallet get_offers --id xxxxxxxxxxx -f 0123456789 to view status
-```
-* `1` and `2` are the wallet numbers, namely for XCH and SBX.
-* The XCH amount is in mojos, but the SBX amount is in SBX.
-* You must choose whether to confirm the offer's creation.
-* `xxxxxxxxxxx` is not the actual ID. It has be obfuscated.
-
-View the offer with a summary (Maker's machine):
-```bash
-(venv) $ chia wallet get_offers --id xxxxxxxxxxx -f 0123456789 -s
-
-Record with id: xxxxxxxxxxx
----------------
-Created at: 2021-12-18 12:24:56
-Confirmed at: 0
-Accepted at: N/A
-Status: PENDING_ACCEPT
-Summary:
-  OFFERED:
-    - XCH (Wallet ID: 1): 1.5E-9 (1500 mojos)
-  REQUESTED:
-    - Spacebucks (Wallet ID: 2): 1 (1000 mojos)
-Pending Balances:
-    - XCH (Wallet ID: 1): 9.9E-9 (9900 mojos)
-Fees: 0
----------------
-```
-
-Accept the offer (Taker's machine):
-```bash
-(venv) $ chia wallet take_offer ./1500_XCH_mojos_for_1_SBX.offer 
-Summary:
-  OFFERED:
-    - XCH (Wallet ID: 1): 1.5E-9 (1500 mojos)
-  REQUESTED:
-    - Spacebucks (Wallet ID: 2): 1 (1000 mojos)
-Fees: 0
-Would you like to take this offer? (y/n): y
-Accepted offer with ID xxxxxxxxxxx
-Use chia wallet get_offers --id xxxxxxxxxxx -f 0123456789 to view its status
-```
-
-View the completed offer with a summary (Maker's machine):
-```bash
-(venv) $ chia wallet get_offers --id xxxxxxxxxxx -f 0123456789 -s
-
-Record with id: xxxxxxxxxxx
----------------
-Created at: 2021-12-18 12:24:56
-Confirmed at: 1290139
-Accepted at: N/A
-Status: CONFIRMED
-Summary:
-  OFFERED:
-    - XCH (Wallet ID: 1): 1.5E-9 (1500 mojos)
-  REQUESTED:
-    - Spacebucks (Wallet ID: 2): 1 (1000 mojos)
-Pending Balances:
-    - XCH (Wallet ID: 1): 9.9E-9 (9900 mojos)
-Fees: 0
-```
-
-View the Maker's wallet after the offer has been accepted:
-```bash
-(venv) $ chia wallet show
-Wallet height: 1291075
-Sync status: Synced
-Balances, fingerprint: 0123456789
-Wallet ID 1 type STANDARD_WALLET Chia Wallet
-   -Total Balance: 3.63986-07 xch (363986 mojo)
-   -Pending Total Balance: 3.63986-07 xch (363986 mojo)
-   -Spendable: 3.63986-07 xch (363986 mojo)
-Wallet ID 2 type COLOURED_COIN Spacebucks (Asset ID: 78ad32a8c9ea70f27d73e9306fc467bab2a6b15b30289791e37ab6e8612212b1)
-   -Total Balance: 1001  (1001000 mojo)
-   -Pending Total Balance: 1001  (1001000 mojo)
-   -Spendable: 13029.997  (1001000 mojo)
-```
-The offer has gone through and the balance of the Maker's wallet has decreased by 1500 XCH mojos and increased by 1 SBX.
+For detailed examples of offers using the the command line interface, see our [CLI tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial").
 
 -----
 ## RPCs
