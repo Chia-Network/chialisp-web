@@ -6,7 +6,7 @@ title: Offers, GUI Tutorial
 
 This tutorial covers Chia offers using the command line interface.
 
-We also have a [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial") and a [reference document](../puzzles/offers.md "Offers reference").
+See also our [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial") and our [reference document](../puzzles/offers.md "Offers reference").
 
 ## Contents:
 
@@ -21,7 +21,10 @@ We also have a [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tu
 * [Potential issues](#potential-issues)
 * [Further reading](#further-reading)
 
+<br/>
+
 -----
+<br/>
 
 ## Note about Windows
 
@@ -43,7 +46,11 @@ RuntimeError: Event loop is closed
 
 For more info, see [https://github.com/aio-libs/aiohttp/issues/4324](https://github.com/aio-libs/aiohttp/issues/4324 "Info about event loop exception").
 
+<br/>
+
 -----
+<br/>
+
 ## CLI commands and reference
 
 Chia's command line interface provides a set of commands to make, take, cancel, and list offers. To use offers on the command line, make sure you are using a virtual environment.
@@ -135,11 +142,14 @@ Options:
 | -s  | --summaries       | None    | False | Show the assets being offered and requested for each offer
 | -h  | --help            | None    | False | Show a help message and exit
 
+<br/>
+
 -----
+<br/>
 
 ## Add a new CAT wallet
 
-For this example, we'll start with an empty wallet.
+For this example, we'll start with a standard Chia wallet.
 ```bash
 (venv) $ chia wallet show
 Wallet height: 1332820
@@ -167,7 +177,7 @@ Successfully added Stably USD with wallet id 2 on key 123456789
 ```
 <br/>
 
-To see your new Stably USD wallet, run `chia wallet show`:
+To see your new wallet, run `chia wallet show`:
 
 ```bash
 (venv) $ chia wallet show
@@ -184,9 +194,13 @@ Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
    -Spendable: 0.0  (0 mojo)
 ```
 <br/>
+
 You should have a Stably USD wallet, in addition to your standard Chia wallet.
 
+<br/>
+
 -----
+<br/>
 
 ## Create a single-token offer
 
@@ -243,11 +257,14 @@ Status: PENDING_ACCEPT
 
 Congratulations! You have created an offer. A few things to note:
 * Your wallet has reserved the coin(s) necessary to complete the offer.
-* The blockchain has not recorded this offer.
+* The blockchain has _not_ recorded this offer.
 * You can distribute the offer file wherever you want.
 * Anyone who sees the offer file can attempt to accept it.
 
+<br/>
+
 -----
+<br/>
 
 ## Accept a single-token offer
 
@@ -323,10 +340,15 @@ Wallet ID 1 type STANDARD_WALLET Chia Wallet
    -Pending Total Balance: 0.100000000000 xch (100000000000 mojo)
    -Spendable: 0.100000000000 xch (100000000000 mojo)
 Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589)
-   -Total Balance: 1.0  (1000 mojo)
-   -Pending Total Balance: 1.0  (1000 mojo)
-   -Spendable: 1.0  (1000 mojo)
+   -Total Balance: 0.0  (0 mojo)
+   -Pending Total Balance: 0.0  (0 mojo)
+   -Spendable: 0.0  (0 mojo)
 ```
+
+<br/>
+
+-----
+<br/>
 
 ## Cancel an offer
 
@@ -389,9 +411,12 @@ Status: CANCELLED
 
 Note that this command canceled the offer on the blockchain by buying the coins that had been offered. This method of cancellation ensures that nobody could accept your offer in the future. This is the default option, and the option that you should use if you have copied your offer file to another computer or website.
 
-If you have not sent the offer file elsewhere, you can cancel the offer by running the same command with the `--insecure` flag, which will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept it. The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
+If you have not sent the offer file elsewhere, you can cancel the offer by running the same command with the `--insecure` flag, which will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you have copied your offer file elsewhere, someone could still accept it. The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
+
+<br/>
 
 -----
+<br/>
 
 ## Create a multiple-token offer
 
@@ -440,11 +465,14 @@ Fees: 0
 ---------------
 ```
 
+<br/>
+
 -----
+<br/>
 
 ## Accept a multiple-token offer
 
-Accept a multiple-token offer just like you did with a single-token offer:
+The process to accept a multiple-token offer is the same as that of a single-token offer:
 
 ```bash
 (venv) $ chia wallet take_offer ~/offers/10usds_10kckc_for_100bmojos_9ksbx.offer
@@ -500,7 +528,10 @@ Wallet ID 4 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
    -Spendable: 10000.0  (10000 mojo)
 ```
 
+<br/>
+
 -----
+<br/>
 
 ## Potential issues
 
@@ -508,16 +539,19 @@ This section will detail a non-comprehensive list of issues you might encounter 
 
 ## Contents:
 
-* [Maker wallet doesn't have enough money](#maker-wallet-doesnt-have-enough-money)
-* [Taker wallet doesn't have enough money](#taker-wallet-doesnt-have-enough-money)
+* [Maker doesn't have enough money](#maker-doesnt-have-enough-money)
+* [Taker doesn't have enough money](#taker-doesnt-have-enough-money)
 * [Taker accepts an unknown CAT offer](#taker-accepts-an-unknown-cat-offer)
 * [Taker attempts to accept an invalid offer](#taker-attempts-to-accept-an-invalid-offer)
 * [Maker cancels an offer locally, Taker accepts the offer](#maker-cancels-an-offer-locally-taker-accepts-the-offer)
 * [Whole coins must be reserved](#whole-coins-must-be-reserved)
 
------
+<br/>
 
-### Maker wallet doesn't have enough money
+-----
+<br/>
+
+### Maker doesn't have enough money
 
 Let's say a Maker has wallets for XCH and CKC, with no money in either of them.
 
@@ -538,7 +572,7 @@ Wallet ID 2 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
 
 <br/>
 
-The maker attempts to make an ambitious offer: 100 XCH for 1 million CKC. However, the Maker does not have enough money do create this offer:
+The maker attempts to make an ambitious offer: 100 XCH for 1 million CKC. However, the Maker does not have enough money to create this offer. As a result, an Exception is thrown:
 
 ```bash
 (venv) $ chia wallet make_offer -o 2:1000000 -r 1:100 -p ~/offers/100xch_for_1mckc.offer
@@ -553,9 +587,12 @@ Confirm (y/n): y
 Exception from 'wallet' {'error': 'Error creating offer: insufficient funds in wallet 2', 'success': False}
 ```
 
------
+<br/>
 
-### Taker wallet doesn't have enough money
+-----
+<br/>
+
+### Taker doesn't have enough money
 
 Let's say the Taker has a brand new wallet:
 
@@ -583,7 +620,7 @@ Fees: 0
 ```
 <br/>
 
-The Taker will get an error when attempting to accept the offer:
+If the Taker attempts to accept the offer, an Exception will be thrown:
 ```bash
 (venv) $ chia wallet take_offer ~/offers/10kckc_for_0.1xch.offer 
 Summary:
@@ -596,11 +633,16 @@ Would you like to take this offer? (y/n): y
 Exception from 'wallet' {'error': 'insufficient funds in wallet 1', 'success': False}
 ```
 
+<br/>
+
 -----
+<br/>
 
 ### Taker accepts an unknown CAT offer
 
-There is a possibility of a scam with _unknown_ CATs, where a Taker thinks an offer is for a valuable token, but it's actually for a worthless one.
+You should be extra careful before accepting offers for unknown CATs. This is because the offer _might_ be a scam where a different -- and worthless -- token is actually being offered.
+
+Here's how the scam would work:
 
 Let's say a potential Taker has 0.1 XCH in their wallet.
 
@@ -627,7 +669,7 @@ Summary:
 ```
 <br/>
 
-The Taker decides to accept the offer:
+The Taker decides to accept the offer and it is confirmed successfully:
 ```bash
 (venv) $ chia wallet take_offer ~/offers/0.25_Shibe_for_0.1_XCH.offer 
 Summary:
@@ -641,13 +683,16 @@ Accepted offer with ID 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95d
 Use chia wallet get_offers --id 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f -f 1234567890 to view its status
 ```
 
-The offer goes through, but the Taker should be aware that there is a risk associated with accpeting an offer for an unknown CAT. The offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertantly accepted an offer for a worthless token!
+Notice that the offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertantly accepted an offer for a worthless token!
 
-There is a simple to avoid this scam: always cross-reference the unknown CAT's ID before accepting the offer. In this case, the Taker should verify from a trusted source that `4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f` indeed corresponds to Shibe.
+Luckily, it is easy to avoid this scam by cross-referencing the unknown CAT's ID before accepting the offer. In this case, the Taker should verify from a trusted source that `4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f` indeed corresponds to Shibe.
 
 Chia does install a list of known CATs by default, so this scam should be rare, but you should always be diligent in scrutinizing offers for unknown CATs.
 
+<br/>
+
 -----
+<br/>
 
 ### Taker attempts to accept an invalid offer
 
@@ -666,7 +711,10 @@ Would you like to take this offer? (y/n): y
 Exception from 'wallet' {'error': 'This offer is no longer valid', 'success': False}
 ```
 
+<br/>
+
 -----
+<br/>
 
 ### Maker cancels an offer locally, Taker accepts the offer
 
@@ -730,7 +778,7 @@ Cancelled offer with ID af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b
 ```
 <br/>
 
-The Maker then verifies that the offer has indeed been canceled:
+The Maker verifies that the offer has indeed been canceled:
 ```bash
 (venv) $ chia wallet get_offers -id af98fd1f63a8351829d2d2fd34c2e880021e154b9a3d23f215385c1b72831b69
 
@@ -744,7 +792,7 @@ Status: CANCELLED
 ```
 <br/>
 
-After the offer has been canceled, a taker notices the offer file and decides to take it:
+After the offer has been canceled, a Taker notices the offer file and decides to accept it:
 
 ```bash
 (venv) $ chia wallet take_offer ~/offers/0.1xch_for_10usds.offer 
@@ -760,7 +808,7 @@ Use chia wallet get_offers --id 8592e2f96b13cf7eee0e1c5bdbf1ef523ee25e6aaf64214c
 ```
 <br/>
 
-Later, the Maker notices that the offer has gone through, despite being canceled:
+Later, the Maker notices that the offer has gone through, despite having been canceled:
 
 ```bash
 (venv) PS $ chia wallet show
@@ -779,13 +827,18 @@ Wallet ID 4 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
 
 If the offer had been canceled on-chain, the reserved coins would have been spent. At that point, even if someone else had gotten access to the offer file, the offer itself would've been invalid.
 
+The lesson here is do _not_ use the --insecure flag unless you're certain the offer file has never left your computer.
+
+<br/>
+
 -----
+<br/>
 
 ### Whole coins must be reserved
 
-Under the coin set model, coins can be of any value. When an offer is created, the wallet must reserve enough coins to meet the requirements of the offer. 
+Under the coin set model, coins can be of any value. When an offer is created, the Maker's wallet must reserve enough coins to meet the requirements of the offer. 
 
-The coin set model [has many advantages](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model") over the account model, but it can create some situations that take some time to understand.
+The coin set model [has many advantages](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model") over the account model, but it can create some situations that take time to understand.
 
 For example, let's say a Maker has 1 XCH and 0 USDS:
 
@@ -826,22 +879,24 @@ Use chia wallet get_offers --id 5708209d4502049b556d3e00782e36259651eb4fdc0da94f
 
 While the offer is pending, the Maker attempts to send 0.1 XCH to another address:
 ```bash
-(venv) $ chia wallet send -i 1 -a 0.1 -t xchxxxxxxxxxxxxxxxxx
+(venv) $ chia wallet send -i 1 -a 0.1 -t <another wallet address>
 Submitting transaction...
 Exception from 'wallet' {'error': "Can't send more than 0 in a single transaction", 'success': False}
 ```
 <br/>
 
-This should be possible -- even after the offer gets accepted, the maker still will have 0.9 XCH. The reason for the Excpetion is because the Maker only has a single coin worth 1 XCH, and that coin has already been reserved for the offer. It's similar to owning a $1 bill and buying something for 10 cents. While the transaction is in progress, you can't buy anything else. You have to wait for your change.
+This should be possible -- the Maker has 0.9 XCH, even after taking the offer into account. The reason for the Excpetion is because the Maker only has a single coin worth 1 XCH, and that coin has already been reserved for the offer.
 
-The Maker can work around this issue by canceling the offer and breaking the single large coin into multiple small ones. The easiest way for the Maker to do this would be to send some money to his/herself:
+It's similar to using a $10 bill to buy something for $1. Before you receive your change, you can't buy anything else. On the other hand, if you had started with two $5 bills and bought the same $1 item, you could've purchased something else while waiting for your change.
+
+The Maker can work around this issue by breaking the single large coin into multiple small ones. One simple way to do this would be to send money to him/herself:
 
 ```bash
-(venv) $ chia wallet send -i 1 -a 0.1 -t xch-makers-obfuscated-address
+(venv) $ chia wallet send -i 1 -a 0.1 -t <Maker's wallet address>
 ```
 <br/>
 
-The Maker's wallet looks identical to before:
+The Maker's wallet looks the same as before:
 
 ```bash
 (venv) $ chia wallet show
@@ -859,7 +914,7 @@ Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
 ```
 <br/>
 
-Even though the Maker has the same amount of money as before, there are now two coins that sum to 1 XCH. The maker can now recreate the old offer:
+Even though the Maker's balance hasn't changed, there are now two coins that sum to 1 XCH. The maker can now recreate the old offer:
 
 ```bash
 (venv) $ chia wallet make_offer -o 1:0.1 -r 2:10 -p ~/offers/0.1xch_for_10usds.offer 
@@ -879,15 +934,18 @@ Use chia wallet get_offers --id 7344ac4ee584725552d3f5a0c713aba2c4eeb1619525753b
 This time if the Maker attempts to send 0.1 XCH to the same wallet as before, the transaction will succeed:
 
 ```bash
-(venv) $ chia wallet send -i 1 -a 0.1 -t xchxxxxxxxxxxxxxxxxx
+(venv) $ chia wallet send -i 1 -a 0.1 -t <another wallet address>
 Submitting transaction...
 Transaction submitted to nodes:
 ```
 <br/>
 
-On of the Maker's coins has been reserved for the offer, and the other has been sent to another wallet. The Maker can further break apart the large coin as needed.
+One of the Maker's coins has been reserved for the offer, and the other has been sent to another wallet. The Maker can further break apart the large coin as needed.
+
+<br/>
 
 -----
+<br/>
 
 ## Further reading
 

@@ -33,7 +33,7 @@ A clique of classical jazz enthusiasts creates a new token in Chia's ecosystem c
 </figcaption>
 </figure>
 
-Alice likes those numbers, so she uses her Chia wallet to generate an _offer file_ with the following conditions, to be enacted upon the offer's acceptance.
+Alice likes those numbers, so she uses her Chia wallet to generate an _offer file_ with the following conditions, to be enacted upon the offer's acceptance:
 
 <figure>
 <img src="../../static/img/offers_img/offers/2_offer_1_xch_251_ckc.jpg" alt="offer details"/>
