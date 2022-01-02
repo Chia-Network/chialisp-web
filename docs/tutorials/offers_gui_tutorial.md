@@ -4,7 +4,7 @@ title: Offers, GUI Tutorial
 
 # Offers tutorial (GUI)
 
-This tutorial covers Chia offers using the offical wallet's graphical user interface.
+This tutorial covers Chia offers using the official wallet's graphical user interface.
 
 See also our [command line tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial") and our [reference document](../puzzles/offers.md "Offers reference").
 
@@ -84,7 +84,7 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
 </figure>
 <br/>
 
-   3. The "Create an Offer" dialog will appear. When you select an asset type to be offered, the dialog will display your spendable balance. After you have filled in the details of your offer, you will also be shown the exchange rate of the assests you want to trade, using the values you have entered.
+   3. The "Create an Offer" dialog will appear. When you select an asset type to be offered, the dialog will display your spendable balance. After you have filled in the details of your offer, you will also be shown the exchange rate of the assets you want to trade, using the values you have entered.
    <br/><br/>When you are satisfied with your offer, click "SAVE OFFER".
 
 <figure>
@@ -441,7 +441,7 @@ There is a warning dialog about the unknown cat, after which the offer is confir
 
 
 
-Notice that the offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertantly accepted an offer for a worthless token!
+Notice that the offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertently accepted an offer for a worthless token!
 
 Luckily, it is easy to avoid this scam by cross-referencing the unknown CAT's ID before accepting the offer. In this case, the Taker should verify from a trusted source that `4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f` indeed corresponds to Shibe.
 
@@ -576,7 +576,7 @@ Notice that while the Total Balance is 1, the Spendable Balance is 0.
 </figure>
 <br/>
 
-This should be possible -- the Maker has 0.9 XCH, even after taking the offer into account. The reason for the Excpetion is because the Maker only has a single coin worth 1 XCH, and that coin has already been reserved for the offer.
+This should be possible -- the Maker has 0.9 XCH, even after taking the offer into account. The reason for the Exception is because the Maker only has a single coin worth 1 XCH, and that coin has already been reserved for the offer.
 
 It's similar to using a $10 bill to buy something for $1. Before you receive your change, you can't buy anything else. On the other hand, if you had started with two $5 bills and bought the same $1 item, you could've purchased something else while waiting for your change.
 

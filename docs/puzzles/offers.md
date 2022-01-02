@@ -125,7 +125,7 @@ An offer has six potential states, as defined in [trade_status.py](https://githu
 3. CANCELLED -- Depending on which [type of cancellation](#cancellation "Offer cancellation") has been used, either
   * The Maker's wallet has released the coins it had been reserving for this offer, or
   * The Maker-Taker's coins have been spent and new ones have been created in the Maker-Taker's wallet.
-4. CONFIRMED -- The Maker's and Takers's reserved coins have been spent in the same spendbundle. Effectively, the offer has been completed successfully.
+4. CONFIRMED -- The Maker's and Taker's reserved coins have been spent in the same spendbundle. Effectively, the offer has been completed successfully.
 5. FAILED -- The Taker attempted, and failed to accept the offer. This could have happened either because the Maker canceled the offer, or because another Taker took the offer first.
 
 
@@ -345,7 +345,7 @@ Options:
 -----
 ### CLI examples
 
-For detailed examples of offers using the the command line interface, see our [CLI tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial").
+For detailed examples of offers using the command line interface, see our [CLI tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial").
 
 -----
 ## RPCs
