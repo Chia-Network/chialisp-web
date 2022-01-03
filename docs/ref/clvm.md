@@ -609,13 +609,13 @@ When a clvm program is run, a cost is attributed to it. The minimum program cost
 
 | operator | base cost | cost per arg | cost per byte |
 | -------- | --------- | ------------ | ------------- |
-| `f` | 30 | - | - |
-| `i` | 33 | - | - |
-| `c` | 50 | - | - |
-| `r` | 30 | - | - |
-| `l` | 19 | - | - |
-| `q` | 20 | - | - |
-| `a` | 90 | - | - |
+| `f` *first* | 30 | - | - |
+| `i` *if* | 33 | - | - |
+| `c` *cons* | 50 | - | - |
+| `r` *rest* | 30 | - | - |
+| `l` *listp* | 19 | - | - |
+| `q` *quote* | 20 | - | - |
+| `a` *apply* | 90 | - | - |
 | `=` | 117 | - | 1 |
 | `+` | 99 | 320 | 3 |
 | `/` | 988 | - | 4 |
