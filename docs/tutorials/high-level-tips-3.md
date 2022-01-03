@@ -7,7 +7,7 @@ sidebar_label: High Level Tips - Announcements, Oracles
 In this video, Adam Kelly discusses announcements and oracles. 
 
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/54heTeWq9xQ" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/54heTeWq9xQ" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen width="100%"></iframe>
 </figure>
 
 ---
