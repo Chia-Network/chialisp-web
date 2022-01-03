@@ -313,17 +313,25 @@ You now free to share your offer file anywhere you wish, just as you were with t
 ## Accept a multiple-token offer
    1. The process to accept a multiple-token offer is the same as for a single-token offer.
 
-   You don't need to have a wallet for all tokens being offered. If you see "Unknown CAT", you should verify that the asset ID matches the CAT you want to receive. For more info on why this is important, see the [Potential issues](#taker-accepts-an-unknown-cat-offer) section.
-
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/1_multiple_accept_dialog.png" alt="Multiple accept dialog"/>
 </figure>
 <br/>
 
-   2. After accepting the offer, a new wallet will be created for any unknown tokens.
+   2. The confirmation dialog shows all assets involved in the offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/2_new_wallet.png" alt="New wallet"/>
+<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/2_confirmed.png" alt="Multiple confirmation dialog"/>
+</figure>
+<br/>
+
+   3. After accepting the offer, a new wallet will be created for any tokens the Taker didn't already have.
+
+<figure>
+<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/3_ckc_wallet.png" alt="CKC wallet"/>
+</figure>
+<figure>
+<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/4_usds_wallet.png" alt="USDS wallet"/>
 </figure>
 
 <br/>
@@ -393,13 +401,17 @@ Let's say the Taker has a wallet with no money in it:
 
 And there's an outstanding offer requesting 0.1 XCH for 10,000 CKC:
 
-TODO: create image file
-
+<figure>
+<img src="../../static/img/offers_img/gui_tutorial/issues/05_accept_offer.png" alt="Accept offer"/>
+</figure>
 <br/>
 
 However, the Taker does not have enough money to accept this offer. As a result, an Error is displayed:
 
-TODO: create image file
+<figure>
+<img src="../../static/img/offers_img/gui_tutorial/issues/06_insufficient_funds.png" alt="Insufficient funds"/>
+</figure>
+<br/>
 
 <br/>
 
@@ -423,6 +435,9 @@ Let's say a potential Taker has 0.1 XCH in their wallet.
 There is an offer of 0.25 Shibe (an unknown CAT) in exchange for 0.1 XCH.
 
 Here's the offer from the Taker's perspective:
+
+TODO: Update graphic
+
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/08_0.25_shibe_for_0.1_xch.png" alt="Offer shibe for XCH"/>
 </figure>
@@ -431,9 +446,15 @@ Here's the offer from the Taker's perspective:
 The Taker decides to accept the offer.
 
 There is a warning dialog about the unknown cat, after which the offer is confirmed successfully:
+
+TODO: Update graphic
+
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/09_accept_unknown_warning.png" alt="Unknown CAT warning"/>
 </figure>
+
+TODO: Update graphic
+
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/10_unknown_success.png" alt="Unknown CAT success"/>
 </figure>
