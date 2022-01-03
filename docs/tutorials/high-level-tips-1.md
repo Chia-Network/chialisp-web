@@ -7,7 +7,7 @@ sidebar_label: High Level Tips - Managing State, Coin Creation, Announcements
 Adam Kelly discusses managing state, coin creation, and announcements in this Chialisp video.
 
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/lDXB4NlbQ-E" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/lDXB4NlbQ-E" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen width="100%"></iframe>
 </figure>
 
 ---
