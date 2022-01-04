@@ -166,10 +166,10 @@ Wallet ID 1 type STANDARD_WALLET Chia Wallet
 
 In order to create an offer, you must have a wallet for any Chia Asset Tokens (CATs) you want to acquire.
 
-The asset IDs for Chia's main CATs are stored in:
+The asset IDs for Chia's main CATs are stored in
 `chia-blockchain/chia/wallet/cc_wallet/cat_constants.py`
 
-The ID for Stably USD (USDS), which we'll use for this example, is:
+The ID for Stably USD (USDS), which we'll use for this example, is
 `6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589`
 
 Here's the command to add a Stably USD wallet:
@@ -273,7 +273,7 @@ Congratulations! You have created an offer. A few things to note:
 This example will use a different computer to accept the offer from the previous example. Keep in mind, offers are accepted on a first-come, first-served basis.
 <br/><br/>
 
-Display your wallet's balance before accepting the offer.
+To display your wallet's balance before accepting the offer, run `chia wallet show`:
 ```bash
 (venv) $ chia wallet show
 Wallet height: 1335630
@@ -290,7 +290,7 @@ Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
 ```
 <br/>
 
-Use the `-e` flag to examine the offer:
+To examine the offer, run `chia wallet take_offer` with the `-e` flag:
 ```bash
 (venv) $ chia wallet take_offer -e ~/0.1_xch_for_10_usds.offer
 Summary:
@@ -813,7 +813,7 @@ Use chia wallet get_offers --id 8592e2f96b13cf7eee0e1c5bdbf1ef523ee25e6aaf64214c
 Later, the Maker notices that the offer has gone through, despite having been canceled:
 
 ```bash
-(venv) PS $ chia wallet show
+(venv) $ chia wallet show
 Wallet height: 1344854
 Sync status: Synced
 Balances, fingerprint: 9876543210

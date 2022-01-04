@@ -20,7 +20,7 @@ Contents:
 
 _Offers_ enable peer-to-peer asset exchange in Chia's ecosystem. In other words, you can swap tokens that run on Chia's blockchain without needing to go through an exchange. Only two parties are required -- the _Maker_, who creates the offer, and the _Taker_, who accepts it.
 
-The Maker and Taker don't need to trust each other. Any attempts to modify the offer will invalidate it. With Chia offers, it's possible to trade your tokens without using a decentralized exchange.
+The Maker and Taker don't need to trust each other. Any attempts to modify the offer will invalidate it.
 
 ### Hypothetical example
 
@@ -91,9 +91,10 @@ Offers have many properties that we think will make them a valuable tool for Chi
   >Offer files do not contain private keys or any way to deduce them. If an offer file falls into a "hacker's" hands, they only have two options: ignore the offer or accept it.
 
 * **Immutable**: Once an offer file is created, any alterations to the file will invalidate it. The offer file only has three possible outcomes:
-  1. A taker accepts the offer as-is. All transactions contained within it are automatically processed. (There also could be multiple takers, [explained below.](#market-makers "Market makers and multiple takers")
+  1. A Taker accepts the offer as-is. All transactions contained within it are automatically processed. (There also could be multiple Takers, [explained below.](#market-makers "Market makers and multiple Takers")
   2. The Maker [cancels the offer](#cancellation "Offer cancellation").
   3. The offer will be in a pending state until either 1. or 2. are fulfilled. It is possible that the offer never is completed or canceled.
+<br/><br/>
 
   >Takers are free to propose a counter offer by creating their own offer file. In this case, the original Maker could cancel the original offer, and both parties' roles would be reversed.
 
@@ -119,13 +120,13 @@ In this section, we'll discuss the technical details of offers, including how th
 
 An offer has six potential states, as defined in [trade_status.py](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/trading/trade_status.py "trade_status.py"):
 
-0. PENDING_ACCEPT -- The Maker has created the offer, but a Taker has not yet accepted it. The Maker's wallet has reserved the coins to be spent. The spendbundle for the offer has not been sent to the mempool.
-1. PENDING_CONFIRM -- The Taker has accepted the offer. The Taker's wallet has reserved the coins to be spent. The completed spendbundle has been sent to the mempool. 
-2. PENDING_CANCEL -- The Maker has attempted to cancel the offer. Effectively, the Maker has accepted their own offer. Therefore, this offer's Maker and Taker are the same entity. The Maker-Taker's wallet has reserved all of the required coins. The completed spendbundle has been sent to the mempool.
-3. CANCELLED -- Depending on which [type of cancellation](#cancellation "Offer cancellation") has been used, either
+0. PENDING_ACCEPT -- The Maker has created the offer, but a Taker has not yet accepted it. The Maker's wallet has reserved the coin(s) to be spent. The spendbundle for the offer has not been sent to the mempool.
+1. PENDING_CONFIRM -- The Taker has accepted the offer. The Taker's wallet has reserved the coin(s) to be spent. The completed spendbundle has been sent to the mempool. 
+2. PENDING_CANCEL -- The Maker has attempted to cancel the offer. Effectively, the Maker has accepted their own offer. Therefore, this offer's Maker and Taker are the same entity. The Maker-Taker's wallet has reserved the required coin(s). The completed spendbundle has been sent to the mempool.
+3. CANCELLED -- Depending on which [type of cancellation](#cancellation "Offer cancellation") has been used, either:
   * The Maker's wallet has released the coins it had been reserving for this offer, or
   * The Maker-Taker's coins have been spent and new ones have been created in the Maker-Taker's wallet.
-4. CONFIRMED -- The Maker's and Taker's reserved coins have been spent in the same spendbundle. Effectively, the offer has been completed successfully.
+4. CONFIRMED -- The Maker's and Taker's reserved coins have been spent in the same spendbundle. The offer has been completed successfully.
 5. FAILED -- The Taker attempted, and failed to accept the offer. This could have happened either because the Maker canceled the offer, or because another Taker took the offer first.
 
 
@@ -135,53 +136,48 @@ Here's the basic workflow to create an offer file:
 
 1. The Maker uses either the wallet GUI or [CLI](#cli-usage "CLI usage for offers") to create the terms for an offer. For example, the Maker might offer 1 XCH for 251 CKC. If the Maker doesn't have sufficient funds, an error is thrown. 
 
-2. The Maker's wallet [selects the appropriate coin(s)](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/wallet.py#L232 "Wallet code's select_coins method") to spend, using starting with the largest coin available.
+2. The Maker's wallet [selects the appropriate coin(s)](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/wallet.py#L232 "Wallet code's select_coins method") to spend, starting with the largest coin available.
 
 3. For each coin the Maker wants to receive from the offer, the Maker's wallet [creates a notarized coin payment](https://github.com/Chia-Network/chia-blockchain/blob/b76b75f3175fc5b8fc904a4b07a7543fdde7dbf1/chia/wallet/trade_manager.py#L241 "trade_manager.py, _create_offer_for_ids method"). This is a list in the form of `(PH1 AMT1 ...)`, where:
   * `PH1` is the puzzle hash of the coin the Maker wants to acquire.
   * `AMT1` is the value of the coin the Maker wants to acquire.
-  * `...` is an optional memo of arbitrary length. By default this is left empty.
+  * `...` is an optional memo of arbitrary length. The trade manager adds a hint to itself in this memo.
 
 4. The Maker's wallet creates a nonce `N`, using the treehash of a sorted list of the coinIDs of each coin being offered.
 
-  Every coinID needs to be included in the nonce to prevent the Maker from duplicating the offer with the same coin(s). (For example, the Maker might want to change the price of the offer if it hasn't been accepted for some time.) Because each coinID must be unique, any attempts to change any of the coins being offered will cause the offer to become invalid.
+  Every coinID needs to be included in the nonce to prevent the Maker from creating two offers that can both be completed with just one payment. (Note that even if two conflicting offers were created, the blockchain would correctly reject one of them as a double-spend.) Because each coinID must be unique, any attempts to change any of the coins being offered will cause the offer to become invalid.
 
   >If you're unfamiliar with nonces, [Wikipedia](https://en.wikipedia.org/wiki/Cryptographic_nonce "Cryptographic Nonce on Wikipedia") has a good explanation.
 
-5. The Maker's wallet combines the nonce (Step 4) with the notarized coin payment(s) (Step 3) to [create a list](https://github.com/Chia-Network/chia-blockchain/blob/4873ea53be168276a56a5a1797075bdd63c46ad9/chia/wallet/trading/offer.py#L49 "offer.py, notarize_payments method") called `notarized_payments`. For example, if three coins are included in the Maker's offer, `notarized_payments` will be structured like this: `(N . ((PH1 AMT1 ...) (PH2 AMT2 ...) (PH3 AMT3 ...)))`.
+5. The Maker's wallet combines the nonce (Step 4) with the notarized coin payment(s) (Step 3) to [create a list](https://github.com/Chia-Network/chia-blockchain/blob/4873ea53be168276a56a5a1797075bdd63c46ad9/chia/wallet/trading/offer.py#L49 "offer.py, notarize_payments method") called `notarized_payments`. For example, if three coins are included in the Maker's offer, `notarized_payments` will be structured like this: `((N . ((PH1 AMT1 ...) (PH2 AMT2 ...) (PH3 AMT3 ...))) ...)`.
 
-6. The Maker's wallet [calculates the appropriate announcements](https://github.com/Chia-Network/chia-blockchain/blob/127342f2ed516537f7398dd1672c89b2fa3c2b59/chia/wallet/trading/offer.py#L69 "Offer.py, calculate_announcements method") to assert in the offer's spendbundle. Some guidelines:
-  * If one or more standard XCH coin(s) are to be spent, there will be an `ASSERT_COIN_ANNOUNCEMENT` condition for each coin. 
-  * For CATs, the assertions will depend on the rules put forward by the individual CAT. An `ASSERT_COIN_ANNOUNCEMENT` is typical.
-  * An `ASSERT_PUZZLE_ANNOUNCEMENT` will be used for the whole offer.
+6. The Offer driver [calculates the announcements](https://github.com/Chia-Network/chia-blockchain/blob/127342f2ed516537f7398dd1672c89b2fa3c2b59/chia/wallet/trading/offer.py#L69 "Offer.py, calculate_announcements method") that need to be asserted in order to get paid.
 
-7. For each coin to be spent, the Maker's wallet creates a signed transaction, which is a slightly different process for [XCH](https://github.com/Chia-Network/chia-blockchain/blob/b76b75f3175fc5b8fc904a4b07a7543fdde7dbf1/chia/wallet/wallet.py#L384 "XCH wallet.py, generate_signed_transaction method") and [CATs](https://github.com/Chia-Network/chia-blockchain/blob/b76b75f3175fc5b8fc904a4b07a7543fdde7dbf1/chia/wallet/cc_wallet/cc_wallet.py#L588 "CAT cc_wallet.py, generate_signed_transaction"). The transactions are then aggregated into a spendbundle, which includes the puzzle hash of settlement_payments.clvm (explained in the [next section](#settlement_paymentsclvm "Discussion of settlement_payments.clvm")), as well as all previously calculated assertions. Finally, the offer file is created, using `notarized_payments` and the spendbundle.
+7. The Maker's wallet creates a spendbundle paying the puzzlehash of settlement_payments.clvm (explained in the [next section](#settlement_paymentsclvm "Discussion of settlement_payments.clvm")). Finally, the offer file is created, using `notarized_payments` and the spendbundle.
 
-The offer _file_ is now complete. The Maker can send this file anywhere others might see it, including social media, message boards, or a website dedicated to maintaining a list of current offers.
+The offer file is now complete. The Maker can send this file anywhere others might see it, including social media, message boards, or a website dedicated to maintaining a list of current offers.
 
 The _offer_'s status is now PENDING_ACCEPT. In order for the offer to be completed, it still requires a `CREATE_PUZZLE_ANNOUNCEMENT` condition for the whole puzzle, and a `CREATE_COIN` condition for each type of asset to be received. The Maker's coin(s) can't be spent until a Taker creates these conditions.
 
 
 ### settlement_payments.clvm
 
-Offers use a Chialisp puzzle called [settlement_payments.clvm](https://github.com/Chia-Network/chia-blockchain/tree/main/chia/wallet/puzzles/settlement_payments.clvm "settlement_payments.clvm, the puzzle to create offer files."). This puzzle's solution is `notarized_payments` (the list of notarized coin payments calculated in the previous section).
+Offers use a Chialisp puzzle called [settlement_payments.clvm](https://github.com/Chia-Network/chia-blockchain/tree/main/chia/wallet/puzzles/settlement_payments.clvm "settlement_payments.clvm, the puzzle to create offer files."). This puzzle's solution is a list of `notarized_payments`, which were calculated in the previous section.
 
-Recall that `notarized_payments` is structured like this: `(N . ((PH1 AMT1 ...) (PH2 AMT2 ...) (PH3 AMT3 ...)))`, where
+Recall that `notarized_payments` is structured like this: `((N . ((PH1 AMT1 ...) (PH2 AMT2 ...) (PH3 AMT3 ...))) ...)`, where:
 * `N` is the nonce.
 * `PH1` is the puzzle hash of the first coin.
 * `AMT1` is the amount (or value) of the coin being offered.
 * `...` is an optional memo.
 
-For each notarized coin payment, this puzzle outputs two conditions: CREATE_COIN and CREATE_PUZZLE_ANNOUNCEMENT. Using a `notarized_coin_payment` of `(PH1 AMT1 ...)` from the above example, the resulting conditions would be:
-* `(CREATE_COIN PH1 AMT1 ...)`
-* `(CREATE_PUZZLE_ANNOUNCEMENT (sha256tree notarized_coin_payment))`
+For each set of notarized coin payments, this puzzle creates one `CREATE_PUZZLE_ANNOUNCEMENT` condition. For each coin payment within this set, the puzzle creates one `CREATE_COIN` condition.
 
 The reason for creating these conditions is to match the announcements created in the offer file. The settlement_payments puzzle is quite versatile -- it can be used as an inner puzzle inside a CAT or NFT, as a puzzle to spend regular XCH, or in order to spend any other assets in Chia's ecosystem.
 
 
 ### Accepting an offer
 
-The offer file can be named anything, and it contains the byte code for an incomplete spendbundle. The Taker still must perform several steps before the offer can be confirmed:
+The offer file can be named anything, and it contains a bech32 address for an incomplete spendbundle. The Taker still must perform several steps before the offer can be confirmed:
 
 1. **View the offer** -- The Taker needs to validate the terms of the offer before choosing whether to accept it. This can be done using either Chia's wallet GUI or the CLI. In either case, the Taker can choose whether to load the offer file or paste its contents.
 
@@ -206,7 +202,7 @@ A "Taker" is part offer-creator, part market-maker. A Taker finds an offer of in
 
 A sophisticated AMM might aggregate multiple `settlement_payments` into a single spend, which means it could combine an arbitrary number of offers, paying through one `settlement_payments` ephemeral coin for each asset type.
 
-For example, a whale wants to buy 10,000 XCH, and is currently sitting on a large stack of stablecoins. There aren't any individuals willing to sell such a large amount of XCH, but the whale doesn't need to create a bunch of small offers. Instead, they create a single offer: 10,000 XCH for the market price in stablecoins. Several small XCH holders can aggregate their holdings to complete the offer.
+For example, a whale wants to buy 10,000 XCH, and is currently sitting on a large stack of stablecoins. There aren't any individuals willing to sell such a large amount of XCH, but the whale doesn't need to create a bunch of small offers. Instead, they create a single offer: _X_ stablecoins (at the current market price) for 10,000 XCH. Several small XCH holders can aggregate their holdings to complete the offer.
 
 ### Oracles and arbitrage
 
@@ -223,7 +219,7 @@ A few aspects of offer files might seem counter-intuitive at first.
 
 When a Maker creates an offer, it's moved to the `PENDING_ACCEPT` state. So far, nothing has been written to the blockchain. In fact, nobody else will even know of the offer's existence until the Maker shares the file. If the Maker changes their mind before sending the offer file to anyone else, the Maker can delete the file, and the offer will have been effectively "canceled."
 
-However, the Maker's wallet needs to keep track of any pending offers, just in case the Maker decides to initiate any additional transactions before the offer has been accepted.
+However, the Maker's wallet needs to keep track of any pending offers, in case the Maker decides to initiate any additional transactions before the offer has been accepted.
 
 For example, let's say Alice has 1 XCH and wants to buy 251 CKC (thereby spending all of her XCH). When she creates her offer, her wallet will store the details locally in its database. All of her XCH coins (totaling 1 XCH) have been reserved for the offer, so she can't spend them while the offer is still pending.
 
@@ -244,7 +240,7 @@ This option does come with two small downsides.
 
 These downsides will likely be acceptable in most cases, so "cancel on the blockchain" is the default option.
 
-2. Cancel locally only. This option should only be used if the Maker has not been sent to anyone else.
+2. Cancel locally only. This option should only be used if the Maker has not sent the offer file to anyone else.
 
 This option will simply notify Alice's wallet that the transaction has been canceled, so the coins will no longer be reserved. There is no blockchain transaction, so the two disadvantages of "Cancel on the blockchain" don't apply here -- the cancellation happens instantly and there is no need for a transaction fee. The downside of this option is that if the offer file ever leaves Alice's computer, a Taker can still take the offer (as long as Alice's coins have not been spent).
 

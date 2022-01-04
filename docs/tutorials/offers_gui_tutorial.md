@@ -18,7 +18,7 @@ See also our [command line tutorial](../tutorials/offers_cli_tutorial.md "Offers
 * [Cancel an offer](#cancel-an-offer)
 * [Create a multiple-token offer](#create-a-multiple-token-offer)
 * [Accept a multiple-token offer](#accept-a-multiple-token-offer)
-* [Common issues](#common-issues)
+* [Potential issues](#potential-issues)
 * [Further reading](#further-reading)
 
 -----
@@ -184,6 +184,7 @@ This example will use a different computer to accept the offer that was created 
 
   6. You'll be given a chance to cancel your acceptance of the offer. Click "ACCEPT OFFER" to continue.
 
+TODO: update graphic
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/6_accept_offer.png" alt="Accept offer"/>
 </figure>
@@ -191,6 +192,7 @@ This example will use a different computer to accept the offer that was created 
 
    7. After a few seconds, you'll receive a "Success" message. This means the offer has been completed and sent to the blockchain for confirmation.
 
+TODO: update graphic
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/7_success.png" alt="Success"/>
 </figure>
@@ -249,7 +251,7 @@ You can cancel any offer you created, as long as it has not already been accepte
 </figure>
 <br/>
 
-   4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you copied your offer file elsewhere, someone could still accept it.
+   4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you have copied your offer file elsewhere, someone could still accept it.
    
    The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
 
