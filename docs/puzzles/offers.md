@@ -206,7 +206,14 @@ For example, a whale wants to buy 10,000 XCH, and is currently sitting on a larg
 
 ### Oracles and arbitrage
 
-As discussed previously, an offer in the `PENDING_ACCEPT` state cannot be modified. If the price of any asset changes after the offer has been created, AMMs could take advantage of arbitrage by accepting stale offers and creating new ones.
+As discussed previously, an offer in the `PENDING_ACCEPT` state cannot be modified. If the price of any asset changes after the offer has been created, AMMs could take advantage of arbitrage by accepting stale offers and creating new ones. However, this also means that farmers could do the same, taking the arbitrage for themselves.
+
+For example:
+  1. Alice offers 1 XCH for 251 CKC.
+  2. The spot price of XCH doubles to 502 CKC per XCH.
+  3. An AMM notices the price increase and decides to accept the offer. They could then sell the 1 XCH and profit 251 CKC, which would be worth 0.5 XCH.
+  4. However, Farmer Bob notices the AMM's attempt at arbitrage and also accepts the offer, adding his own acceptance (and not the AMM's) to the block. Bob has effectively taken the AMM's intended arbitrage.
+  5. The AMM's only option to taking the offer is to add a fee of at least 0.5 XCH, which would cost them more money than they stood to make in the first place. Bob has secured all of the financial incentive for himself.
 
 Additionally, price oracles could be used to reduce MEV, ensure fairness, and stabilize the offers markets. There are many potential business opportunities in this realm, which would have to be developed external to Chia Network Inc.
 
@@ -245,6 +252,20 @@ These downsides will likely be acceptable in most cases, so "cancel on the block
 This option will simply notify Alice's wallet that the transaction has been canceled, so the coins will no longer be reserved. There is no blockchain transaction, so the two disadvantages of "Cancel on the blockchain" don't apply here -- the cancellation happens instantly and there is no need for a transaction fee. The downside of this option is that if the offer file ever leaves Alice's computer, a Taker can still take the offer (as long as Alice's coins have not been spent).
 
   >NOTE: Double spends on the blockchain aren't possible for either of these options. In the coin set model, coins can only ever be spent once. If someone attempts to take Alice's offer at the same time she spends the coins, only one of those transactions will make it onto the blockchain. [Chialisp.com](https://chialisp.com/docs/coin_lifecycle#the-coin-set-model "Coin set model on chialisp.com") has a detailed explanation of the coin set model.
+
+### Coin set (UTXO)
+
+Chia uses the coin set model to keep track of state. This is similar to the UTXO model in Bitcoin. The coin set model [has many advantages](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model") over the account model, but it can create some situations that take time to understand.
+
+In the coin set model, everything is a coin. There are no accounts, at least not at the blockchain level. Coins can only ever be spent once, and they can't be divided.
+
+This is similar to how cash works. If Alice has a $20 bill and she wants to buy something for $1, she can't just rip out a piece of the bill and hand it to the cashier. She has to pay with the whole bill and wait for her change.
+
+Chia works the same way. If someone sends Alice 20 XCH, her wallet is now tracking a single coin worth 20 XCH. If she makes an offer for 1 XCH, her wallet needs to reserve the entire coin for the offer. While the offer is pending, Alice can't spend any of her coin.
+
+However, Alice can get around this issue by sending money to herself. Let's say she sends 10 XCH to her own wallet. Her 20-XCH coin has been spent and two new coins have been created, both worth 10 XCH. She can now make an offer for 1 XCH, thus reserving one of her coins, and she can spend the other coin in the usual manner while the offer is pending.
+
+The [GUI tutorial](../tutorials/offers_gui_tutorial.md#whole-coins-must-be-reserved "Offers GUI tutorial") goes over an example of this process.
 
 -----
 ## CLI Usage
