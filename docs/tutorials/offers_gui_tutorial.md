@@ -184,7 +184,6 @@ This example will use a different computer to accept the offer that was created 
 
   6. You'll be given a chance to cancel your acceptance of the offer. Click "ACCEPT OFFER" to continue.
 
-TODO: update graphic
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/6_accept_offer.png" alt="Accept offer"/>
 </figure>
@@ -192,7 +191,6 @@ TODO: update graphic
 
    7. After a few seconds, you'll receive a "Success" message. This means the offer has been completed and sent to the blockchain for confirmation.
 
-TODO: update graphic
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/7_success.png" alt="Success"/>
 </figure>
@@ -438,8 +436,6 @@ There is an offer of 0.25 Shibe (an unknown CAT) in exchange for 0.1 XCH.
 
 Here's the offer from the Taker's perspective:
 
-TODO: Update graphic
-
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/08_0.25_shibe_for_0.1_xch.png" alt="Offer shibe for XCH"/>
 </figure>
@@ -449,14 +445,9 @@ The Taker decides to accept the offer.
 
 There is a warning dialog about the unknown cat, after which the offer is confirmed successfully:
 
-TODO: Update graphic
-
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/09_accept_unknown_warning.png" alt="Unknown CAT warning"/>
 </figure>
-
-TODO: Update graphic
-
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/10_unknown_success.png" alt="Unknown CAT success"/>
 </figure>
