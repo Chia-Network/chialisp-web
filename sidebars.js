@@ -13,8 +13,16 @@ module.exports = {
       'optimization',
       'glossary'
     ],
-    CLVM: ['ref/clvm', 'ref/serialization'],
-    Puzzles: ['puzzles/singletons', 'puzzles/pooling', 'puzzles/cats'],
+    CLVM: [
+      'ref/clvm',
+      'ref/serialization'
+    ],
+    Puzzles: [
+      'puzzles/singletons',
+      'puzzles/pooling',
+      'puzzles/cats',
+      'puzzles/offers'
+    ],
     Tutorials: [
       'tutorials/why_chia_is_great',
       'tutorials/developing_applications',
@@ -32,6 +40,8 @@ module.exports = {
       'tutorials/CAT_Launch_Process_Windows',
       'tutorials/single_issuance_CAT',
       'tutorials/multiple_issuance_CAT',
+      'tutorials/offers_gui_tutorial',
+      'tutorials/offers_cli_tutorial'
     ],
     FAQ: ['faq'],
   },
