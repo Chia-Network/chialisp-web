@@ -1,7 +1,7 @@
 ---
 id: offers_cli_tutorial
-title: Offers, CLI Tutorial
-sidebar_label: Offers, CLI Tutorial
+title: Offers - CLI Tutorial
+sidebar_label: Offers - CLI Tutorial
 ---~~‌~~
 
 
