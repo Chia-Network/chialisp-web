@@ -16,7 +16,7 @@ You will learn Chialisp basics, including:
 * recursion
 
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/JcC1_igwSmA" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/JcC1_igwSmA" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen width="100%"></iframe>
 </figure>
 
 Test your understanding of the concepts in the video by printing out the full list of the lyrics of the song. Your result should look similar to:
