@@ -1,5 +1,5 @@
 ---
-id: tutorials/offers_cli_tutorial
+id: offers_cli_tutorial
 title: Offers, CLI Tutorial
 sidebar_label: Offers, CLI Tutorial
 ---~~‌~~
@@ -954,7 +954,7 @@ One of the Maker's coins has been reserved for the offer, and the other has been
 
 ## Further reading
 
-* [Offers blog entry]()
+* [Offers blog entry](https://www.chia.net/blog/)
 * [Offers reference](../puzzles/offers.md "Offers reference")
 * [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial")
 * [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model")
