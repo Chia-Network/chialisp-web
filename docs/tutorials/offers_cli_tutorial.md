@@ -1,6 +1,9 @@
-id: offers_gui_tutorial
-title: Offers, GUI Tutorial
 ---
+id: tutorials/offers_cli_tutorial
+title: Offers, CLI Tutorial
+sidebar_label: Offers, CLI Tutorial
+---~~‌~~
+
 
 # Offers tutorial (CLI)
 
