@@ -1,8 +1,8 @@
 ---
 id: offers_cli_tutorial
-title: Offers - CLI Tutorial
+title: Offers tutorial (CLI)
 sidebar_label: Offers - CLI Tutorial
----~~‌~~
+---
 
 
 # Offers tutorial (CLI)
@@ -26,10 +26,7 @@ See also our [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tuto
 * [Potential issues](#potential-issues)
 * [Further reading](#further-reading)
 
-<br/>
-
 -----
-<br/>
 
 ## Note about Windows
 
@@ -51,10 +48,7 @@ RuntimeError: Event loop is closed
 
 For more info, see [https://github.com/aio-libs/aiohttp/issues/4324](https://github.com/aio-libs/aiohttp/issues/4324 "Info about event loop exception").
 
-<br/>
-
 -----
-<br/>
 
 ## CLI commands and reference
 
@@ -147,10 +141,7 @@ Options:
 | -s  | --summaries       | None    | False | Show the assets being offered and requested for each offer
 | -h  | --help            | None    | False | Show a help message and exit
 
-<br/>
-
 -----
-<br/>
 
 ## Add a new CAT wallet
 
@@ -165,7 +156,6 @@ Wallet ID 1 type STANDARD_WALLET Chia Wallet
    -Pending Total Balance: 0.2 xch (200000000000 mojo)
    -Spendable: 0.2 xch (200000000000 mojo)
 ```
-<br/>
 
 In order to create an offer, you must have a wallet for any Chia Asset Tokens (CATs) you want to acquire.
 
@@ -180,7 +170,6 @@ Here's the command to add a Stably USD wallet:
 (venv) $ chia wallet add_token -n "Stably USD" -id 6d95dae356e32a71db5ddcb42224754a02524c615c5fc35f568c2af04774e589
 Successfully added Stably USD with wallet id 2 on key 123456789
 ```
-<br/>
 
 To see your new wallet, run `chia wallet show`:
 
@@ -198,19 +187,14 @@ Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
    -Pending Total Balance: 0.0  (0 mojo)
    -Spendable: 0.0  (0 mojo)
 ```
-<br/>
 
 You should have a Stably USD wallet, in addition to your standard Chia wallet.
 
-<br/>
-
 -----
-<br/>
 
 ## Create a single-token offer
 
 In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
-<br/><br/>
 
 A few assumptions:
 
@@ -218,13 +202,11 @@ A few assumptions:
 * Wallet ID 1 is a standard Chia wallet.
 * Wallet ID 2 is a Stably USD wallet.
 * We won't add a fee to the offer (if you want to add a fee, use the `-m` flag).
-<br/><br/>
 
 Three flags are required to create the offer file:
 * `-o`: The Wallet ID and amount being offered.
 * `-r`: The Wallet ID and amount being requested.
 * `-p`: The name of the offer file to be created.
-<br/><br/>
 
 Here's the full command and result:
 
@@ -241,7 +223,6 @@ Confirm (y/n): y
 Created offer with ID 62260d78a563620818a43c2cf837a8fca13a808f20ce62f4e42064f46f4c5a91
 Use chia wallet get_offers --id 62260d78a563620818a43c2cf837a8fca13a808f20ce62f4e42064f46f4c5a91 -f 0123456789 to view status
 ```
-<br/>
 
 After running and confirming this command, the offer file `~/offers/0.1_xch_for_10_usds.offer` will be created.
 
@@ -258,7 +239,6 @@ Accepted at: N/A
 Status: PENDING_ACCEPT
 ---------------
 ```
-<br/>
 
 Congratulations! You have created an offer. A few things to note:
 * Your wallet has reserved the coin(s) necessary to complete the offer.
@@ -266,15 +246,11 @@ Congratulations! You have created an offer. A few things to note:
 * You can distribute the offer file wherever you want.
 * Anyone who sees the offer file can attempt to accept it.
 
-<br/>
-
 -----
-<br/>
 
 ## Accept a single-token offer
 
 This example will use a different computer to accept the offer from the previous example. Keep in mind, offers are accepted on a first-come, first-served basis.
-<br/><br/>
 
 To display your wallet's balance before accepting the offer, run `chia wallet show`:
 ```bash
@@ -350,15 +326,11 @@ Wallet ID 2 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
    -Spendable: 0.0  (0 mojo)
 ```
 
-<br/>
-
 -----
-<br/>
 
 ## Cancel an offer
 
 You can cancel any offer you created, as long as it has not been accepted already.
-<br/>
 
 Start by listing all of your current offers:
 ```bash
@@ -418,10 +390,7 @@ Note that this command canceled the offer on the blockchain by buying the coins 
 
 If you have not sent the offer file elsewhere, you can cancel the offer by running the same command with the `--insecure` flag, which will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you have copied your offer file elsewhere, someone could still accept it. The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
 
-<br/>
-
 -----
-<br/>
 
 ## Create a multiple-token offer
 
@@ -442,7 +411,6 @@ Confirm (y/n): y
 Created offer with ID 9f624c95b81ed3428f74cbe2e400d0d8cccbfe6169fe8e58422af8a86e0a6388
 Use chia wallet get_offers --id 9f624c95b81ed3428f74cbe2e400d0d8cccbfe6169fe8e58422af8a86e0a6388 -f 123456789 to view status
 ```
-
 <br/>
 
 To view the offer with a summary of the tokens being offered, use the `-s` flag:
@@ -470,10 +438,7 @@ Fees: 0
 ---------------
 ```
 
-<br/>
-
 -----
-<br/>
 
 ## Accept a multiple-token offer
 
@@ -533,10 +498,7 @@ Wallet ID 4 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
    -Spendable: 10000.0  (10000 mojo)
 ```
 
-<br/>
-
 -----
-<br/>
 
 ## Potential issues
 
@@ -551,10 +513,7 @@ This section will detail a non-comprehensive list of issues you might encounter 
 * [Maker cancels an offer locally, Taker accepts the offer](#maker-cancels-an-offer-locally-taker-accepts-the-offer)
 * [Whole coins must be reserved](#whole-coins-must-be-reserved)
 
-<br/>
-
 -----
-<br/>
 
 ### Maker doesn't have enough money
 
@@ -574,7 +533,6 @@ Wallet ID 2 type COLOURED_COIN CAT King Cole (Asset ID: 1121996b75cce3c746369ace
    -Pending Total Balance: 0.0  (0 mojo)
    -Spendable: 0.0  (0 mojo)
 ```
-
 <br/>
 
 The maker attempts to make an ambitious offer: 100 XCH for 1 million CKC. However, the Maker does not have enough money to create this offer. As a result, an Exception is thrown:
@@ -592,10 +550,7 @@ Confirm (y/n): y
 Exception from 'wallet' {'error': 'Error creating offer: insufficient funds in wallet 2', 'success': False}
 ```
 
-<br/>
-
 -----
-<br/>
 
 ### Taker doesn't have enough money
 
@@ -638,10 +593,7 @@ Would you like to take this offer? (y/n): y
 Exception from 'wallet' {'error': 'insufficient funds in wallet 1', 'success': False}
 ```
 
-<br/>
-
 -----
-<br/>
 
 ### Taker accepts an unknown CAT offer
 
@@ -687,6 +639,7 @@ Would you like to take this offer? (y/n): y
 Accepted offer with ID 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f
 Use chia wallet get_offers --id 4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f -f 1234567890 to view its status
 ```
+<br/>
 
 Notice that the offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertently accepted an offer for a worthless token!
 
@@ -694,10 +647,7 @@ Luckily, it is easy to avoid this scam by cross-referencing the unknown CAT's ID
 
 Chia does install a list of known CATs by default, so this scam should be rare, but you should always be diligent in scrutinizing offers for unknown CATs.
 
-<br/>
-
 -----
-<br/>
 
 ### Taker attempts to accept an invalid offer
 
@@ -716,10 +666,7 @@ Would you like to take this offer? (y/n): y
 Exception from 'wallet' {'error': 'This offer is no longer valid', 'success': False}
 ```
 
-<br/>
-
 -----
-<br/>
 
 ### Maker cancels an offer locally, Taker accepts the offer
 
@@ -829,15 +776,13 @@ Wallet ID 4 type COLOURED_COIN Stably USD (Asset ID: 6d95dae356e32a71db5ddcb4222
    -Pending Total Balance: 11.0  (11000 mojo)
    -Spendable: 11.0  (11000 mojo)
 ```
+<br/>
 
 If the offer had been canceled on-chain, the reserved coins would have been spent. At that point, even if someone else had gotten access to the offer file, the offer itself would've been invalid.
 
 The lesson here is do _not_ use the --insecure flag unless you're certain the offer file has never left your computer.
 
-<br/>
-
 -----
-<br/>
 
 ### Whole coins must be reserved
 
@@ -947,10 +892,7 @@ Transaction submitted to nodes:
 
 One of the Maker's coins has been reserved for the offer, and the other has been sent to another wallet. The Maker can further break apart the large coin as needed.
 
-<br/>
-
 -----
-<br/>
 
 ## Further reading
 

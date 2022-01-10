@@ -1,8 +1,8 @@
 ---
 id: offers_gui_tutorial
-title: Offers - GUI Tutorial
+title: Offers tutorial (GUI)
 sidebar_label: Offers - GUI Tutorial
----~~‌~~
+---
 
 # Offers tutorial (GUI)
 
@@ -25,14 +25,11 @@ See also our [command line tutorial](../tutorials/offers_cli_tutorial.md "Offers
 
 -----
 
-<br/>
-
 ## Add a new CAT wallet
 
 In order to create an offer, you must have a wallet for any Chia Asset Tokens (CATs) you want to acquire. If you don't have such a wallet, it's easy to add one.
 
 For example, here's how to add the Stably USD (USDS) token:
-<br/>
 
    1. Click "+ ADD TOKEN".
 
@@ -61,16 +58,11 @@ For example, here's how to add the Stably USD (USDS) token:
 <img src="../../static/img/offers_img/gui_tutorial/wallet_add/4_two_wallets.png" alt="Two wallets"/>
 </figure>
 
-<br/>
-
 -----
-
-<br/>
 
 ## Create a single-token offer
 
 In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
-<br/>
 
    1. Click "MANAGE OFFERS".
 
@@ -138,11 +130,7 @@ Congratulations! You have created an offer. A few things to note:
 * You can distribute the offer file wherever you want.
 * Anyone who sees the offer file can attempt to accept it.
 
-<br/>
-
 -----
-
-<br/>
 
 ## Accept a single-token offer
 
@@ -170,7 +158,7 @@ This example will use a different computer to accept the offer that was created 
 <br/>
 
    4. A new dialog will open. This may look different than what is pictured, depending on your operating system.
-   <br/>Find the offer file and click "Open". Keep in mind, the name of the offer file doesn't necessarily reflect the actual offer.
+   <br/><br/>Find the offer file and click "Open". Keep in mind, the name of the offer file doesn't necessarily reflect the actual offer.
 
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/4_open.png" alt="Open"/>
@@ -218,19 +206,14 @@ This example will use a different computer to accept the offer that was created 
 <img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/10_wallet_post_trade.png" alt="Wallet post trade"/>
 </figure>
 
-<br/>
-
 -----
-
-<br/>
 
 ## Cancel an offer
 
 You can cancel any offer you created, as long as it has not already been accepted.
-<br/>
 
    1. In the "Manage Offers" dialog, locate the offer you want to cancel. It must be in the "Pending Accept" state.
-   <br/>Click the three dots in the "Actions" column.
+   <br/><br/>Click the three dots in the "Actions" column.
 
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/cancel/1_actions.png" alt="Offer actions"/>
@@ -273,16 +256,11 @@ You can cancel any offer you created, as long as it has not already been accepte
 <img src="../../static/img/offers_img/gui_tutorial/cancel/6_cancelled.png" alt="Cancelled"/>
 </figure>
 
-<br/>
-
 -----
-
-<br/>
 
 ## Create a multiple-token offer
 
 It's easy to create an offer with multiple tokens, on one or both ends of the trade.
-<br/>
 
    1. In the "Create an Offer" dialog, click the "+" to add more tokens. In order for the "+" to be accessible, you must have a wallet with a token that has not been used in this offer.
 
@@ -306,11 +284,7 @@ It's easy to create an offer with multiple tokens, on one or both ends of the tr
 
 You now free to share your offer file anywhere you wish, just as you were with the single-token offer.
 
-<br/>
-
 -----
-
-<br/>
 
 ## Accept a multiple-token offer
    1. The process to accept a multiple-token offer is the same as for a single-token offer.
@@ -336,11 +310,7 @@ You now free to share your offer file anywhere you wish, just as you were with t
 <img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/4_usds_wallet.png" alt="USDS wallet"/>
 </figure>
 
-<br/>
-
 -----
-
-<br/>
 
 ## Potential issues
 
@@ -355,11 +325,7 @@ This section will detail a non-comprehensive list of issues you might encounter 
 * [Maker cancels an offer locally, Taker accepts the offer](#maker-cancels-an-offer-locally-taker-accepts-the-offer)
 * [Whole coins must be reserved](#whole-coins-must-be-reserved)
 
-<br/>
-
 -----
-
-<br/>
 
 ### Maker doesn't have enough money
 
@@ -371,7 +337,6 @@ Let's say a Maker has wallets for XCH and CKC, with no money in either of them.
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/02_ckc_wallet.png" alt="0 CKC wallet"/>
 </figure>
-
 <br/>
 
 The maker attempts to make an ambitious offer: 100 XCH for 1 million CKC.
@@ -386,11 +351,7 @@ However, the Maker does not have enough money to create this offer. As a result,
 <img src="../../static/img/offers_img/gui_tutorial/issues/04_100xch_for_1mckc_fail.png" alt="Amount exceeds spendable balance"/>
 </figure>
 
-<br/>
-
 -----
-
-<br/>
 
 ### Taker doesn't have enough money
 
@@ -413,13 +374,8 @@ However, the Taker does not have enough money to accept this offer. As a result,
 <figure>
 <img src="../../static/img/offers_img/gui_tutorial/issues/06_insufficient_funds.png" alt="Insufficient funds"/>
 </figure>
-<br/>
-
-<br/>
 
 -----
-
-<br/>
 
 ### Taker accepts an unknown CAT offer
 
@@ -455,19 +411,13 @@ There is a warning dialog about the unknown cat, after which the offer is confir
 </figure>
 <br/>
 
-
-
 Notice that the offer file was named `0.25_Shibe_for_0.1_XCH.offer`, but the file name itself does _not_ dictate the contents of the offer. The Taker may have inadvertently accepted an offer for a worthless token!
 
 Luckily, it is easy to avoid this scam by cross-referencing the unknown CAT's ID before accepting the offer. In this case, the Taker should verify from a trusted source that `4ac6a35e5fecb50d85604b19250a942afdc81876fe11db1f9d970c95dcf2c43f` indeed corresponds to Shibe.
 
 Chia does install a list of known CATs by default, so this scam should be rare, but you should always be diligent in scrutinizing offers for unknown CATs.
 
-<br/>
-
 -----
-
-<br/>
 
 ### Taker attempts to accept an invalid offer
 
@@ -479,11 +429,7 @@ Any potential Takers will be conveyed this information upon viewing the offer. F
 <img src="../../static/img/offers_img/gui_tutorial/issues/11_invalid_offer.png" alt="Invalid offer"/>
 </figure>
 
-<br/>
-
 -----
-
-<br/>
 
 ### Maker cancels an offer locally, Taker accepts the offer
 
@@ -540,12 +486,7 @@ If the offer had been canceled on-chain, the reserved coins would have been spen
 
 The lesson here is do _not_ uncheck the "Cancel on blockchain" checkbox unless you're certain the offer file has never left your computer.
 
-
-<br/>
-
 -----
-
-<br/>
 
 ### Whole coins must be reserved
 
@@ -625,11 +566,7 @@ The Maker can now send 0.1 XCH to another wallet, even while the offer is still 
 
 One of the Maker's coins has been reserved for the offer, and the other has been sent to another wallet. The Maker can further break apart the large coin as needed.
 
-<br/>
-
 -----
-
-<br/>
 
 ## Further reading
 

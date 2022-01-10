@@ -91,14 +91,13 @@ Offers have many properties that we think will make them a valuable tool for Chi
   >Offer files do not contain private keys or any way to deduce them. If an offer file falls into a "hacker's" hands, they only have two options: ignore the offer or accept it.
 
 * **Immutable**: Once an offer file is created, any alterations to the file will invalidate it. The offer file only has three possible outcomes:
-  1. A Taker accepts the offer as-is. All transactions contained within it are automatically processed. (There also could be multiple Takers, [explained below.](#market-makers "Market makers and multiple Takers")
+  1. A Taker accepts the offer as-is. All transactions contained within it are automatically processed. (There also could be multiple Takers, [explained below](#market-makers "Market makers and multiple Takers").)
   2. The Maker [cancels the offer](#cancellation "Offer cancellation").
   3. The offer will be in a pending state until either 1. or 2. are fulfilled. It is possible that the offer never is completed or canceled.
-<br/><br/>
 
   >Takers are free to propose a counter offer by creating their own offer file. In this case, the original Maker could cancel the original offer, and both parties' roles would be reversed.
 
-* **Compliant**: As offers are inherently peer-to-peer, they don't constitute an “exchange” or other regulated market entity.
+* **Compliant**: As offers are inherently peer-to-peer, they don't constitute an “exchange” or other regulated market activity.
 
 * **Trustless**: Offers are _not_ analogous to a handshake or a promise, where one party could renege on the trade. By using Chia offers, the Maker and Taker don't need to trust each other. They don't even need to _know_ each other. As long as a Taker matches the offer identically, the offer will be valid.
 
@@ -124,8 +123,8 @@ An offer has six potential states, as defined in [trade_status.py](https://githu
 1. PENDING_CONFIRM -- The Taker has accepted the offer. The Taker's wallet has reserved the coin(s) to be spent. The completed spendbundle has been sent to the mempool. 
 2. PENDING_CANCEL -- The Maker has attempted to cancel the offer. Effectively, the Maker has accepted their own offer. Therefore, this offer's Maker and Taker are the same entity. The Maker-Taker's wallet has reserved the required coin(s). The completed spendbundle has been sent to the mempool.
 3. CANCELLED -- Depending on which [type of cancellation](#cancellation "Offer cancellation") has been used, either:
-  * The Maker's wallet has released the coins it had been reserving for this offer, or
-  * The Maker-Taker's coins have been spent and new ones have been created in the Maker-Taker's wallet.
+    * The Maker's wallet has released the coins it had been reserving for this offer, or
+    * The Maker-Taker's coins have been spent and new ones have been created in the Maker-Taker's wallet.
 4. CONFIRMED -- The Maker's and Taker's reserved coins have been spent in the same spendbundle. The offer has been completed successfully.
 5. FAILED -- The Taker attempted, and failed to accept the offer. This could have happened either because the Maker canceled the offer, or because another Taker took the offer first.
 
@@ -139,9 +138,9 @@ Here's the basic workflow to create an offer file:
 2. The Maker's wallet [selects the appropriate coin(s)](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/wallet.py#L232 "Wallet code's select_coins method") to spend, starting with the largest coin available.
 
 3. For each coin the Maker wants to receive from the offer, the Maker's wallet [creates a notarized coin payment](https://github.com/Chia-Network/chia-blockchain/blob/b76b75f3175fc5b8fc904a4b07a7543fdde7dbf1/chia/wallet/trade_manager.py#L241 "trade_manager.py, _create_offer_for_ids method"). This is a list in the form of `(PH1 AMT1 ...)`, where:
-  * `PH1` is the puzzle hash of the coin the Maker wants to acquire.
-  * `AMT1` is the value of the coin the Maker wants to acquire.
-  * `...` is an optional memo of arbitrary length. The trade manager adds a hint to itself in this memo.
+    * `PH1` is the puzzle hash of the coin the Maker wants to acquire.
+    * `AMT1` is the value of the coin the Maker wants to acquire.
+    * `...` is an optional memo of arbitrary length. The trade manager adds a hint to itself in this memo.
 
 4. The Maker's wallet creates a nonce `N`, using the treehash of a sorted list of the coinIDs of each coin being offered.
 
@@ -162,7 +161,7 @@ The _offer_'s status is now PENDING_ACCEPT. In order for the offer to be complet
 
 ### settlement_payments.clvm
 
-Offers use a Chialisp puzzle called [settlement_payments.clvm](https://github.com/Chia-Network/chia-blockchain/tree/main/chia/wallet/puzzles/settlement_payments.clvm "settlement_payments.clvm, the puzzle to create offer files."). This puzzle's solution is a list of `notarized_payments`, which were calculated in the previous section.
+Offers use a Chialisp puzzle called [settlement_payments.clvm](https://github.com/Chia-Network/chia-blockchain/tree/pacr-dev/chia/wallet/puzzles/settlement_payments.clvm "settlement_payments.clvm, the puzzle to create offer files."). This puzzle's solution is a list of `notarized_payments`, which were calculated in the previous section.
 
 Recall that `notarized_payments` is structured like this: `((N . ((PH1 AMT1 ...) (PH2 AMT2 ...) (PH3 AMT3 ...))) ...)`, where:
 * `N` is the nonce.
@@ -239,17 +238,17 @@ If Alice wants to be sure all of her wallets are in agreement, she must cancel h
 A Maker has two options to cancel an offer.
 1. Cancel on the blockchain. This is the default cancellation option. It should be used if the Maker has sent the offer file to anyone else.
 
-Continuing our previous example, if Alice uses this option, then she will take the other end of her own offer. She is now both the Maker and the Taker. Her previously-reserved coins are spent, and a new coin is created in her wallet. Alice doesn't need to know about the underlying coins that have been spent -- she just sees her old balance return to her wallet. The offer is now complete and can't be used again.
+  Continuing our previous example, if Alice uses this option, then she will take the other end of her own offer. She is now both the Maker and the Taker. Her previously-reserved coins are spent, and a new coin is created in her wallet. Alice doesn't need to know about the underlying coins that have been spent -- she just sees her old balance return to her wallet. The offer is now complete and can't be used again.
 
-This option does come with two small downsides.
-  * Alice must wait for the blockchain to confirm that the transaction has completed.
-  * Alice might have to pay a transaction fee.
+  This option does come with two small downsides.
+    * Alice must wait for the blockchain to confirm that the transaction has completed.
+    * Alice might have to pay a transaction fee.
 
-These downsides will likely be acceptable in most cases, so "cancel on the blockchain" is the default option.
+  These downsides will likely be acceptable in most cases, so "cancel on the blockchain" is the default option.
 
 2. Cancel locally only. This option should only be used if the Maker has not sent the offer file to anyone else.
 
-This option will simply notify Alice's wallet that the transaction has been canceled, so the coins will no longer be reserved. There is no blockchain transaction, so the two disadvantages of "Cancel on the blockchain" don't apply here -- the cancellation happens instantly and there is no need for a transaction fee. The downside of this option is that if the offer file ever leaves Alice's computer, a Taker can still take the offer (as long as Alice's coins have not been spent).
+  This option will simply notify Alice's wallet that the transaction has been canceled, so the coins will no longer be reserved. There is no blockchain transaction, so the two disadvantages of "Cancel on the blockchain" don't apply here -- the cancellation happens instantly and there is no need for a transaction fee. The downside of this option is that if the offer file ever leaves Alice's computer, a Taker can still take the offer (as long as Alice's coins have not been spent).
 
   >NOTE: Double spends on the blockchain aren't possible for either of these options. In the coin set model, coins can only ever be spent once. If someone attempts to take Alice's offer at the same time she spends the coins, only one of those transactions will make it onto the blockchain. [Chialisp.com](https://chialisp.com/docs/coin_lifecycle#the-coin-set-model "Coin set model on chialisp.com") has a detailed explanation of the coin set model.
 
