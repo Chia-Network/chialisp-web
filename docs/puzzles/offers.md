@@ -366,7 +366,7 @@ For detailed examples of offers using the command line interface, see our [CLI t
 -----
 ## RPCs
 
-### RPC client
+From [wallet_rpc_client.py](https://github.com/Chia-Network/chia-blockchain/blob/pacr-dev/chia/rpc/wallet_rpc_client.py):
 
 * [`create_offer_for_ids`](#create_offer_for_ids)
 * [`get_offer_summary`](#get_offer_summary)
