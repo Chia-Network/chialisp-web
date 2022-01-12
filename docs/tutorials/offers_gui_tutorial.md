@@ -34,28 +34,28 @@ For example, here's how to add the Stably USD (USDS) token:
    1. Click "+ ADD TOKEN".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/wallet_add/1_xch_balance.png" alt="XCH balance before offer"/>
+<img src="/img/offers_img/gui_tutorial/wallet_add/1_xch_balance.png" alt="XCH balance before offer"/>
 </figure>
 <br/>
 
    2. Click the "USDS / Stably USD" button.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/wallet_add/2_add_usds.png" alt="Add USDS wallet"/>
+<img src="/img/offers_img/gui_tutorial/wallet_add/2_add_usds.png" alt="Add USDS wallet"/>
 </figure>
 <br/>
 
    3. "Adding USDS token" will be displayed while your new wallet is being created. This will take some time.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/wallet_add/3_adding_usds_token.png" alt="Add USDS wallet"/>
+<img src="/img/offers_img/gui_tutorial/wallet_add/3_adding_usds_token.png" alt="Add USDS wallet"/>
 </figure>
 <br/>
 
    4. You now have a USDS wallet, in addition to your standard Chia wallet.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/wallet_add/4_two_wallets.png" alt="Two wallets"/>
+<img src="/img/offers_img/gui_tutorial/wallet_add/4_two_wallets.png" alt="Two wallets"/>
 </figure>
 
 -----
@@ -67,14 +67,14 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
    1. Click "MANAGE OFFERS".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/1_usds_wallet.png" alt="Add USDS wallet"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/1_usds_wallet.png" alt="Add USDS wallet"/>
 </figure>
 <br/>
 
    2. Click "CREATE AN OFFER".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/2_create_offer.png" alt="Create offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/2_create_offer.png" alt="Create offer"/>
 </figure>
 <br/>
 
@@ -82,7 +82,7 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
    <br/><br/>When you are satisfied with your offer, click "SAVE OFFER".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/3_save_offer.png" alt="Save offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/3_save_offer.png" alt="Save offer"/>
 </figure>
 <br/>
 
@@ -90,7 +90,7 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
    <br/>(Depending on your operating system, this dialog may appear different to what is shown.)
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/4_save_dialog.png" alt="Save offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/4_save_dialog.png" alt="Save offer"/>
 </figure>
 <br/>
 
@@ -98,14 +98,14 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
    <br/><br/>That said, for this tutorial we'll click the "OFFERBIN" button.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/5_share_offer.png" alt="Share offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/5_share_offer.png" alt="Share offer"/>
 </figure>
 <br/>
 
    6. You will be shown the details of your offer once again. Click the "SHARE" button to share your offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/6_share_on_offer_bin.png" alt="Share on offer bin"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/6_share_on_offer_bin.png" alt="Share on offer bin"/>
 </figure>
 <br/>
 
@@ -113,14 +113,14 @@ In this example, we'll offer 0.1 XCH in exchange for 10 USDS.
    <br/><br/>You now have the option to view your offer on Offer Bin, copy the URL to share in more locations, or simply wait for someone to accept your offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/7_view_on_offer_bin.png" alt="View on offer bin"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/7_view_on_offer_bin.png" alt="View on offer bin"/>
 </figure>
 <br/>
 
    8. There is now one offer in the "Manage Offers" dialog. Its status is "Pending Accept".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_create/8_pending_accept.png" alt="Pending accept"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_create/8_pending_accept.png" alt="Pending accept"/>
 </figure>
 <br/>
 
@@ -139,21 +139,21 @@ This example will use a different computer to accept the offer that was created 
    1. From your light wallet's main dialog, click "MANAGE OFFERS".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/1_chia_wallet.png" alt="Chia wallet"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/1_chia_wallet.png" alt="Chia wallet"/>
 </figure>
 <br/>
 
   2. Click "VIEW AN OFFER".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/2_view_an_offer.png" alt="View an offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/2_view_an_offer.png" alt="View an offer"/>
 </figure>
 <br/>
 
    3. You can either paste the contents of an offer file, or load the whole file. In this example, we'll do the latter.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/3_select_offer_file.png" alt="Select offer file"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/3_select_offer_file.png" alt="Select offer file"/>
 </figure>
 <br/>
 
@@ -161,49 +161,49 @@ This example will use a different computer to accept the offer that was created 
    <br/><br/>Find the offer file and click "Open". Keep in mind, the name of the offer file doesn't necessarily reflect the actual offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/4_open.png" alt="Open"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/4_open.png" alt="Open"/>
 </figure>
 <br/>
 
   5. You'll be shown a summary of the offer. You can add an optional fee (payable in XCH) if you want Chia's blockchain to prioritize your offer. If you agree with the terms, click "ACCEPT OFFER".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/5_accept_offer.png" alt="Accept offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/5_accept_offer.png" alt="Accept offer"/>
 </figure>
 <br/>
 
   6. You'll be given a chance to cancel your acceptance of the offer. Click "ACCEPT OFFER" to continue.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/6_accept_offer.png" alt="Accept offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/6_accept_offer.png" alt="Accept offer"/>
 </figure>
 <br/>
 
    7. After a few seconds, you'll receive a "Success" message. This means the offer has been completed and sent to the blockchain for confirmation.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/7_success.png" alt="Success"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/7_success.png" alt="Success"/>
 </figure>
 <br/>
 
    8. The offer is now in the "Pending Confirm" state.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/8_pending_confirm.png" alt="Pending confirm"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/8_pending_confirm.png" alt="Pending confirm"/>
 </figure>
 <br/>
 
    9. The offer will take a few minutes to be confirmed. Note that this time can vary, depending on how full the mempool is and whether you included a fee upon accepting the offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/9_confirmed.png" alt="Confirmed"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/9_confirmed.png" alt="Confirmed"/>
 </figure>
 <br/>
 
    10. After the offer has been confirmed, your new balance will be shown in your wallet.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_single_accept/10_wallet_post_trade.png" alt="Wallet post trade"/>
+<img src="/img/offers_img/gui_tutorial/offer_single_accept/10_wallet_post_trade.png" alt="Wallet post trade"/>
 </figure>
 
 -----
@@ -216,44 +216,44 @@ You can cancel any offer you created, as long as it has not already been accepte
    <br/><br/>Click the three dots in the "Actions" column.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/cancel/1_actions.png" alt="Offer actions"/>
+<img src="/img/offers_img/gui_tutorial/cancel/1_actions.png" alt="Offer actions"/>
 </figure>
 <br/>
 
    2. Click "Cancel Offer".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/cancel/2_cancel.png" alt="Cancel an offer"/>
+<img src="/img/offers_img/gui_tutorial/cancel/2_cancel.png" alt="Cancel an offer"/>
 </figure>
 <br/>
 
    3. The "Cancel Offer" dialog will appear. The default option is to cancel on the blockchain. This option will use your wallet to buy the coins you offered, which will ensure that nobody can accept your offer in the future.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/cancel/3_cancel_on_chain.png" alt="Cancel on chain"/>
+<img src="/img/offers_img/gui_tutorial/cancel/3_cancel_on_chain.png" alt="Cancel on chain"/>
 </figure>
 <br/>
 
    4. If you uncheck the checkbox, your wallet will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you have copied your offer file elsewhere, someone could still accept it.
-   
+
    The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/cancel/4_cancel_off_chain.png" alt="Cancel off chain"/>
+<img src="/img/offers_img/gui_tutorial/cancel/4_cancel_off_chain.png" alt="Cancel off chain"/>
 </figure>
 <br/>
 
    5. If you left the checkbox checked in the previous step, your offer will enter the "Pending Cancel" state while the cancellation is being recorded on the blockchain. This could take several minutes.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/cancel/5_pending_cancel.png" alt="Pending cancel"/>
+<img src="/img/offers_img/gui_tutorial/cancel/5_pending_cancel.png" alt="Pending cancel"/>
 </figure>
 <br/>
 
    6. When your order has been successfully canceled, it will enter the "Cancelled" state. Your funds are now available in your wallet.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/cancel/6_cancelled.png" alt="Cancelled"/>
+<img src="/img/offers_img/gui_tutorial/cancel/6_cancelled.png" alt="Cancelled"/>
 </figure>
 
 -----
@@ -265,21 +265,21 @@ It's easy to create an offer with multiple tokens, on one or both ends of the tr
    1. In the "Create an Offer" dialog, click the "+" to add more tokens. In order for the "+" to be accessible, you must have a wallet with a token that has not been used in this offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_create/1_plus_buttons.png" alt="Plus buttons"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_create/1_plus_buttons.png" alt="Plus buttons"/>
 </figure>
 <br/>
 
    2. When you are satisfied with the number of tokens being offered and received, click "SAVE OFFER".
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_create/2_save_multiple_offer.png" alt="Save multiple offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_create/2_save_multiple_offer.png" alt="Save multiple offer"/>
 </figure>
 <br/>
 
    3. Your new offer, including all tokens, is now in the "Pending Accept" state.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_create/3_manage_multiple.png" alt="Manage multiple offer"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_create/3_manage_multiple.png" alt="Manage multiple offer"/>
 </figure>
 
 You now free to share your offer file anywhere you wish, just as you were with the single-token offer.
@@ -290,24 +290,24 @@ You now free to share your offer file anywhere you wish, just as you were with t
    1. The process to accept a multiple-token offer is the same as for a single-token offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/1_multiple_accept_dialog.png" alt="Multiple accept dialog"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_accept/1_multiple_accept_dialog.png" alt="Multiple accept dialog"/>
 </figure>
 <br/>
 
    2. The confirmation dialog shows all assets involved in the offer.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/2_confirmed.png" alt="Multiple confirmation dialog"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_accept/2_confirmed.png" alt="Multiple confirmation dialog"/>
 </figure>
 <br/>
 
    3. After accepting the offer, a new wallet will be created for any tokens the Taker didn't already have.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/3_ckc_wallet.png" alt="CKC wallet"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_accept/3_ckc_wallet.png" alt="CKC wallet"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/offer_multiple_accept/4_usds_wallet.png" alt="USDS wallet"/>
+<img src="/img/offers_img/gui_tutorial/offer_multiple_accept/4_usds_wallet.png" alt="USDS wallet"/>
 </figure>
 
 -----
@@ -332,23 +332,23 @@ This section will detail a non-comprehensive list of issues you might encounter 
 Let's say a Maker has wallets for XCH and CKC, with no money in either of them.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/01_xch_wallet.png" alt="0 XCH wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/01_xch_wallet.png" alt="0 XCH wallet"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/02_ckc_wallet.png" alt="0 CKC wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/02_ckc_wallet.png" alt="0 CKC wallet"/>
 </figure>
 <br/>
 
 The maker attempts to make an ambitious offer: 100 XCH for 1 million CKC.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/03_100xch_for_1mckc.png" alt="Offer 100 XCH for 1 million CKC"/>
+<img src="/img/offers_img/gui_tutorial/issues/03_100xch_for_1mckc.png" alt="Offer 100 XCH for 1 million CKC"/>
 </figure>
 <br/>
 
 However, the Maker does not have enough money to create this offer. As a result, an Error is displayed:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/04_100xch_for_1mckc_fail.png" alt="Amount exceeds spendable balance"/>
+<img src="/img/offers_img/gui_tutorial/issues/04_100xch_for_1mckc_fail.png" alt="Amount exceeds spendable balance"/>
 </figure>
 
 -----
@@ -358,21 +358,21 @@ However, the Maker does not have enough money to create this offer. As a result,
 Let's say the Taker has a wallet with no money in it:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/01_xch_wallet.png" alt="0 XCH wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/01_xch_wallet.png" alt="0 XCH wallet"/>
 </figure>
 <br/>
 
 And there's an outstanding offer requesting 0.1 XCH for 10,000 CKC:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/05_accept_offer.png" alt="Accept offer"/>
+<img src="/img/offers_img/gui_tutorial/issues/05_accept_offer.png" alt="Accept offer"/>
 </figure>
 <br/>
 
 However, the Taker does not have enough money to accept this offer. As a result, an Error is displayed:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/06_insufficient_funds.png" alt="Insufficient funds"/>
+<img src="/img/offers_img/gui_tutorial/issues/06_insufficient_funds.png" alt="Insufficient funds"/>
 </figure>
 
 -----
@@ -386,7 +386,7 @@ Here's how the scam would work:
 Let's say a potential Taker has 0.1 XCH in their wallet.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/07_0.1xch_wallet.png" alt="0.1 XCH wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/07_0.1xch_wallet.png" alt="0.1 XCH wallet"/>
 </figure>
 <br/>
 
@@ -395,7 +395,7 @@ There is an offer of 0.25 Shibe (an unknown CAT) in exchange for 0.1 XCH.
 Here's the offer from the Taker's perspective:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/08_0.25_shibe_for_0.1_xch.png" alt="Offer shibe for XCH"/>
+<img src="/img/offers_img/gui_tutorial/issues/08_0.25_shibe_for_0.1_xch.png" alt="Offer shibe for XCH"/>
 </figure>
 <br/>
 
@@ -404,10 +404,10 @@ The Taker decides to accept the offer.
 There is a warning dialog about the unknown cat, after which the offer is confirmed successfully:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/09_accept_unknown_warning.png" alt="Unknown CAT warning"/>
+<img src="/img/offers_img/gui_tutorial/issues/09_accept_unknown_warning.png" alt="Unknown CAT warning"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/10_unknown_success.png" alt="Unknown CAT success"/>
+<img src="/img/offers_img/gui_tutorial/issues/10_unknown_success.png" alt="Unknown CAT success"/>
 </figure>
 <br/>
 
@@ -426,7 +426,7 @@ If the Maker has canceled the offer on the blockchain, or a Taker has already ta
 Any potential Takers will be conveyed this information upon viewing the offer. For example:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/11_invalid_offer.png" alt="Invalid offer"/>
+<img src="/img/offers_img/gui_tutorial/issues/11_invalid_offer.png" alt="Invalid offer"/>
 </figure>
 
 -----
@@ -437,48 +437,48 @@ This example will demonstrate that if you need to cancel an offer, you should al
 
 Let's say a Maker has 0.1 XCH and 1 USDS:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/12_0.1xch_wallet.png" alt="0.1 XCH in wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/12_0.1xch_wallet.png" alt="0.1 XCH in wallet"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/13_1usds_wallet.png" alt="1 USDS in wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/13_1usds_wallet.png" alt="1 USDS in wallet"/>
 </figure>
 <br/>
 
 The Maker offers 0.1 XCH in exchange for 10 USDS:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/14_view_offer_0.1xch_10usds.png" alt="Offer 0.1 XCH for 10 USDS"/>
+<img src="/img/offers_img/gui_tutorial/issues/14_view_offer_0.1xch_10usds.png" alt="Offer 0.1 XCH for 10 USDS"/>
 </figure>
 <br/>
 
 The Maker then decides to cancel the offer, and unchecks the "Cancel on blockchain" checkbox:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/15_cancel_off_chain.png" alt="Cancel offer off chain"/>
+<img src="/img/offers_img/gui_tutorial/issues/15_cancel_off_chain.png" alt="Cancel offer off chain"/>
 </figure>
 <br/>
 
 The offer's state is immediately changed to "Cancelled".
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/16_canceled_off_chain.png" alt="Canceled offer off chain"/>
+<img src="/img/offers_img/gui_tutorial/issues/16_canceled_off_chain.png" alt="Canceled offer off chain"/>
 </figure>
 <br/>
 
 After the offer has been canceled, a Taker notices the offer file and decides to accept it:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/17_accept_a_canceled_offer.png" alt="Accept a canceled offer"/>
+<img src="/img/offers_img/gui_tutorial/issues/17_accept_a_canceled_offer.png" alt="Accept a canceled offer"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/18_confirmed_canceled_offer.png" alt="Confirm a canceled offer"/>
+<img src="/img/offers_img/gui_tutorial/issues/18_confirmed_canceled_offer.png" alt="Confirm a canceled offer"/>
 </figure>
 <br/>
 
 Later, the Maker notices that the offer has gone through, despite having been canceled:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/19_0xch_wallet.png" alt="Post-offer 0 XCH"/>
+<img src="/img/offers_img/gui_tutorial/issues/19_0xch_wallet.png" alt="Post-offer 0 XCH"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/20_11usds_wallet.png" alt="Post-offer 11 USDS"/>
+<img src="/img/offers_img/gui_tutorial/issues/20_11usds_wallet.png" alt="Post-offer 11 USDS"/>
 </figure>
 <br/>
 
@@ -490,17 +490,17 @@ The lesson here is do _not_ uncheck the "Cancel on blockchain" checkbox unless y
 
 ### Whole coins must be reserved
 
-Under the coin set model, coins can be of any value. When an offer is created, the Maker's wallet must reserve enough coins to meet the requirements of the offer. 
+Under the coin set model, coins can be of any value. When an offer is created, the Maker's wallet must reserve enough coins to meet the requirements of the offer.
 
 The coin set model [has many advantages](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model") over the account model, but it can create some situations that take time to understand.
 
 For example, let's say a Maker has 1 XCH and 0 USDS:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/21_1xch_wallet.png" alt="1 XCH in wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/21_1xch_wallet.png" alt="1 XCH in wallet"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/22_0usds_wallet.png" alt="0 USDS in wallet"/>
+<img src="/img/offers_img/gui_tutorial/issues/22_0usds_wallet.png" alt="0 USDS in wallet"/>
 </figure>
 <br/>
 
@@ -511,13 +511,13 @@ The Maker received the XCH in one lump sum, so there is a single coin worth 1 XC
 This is viewable in the offer's details:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/23_pending_accept.png" alt="Offer in Pending Accept state"/>
+<img src="/img/offers_img/gui_tutorial/issues/23_pending_accept.png" alt="Offer in Pending Accept state"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/24_show_details.png" alt="Show offer's details"/>
+<img src="/img/offers_img/gui_tutorial/issues/24_show_details.png" alt="Show offer's details"/>
 </figure>
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/25_one_coin.png" alt="One coin used for offer"/>
+<img src="/img/offers_img/gui_tutorial/issues/25_one_coin.png" alt="One coin used for offer"/>
 <figcaption>
 <em>Scroll to the bottom to view coins reserved for the offer.</em>
 </figcaption>
@@ -529,7 +529,7 @@ While the offer is pending, the Maker attempts to send 0.1 XCH to another addres
 Notice that while the Total Balance is 1, the Spendable Balance is 0.
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/26_cant_send_offer_pending.png" alt="Can't send while offer pending"/>
+<img src="/img/offers_img/gui_tutorial/issues/26_cant_send_offer_pending.png" alt="Can't send while offer pending"/>
 </figure>
 <br/>
 
@@ -540,13 +540,13 @@ It's similar to using a $10 bill to buy something for $1. Before you receive you
 The Maker can work around this issue by canceling the offer, then breaking the single large coin into multiple small ones. One simple way to do this would be to send money to him/herself:
 
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/27_send_0.1xch_to_self.png" alt="Maker sends money to him/herself"/>
+<img src="/img/offers_img/gui_tutorial/issues/27_send_0.1xch_to_self.png" alt="Maker sends money to him/herself"/>
 </figure>
 <br/>
 
 The Maker can then recreate the same offer. The new offer's details show a coin worth 0.9 XCH being reserved:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/28_0.1_coin_in_offer.png" alt="New details of Maker's offer"/>
+<img src="/img/offers_img/gui_tutorial/issues/28_0.1_coin_in_offer.png" alt="New details of Maker's offer"/>
 </figure>
 <br/>
 
@@ -554,13 +554,13 @@ The Maker's wallet shows a Total Balance of 1 XCH. This is the same as before, b
 
 Because there are now two coins in the Maker's wallet, and only one (worth 0.9 XCH) has been reserved for the offer, the Spendable Balance is 0.1 XCH:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/29_0.1xch_available.png" alt="Maker has 0.1 XCH available"/>
+<img src="/img/offers_img/gui_tutorial/issues/29_0.1xch_available.png" alt="Maker has 0.1 XCH available"/>
 </figure>
 <br/>
 
 The Maker can now send 0.1 XCH to another wallet, even while the offer is still pending:
 <figure>
-<img src="../../static/img/offers_img/gui_tutorial/issues/30_send_while_offer_pending.png" alt="Successful send while offer pending"/>
+<img src="/img/offers_img/gui_tutorial/issues/30_send_while_offer_pending.png" alt="Successful send while offer pending"/>
 </figure>
 <br/>
 
