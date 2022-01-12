@@ -227,7 +227,7 @@ You can cancel any offer you created, as long as it has not already been accepte
 </figure>
 <br/>
 
-   3. The "Cancel Offer" dialog will appear. The default option is to cancel on the blockchain. This option will use your wallet to buy the coins you offered, which will ensure that nobody can accept your offer in the future.
+   3. The "Cancel Offer" dialog will appear. The default option is to cancel on the blockchain. This option will use your wallet to spend the coins you had offered, and create new coins of the same type and value. This process does not involve taking the other end of the offer, so you will not receive any funds of the type you had requested. The end result is that your wallet's balance will be the same as it was before you made the offer. The advantage of canceling in this manner is that it ensures that nobody can accept your offer in the future.
 
 <figure>
 <img src="/img/offers_img/gui_tutorial/cancel/3_cancel_on_chain.png" alt="Cancel on chain"/>
