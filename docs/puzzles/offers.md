@@ -121,10 +121,10 @@ An offer has six potential states, as defined in [trade_status.py](https://githu
 
 0. PENDING_ACCEPT -- The Maker has created the offer, but a Taker has not yet accepted it. The Maker's wallet has reserved the coin(s) to be spent. The spendbundle for the offer has not been sent to the mempool.
 1. PENDING_CONFIRM -- The Taker has accepted the offer. The Taker's wallet has reserved the coin(s) to be spent. The completed spendbundle has been sent to the mempool.
-2. PENDING_CANCEL -- The Maker has attempted to cancel the offer. Effectively, the Maker has accepted their own offer. Therefore, this offer's Maker and Taker are the same entity. The Maker-Taker's wallet has reserved the required coin(s). The completed spendbundle has been sent to the mempool.
+2. PENDING_CANCEL -- The Maker has attempted to cancel the offer by spending the coins being offered. The completed spendbundle has been sent to the mempool.
 3. CANCELLED -- Depending on which [type of cancellation](#cancellation "Offer cancellation") has been used, either:
     * The Maker's wallet has released the coins it had been reserving for this offer, or
-    * The Maker-Taker's coins have been spent and new ones have been created in the Maker-Taker's wallet.
+    * The Maker's coins have been spent and new ones have been created in the Maker's wallet.
 4. CONFIRMED -- The Maker's and Taker's reserved coins have been spent in the same spendbundle. The offer has been completed successfully.
 5. FAILED -- The Taker attempted, and failed to accept the offer. This could have happened either because the Maker canceled the offer, or because another Taker took the offer first.
 
@@ -238,10 +238,10 @@ If Alice wants to be sure all of her wallets are in agreement, she must cancel h
 A Maker has two options to cancel an offer.
 1. Cancel on the blockchain. This is the default cancellation option. It should be used if the Maker has sent the offer file to anyone else.
 
-  Continuing our previous example, if Alice uses this option, then she will take the other end of her own offer. She is now both the Maker and the Taker. Her previously-reserved coins are spent, and a new coin is created in her wallet. Alice doesn't need to know about the underlying coins that have been spent -- she just sees her old balance return to her wallet. The offer is now complete and can't be used again.
+  Continuing our previous example, if Alice uses this option, then her wallet will spend the coins being offered, and create new coins of the same type and value. Alice doesn't need to know about the underlying coins that have been spent -- she just sees her old balance return to her wallet. The offer is now complete and can't be used again.
 
   This option does come with two small downsides.
-    * Alice must wait for the blockchain to confirm that the transaction has completed.
+    * Alice must wait for the blockchain to confirm that the cancellation transaction has completed.
     * Alice might have to pay a transaction fee.
 
   These downsides will likely be acceptable in most cases, so "cancel on the blockchain" is the default option.
