@@ -67,6 +67,14 @@ You can assert puzzles of other coins, condense puzzles for easier signing, and 
 
 ## Currying
 
+_Currying_ is named in honor of the mathematician Haskell Curry. In math, currying is the technique of converting a function that takes multiple arguments into a sequence of functions that each take a single argument. For more information on the mathematical concept of currying, see [Wikipedia](https://en.wikipedia.org/wiki/Currying "Currying in math").
+
+In Chialisp, currying is a technique of pre-committing a portion of the solution to a puzzle. It works like hard-coding, but it's more versatile because it allows for the same puzzle to be reused. 
+
+For example, if a puzzle requires a password in its solution, a Chialisp developer could hard-code the password into the puzzle. But what if the developer later wanted to create a new smart coin with a different password? He or she would have to make a copy of the puzzle and swap out all instances of the old password for the new one. This would be quite inconvenient, especially in a puzzle with a complex solution.
+
+The developer could avoid this inconvenience by using a variable for the password. But that wouldn't be secure -- a farmer could change the password and steal the coin. This is where currying comes in -- it allows the developer to pre-commit without hard-coding.
+
 Currying is an extremely important concept in Chialisp that is responsible for almost the entirety of how state is stored in coins.
 The idea is to pass in arguments to a puzzle *before* it is hashed.
 When you curry, you commit to solution values so that the individual solving the puzzle cannot change them.
