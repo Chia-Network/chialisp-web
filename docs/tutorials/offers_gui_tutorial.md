@@ -227,7 +227,9 @@ You can cancel any offer you created, as long as it has not already been accepte
 </figure>
 <br/>
 
-   3. The "Cancel Offer" dialog will appear. The default option is to cancel on the blockchain. This option will use your wallet to buy the coins you offered, which will ensure that nobody can accept your offer in the future.
+   3. The "Cancel Offer" dialog will appear. The default option is to cancel on the blockchain. This option will use your wallet to spend the coins you had offered, and create new coins of the same type and value. This process does not involve taking the other end of the offer, so you will not receive any funds of the type you had requested. The end result is that your wallet's balance will be the same as it was before you made the offer (minus any transaction fees).
+   
+   The advantage of canceling in this manner is that it ensures that nobody can accept your offer in the future. The disadvantages are that you will need to wait a few minutes for your transaction to be processed, and that you may have to pay a transaction fee.
 
 <figure>
 <img src="/img/offers_img/gui_tutorial/cancel/3_cancel_on_chain.png" alt="Cancel on chain"/>
@@ -570,7 +572,7 @@ One of the Maker's coins has been reserved for the offer, and the other has been
 
 ## Further reading
 
-* [Offers blog entry](https://www.chia.net/2022/01/12/chia-offers-are-here-en.html)
+* [Offers blog entry](https://www.chia.net/blog/)
 * [Offers reference](../puzzles/offers.md "Offers reference")
 * [CLI tutorial](../tutorials/offers_cli_tutorial.md "Offers CLI tutorial")
 * [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model")

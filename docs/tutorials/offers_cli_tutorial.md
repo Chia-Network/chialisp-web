@@ -125,7 +125,7 @@ Options:
 ---
 ### **`get_offers`**
 
-Functionality: Get the status of existing offers.
+Functionality: Get the status of existing offers. Must be the offer's Maker.
 
 Usage: `chia wallet get_offers [OPTIONS]`
 
@@ -386,7 +386,9 @@ Status: CANCELLED
 ```
 <br/>
 
-Note that this command canceled the offer on the blockchain by buying the coins that had been offered. This method of cancellation ensures that nobody could accept your offer in the future. This is the default option, and the option that you should use if you have copied your offer file to another computer or website.
+Note that this command canceled the offer on the blockchain by spending the coins you had offered, and creating new coins of the same type and value. This process did not involve taking the other end of the offer, so you did not receive any funds of the type you had requested. The end result is that your wallet's balance is the same as it was before you made the offer (minus any transaction fees).
+
+The advantage of canceling in this manner is that it ensures that nobody can accept your offer in the future. The disadvantages are that you will need to wait a few minutes for your transaction to be processed, and that you may have to pay a transaction fee. This is the default option, and the option that you should use if you have copied your offer file to another computer or website.
 
 If you have not sent the offer file elsewhere, you can cancel the offer by running the same command with the `--insecure` flag, which will un-reserve the coins for your offer. However, nothing will be recorded on the blockchain. If you have copied your offer file elsewhere, someone could still accept it. The advantages of this option are that it will cancel your offer instantly, and there's no need to include a fee.
 
@@ -896,7 +898,7 @@ One of the Maker's coins has been reserved for the offer, and the other has been
 
 ## Further reading
 
-* [Offers blog entry](https://www.chia.net/2022/01/12/chia-offers-are-here-en.html)
+* [Offers blog entry](https://www.chia.net/blog/)
 * [Offers reference](../puzzles/offers.md "Offers reference")
 * [GUI tutorial](../tutorials/offers_gui_tutorial.md "Offers GUI tutorial")
 * [Info on the coin set model](https://docs.chia.net/docs/04coin-set-model/what-is-a-coin "Coin set model")
