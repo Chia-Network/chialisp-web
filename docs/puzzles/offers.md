@@ -161,7 +161,7 @@ The _offer_'s status is now PENDING_ACCEPT. In order for the offer to be complet
 
 ### settlement_payments.clvm
 
-Offers use a Chialisp puzzle called [settlement_payments.clvm](https://github.com/Chia-Network/chia-blockchain/tree/pacr-dev/chia/wallet/puzzles/settlement_payments.clvm "settlement_payments.clvm, the puzzle to create offer files."). This puzzle's solution is a list of `notarized_payments`, which were calculated in the previous section.
+Offers use a Chialisp puzzle called [settlement_payments.clvm](https://github.com/Chia-Network/chia-blockchain/tree/protocol_and_cats_rebased/chia/wallet/puzzles/settlement_payments.clvm "settlement_payments.clvm, the puzzle to create offer files."). This puzzle's solution is a list of `notarized_payments`, which were calculated in the previous section.
 
 Recall that `notarized_payments` is structured like this: `((N . ((PH1 AMT1 ...) (PH2 AMT2 ...) (PH3 AMT3 ...))) ...)`, where:
 * `N` is the nonce.
@@ -342,7 +342,7 @@ Options:
 ---
 ### **`get_offers`**
 
-Functionality: Get the status of existing offers. Must be the offer's Maker.
+Functionality: Get the status of existing offers.
 
 Usage: `chia wallet get_offers [OPTIONS]`
 
@@ -366,7 +366,7 @@ For detailed examples of offers using the command line interface, see our [CLI t
 -----
 ## RPCs
 
-From [wallet_rpc_client.py](https://github.com/Chia-Network/chia-blockchain/blob/pacr-dev/chia/rpc/wallet_rpc_client.py):
+From [wallet_rpc_client.py](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/rpc/wallet_rpc_client.py):
 
 * [`create_offer_for_ids`](#create_offer_for_ids)
 * [`get_offer_summary`](#get_offer_summary)
