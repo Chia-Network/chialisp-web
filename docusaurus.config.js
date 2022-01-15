@@ -17,6 +17,7 @@ module.exports = {
       logo: {
         alt: 'Chialisp Logo',
         src: 'img/logo.svg',
+        srcDark: 'img/logo_dark.svg',
       },
       items: [
         {
