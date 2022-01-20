@@ -99,6 +99,10 @@ module.exports = {
     [
       '@docusaurus/preset-classic',
       {
+        googleAnalytics: {
+          trackingID: 'G-H6XZNYRS4V',
+          anonymizeIP: true,
+        },
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
           path: 'docs',
