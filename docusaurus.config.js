@@ -99,7 +99,7 @@ module.exports = {
     [
       '@docusaurus/preset-classic',
       {
-        googleAnalytics: {
+        gtag: {
           trackingID: 'G-H6XZNYRS4V',
           anonymizeIP: true,
         },
