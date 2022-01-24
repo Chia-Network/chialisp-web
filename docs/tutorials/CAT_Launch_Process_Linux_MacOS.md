@@ -21,14 +21,11 @@ Welcome to the world of CATs! We're excited to have you here, and we can't wait 
 
 This tutorial will help you jump right in and get started with issuing your own CATs. However, there are a few things you should know before we begin.
 
-The [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation") is currently in **draft** form. This means that anything you do here could potentially be invalidated later if we add any breaking changes to the final standard. **Proceed at your own risk**.
+The [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation") is finalized as of January 2022.
 
-As this still a draft standard, not all edge cases have been thoroughly tested. To minimize your risk of running into unexpected results, we recommend that you do following (each of these will be discussed in more detail later in the tutorial):
+To minimize your risk of running into unexpected results, we recommend that you do following (each of these will be discussed in more detail later in the tutorial):
 
-* Run your full node and light wallet on the same computer.
-* Do not use the executable installer to install the light wallet for this tutorial. Instead, install from source, as this document will show you how to do. The reason for this is because the executable installer will overwrite your full node installation.
 * Generate a new public/private key pair for each CAT you issue. This key pair should be used for issuing one specific CAT **and nothing else**. It should also be the only key pair on your computer while issuing the CAT.
-* Do not attempt to test your CAT's creation on an active farming machine.
 * Test thoroughly on testnet before issuing your CAT to mainnet.
 
 For any questions regarding this tutorial, head over to the #chialisp channel on our [Keybase](https://keybase.io/team/chia_network.public "Chia's Keybase forum") forum, where there are lots of friendly folks who can help you.
@@ -53,59 +50,33 @@ These concepts are discussed in greater detail in our [CAT1 standard](https://ch
 
 ## Setting up your Chia environment
 
-First, a few notes on the current structure of Chia's source code as it pertains to CATs:
+There are two phases of issuing a CAT: testing your issuance on testnet and actually issuing on mainnet. In both of these phases, you'll need a synced full node.
 
->For now, the light wallet is the only wallet capable of issuing new CATs. It is currently located in a GitHub branch called `protocol_and_cats_rebased`. This branch will eventually be merged with the `main` branch, but while the CAT1 standard is still in draft form, the two branches will be kept separate.
->
->There are two phases of issuing a CAT: testing your issuance on testnet and actually issuing on mainnet. In both of these phases, you'll need a synced full node and a synced light wallet.
->
->For testing your issuance, you'll need to use testnet10. This testnet is only located on the `protocol_and_cats_rebased` branch. Therefore, you must use this branch for both your full node and the light wallet.
->
->For issuing on mainnet, your light wallet must come from `protocol_and_cats_rebased`, but your full node can be based off of either `main` or `protocol_and_cats_rebased`.
-
-To start this tutorial, we'll assume you are currently testing your issuance, and therefore will be running on the `protocol_and_cats_rebased` branch. Later in the tutorial, we'll show you how to make the switch to mainnet.
-
-All right, time to get started!
+We'll start with installing Chia's testnet.
 
 0. Ensure that you have a Python version between 3.7 and 3.9 installed by running `python3 version`.
 
-1. Clone the `protocol_and_cats_rebased` branch from GitHub and install the light wallet:
+  >If you already have Chia version 1.3 or later installed, you can skip step 1.
 
-    a. Create a new folder called `protocol_and_cats_rebased` and cd to it.
+1. Clone the `main` branch from GitHub and install Chia:
+
+    a. Create a new folder called `chia_main` (or something similar) and cd to it.
   
-    > In case you missed the above warning, please do not run the executable installer to install the light wallet. It will overwrite your full node if you have one installed. This will be fixed in a future release. For now, run the `git` command listed below to avoid overwriting your full node.
-
-    b. Run `git clone https://github.com/Chia-Network/chia-blockchain.git -b protocol_and_cats_rebased --recurse-submodules` to clone Chia's CAT branch.
+    b. Run `git clone https://github.com/Chia-Network/chia-blockchain.git -b main --recurse-submodules` to clone Chia's main branch.
  
     c. Run `cd chia-blockchain`.
     
-    d. Run `sh install.sh` to install the light wallet.
+    d. Run `sh install.sh` to install Chia.
     
     e. Run `. ./activate` to activate a virtual environment.
     
     f. Run `chia init` to initialize your environment.
 
     g. If you receive this message: "WARNING: UNPROTECTED SSL FILE!" then run `chia init --fix-ssl-permissions`.
-
-    h. Run `chia configure -t true` to switch to testnet10.
     
-    i. Run `sh install-gui.sh` to install the light wallet GUI.
+    h. Run `sh install-gui.sh` to install the Chia GUI.
 
-2. Run and sync the light wallet GUI:
-
-    a. Before doing anything else, it’s a good idea to set your log_level to INFO. To do this, edit `~/.chia/standalone_wallet/config/config.yaml` and change the value for "log_level:" to INFO. (It’s set to WARNING by default.)
-    
-    b. Run `cd chia-blockchain-gui`.
-    
-    c. Run `npm run electron &` to run the light wallet GUI as a daemon.
-
-    d. If you already have a "Private key with public fingerprint", select it when the GUI loads. Otherwise, select "CREATE A NEW PRIVATE KEY".
-
-    e. "Status: Syncing" should appear in the upper right corner of the GUI. Within a few minutes, this should change to "Status: Synced". This process doesn’t take long because the light wallet only requests and downloads the blocks that are required for that specific wallet.
-
-    f. If your Total Balance is 0, you can get some testnet10 TXCH from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
-
-3. Sync your testnet10 full_node:
+2. Download the testnet10 database and tell Chia to use the testnet:
 
     Because your are running on the testnet, you can download a database to speed up the syncing of your full node.
     
@@ -115,28 +86,39 @@ All right, time to get started!
     
     b. Click the file "blockchain_v1_testnet10.sqlite" to download it. Depending on your connection speed, this could take several minutes.
     
-    c. Move the .sqlite file to the db folder, which is located in `~/.chia/standalone_wallet/db/`.
+    c. Move the .sqlite file to the db folder, which is located in `~/.chia/mainnet/db/`.
+
+    d. Run `chia configure -t true` to switch to testnet10.
     
-    d. Change to the "chia-blockchain" directory where you installed the light wallet.
+3. Run and sync the Chia GUI:
 
-    e. If "(venv)" doesn’t appear on the left side of your command line, run `. ./activate` to activate your virtual environment.
+    a. Before doing anything else, it’s a good idea to set your log_level to INFO. To do this, edit `~/.chia/mainnet/config/config.yaml` and change the value for "log_level:" to INFO. (It’s set to WARNING by default.)
     
-    f. Run `chia start node`. You should receive a message that the chia_full_node has been started. If you copied the .sqlite file to your db folder, your node should be synced within a few minutes. You can monitor the syncing progress in "~/.chia/standalone_wallet/log/debug.log".
+    b. Run `cd chia_main/chia-blockchain/chia-blockchain-gui`.
 
-    g. While your full node is syncing, you may proceed to the next step.
+    c. If "(venv)" doesn’t appear on the left side of your command line, run `. ../activate` to activate your virtual environment.
+    
+    d. Run `npm run electron &` to run the Chia GUI as a daemon.
 
+    e. You will be given the option to run in "Farming Mode" or "Wallet Mode". Choose "Farming Mode", which will start run Chia as a full node.
+
+    f. If you already have a "Private key with public fingerprint", select it when the GUI loads. Otherwise, select "CREATE A NEW PRIVATE KEY".
+
+    g. "Status: Syncing" should appear in the upper right corner of the GUI. Within a few minutes, this should change to "Status: Synced".
+
+    h. If your Total Balance is 0, you can get some testnet10 TXCH from [our faucet](https://testnet10-faucet.chia.net "testnet10 TXCH faucet").
 
 4. Set up the CAT admin tool, which will help you to issue your CATs:
 
     a. Run `git clone https://github.com/Chia-Network/CAT-admin-tool.git -b main --recurse-submodules` to clone the CAT admin tool.
 
-    b. Run `cd CAT-admin-tool-main`.
+    b. Run `cd CAT-admin-tool`.
     
     c. Run `python3 -m venv venv` to create a virtual environment.
 
     d. Run `. ./venv/bin/activate` to activate the virtual environment.
 
-    e. Run `pip install .`. This will take a few minutes.
+    e. Run `pip install .`. This will take a few minutes. You will likely receive a few errors, which are safe to ignore.
     
     f. Run `pip install chia-dev-tools --no-deps`.
     
@@ -150,7 +132,7 @@ All right, time to get started!
     
     c. Run `chia show -s`. You should get this message: "Current Blockchain Status: Full Node Synced", along with a listing of the latest block heights.
 
-    d. Verify that "Status: Synced" is showing in the upper right side of the standalone GUI.
+    d. Verify that "Status: Synced" is showing in the upper right side of the Chia GUI.
 
     e. Make sure you have some TXCH in your wallet.
 
@@ -168,15 +150,15 @@ To get started, you will create a single-mint CAT. This is the default way to is
 
 A CAT with a single-mint TAIL will be useful for anyone who wants to create a token with a guaranteed fixed supply.
 
-You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Single-mint TAIL").
+You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Single-mint TAIL").
 
 1. Find a coin to mint, and create and push a new spendbundle:
 
-    a. Change to the "CAT-admin-tool-main" folder if you're not already there.
+    a. Change to the "CAT-admin-tool" folder if you're not already there.
 
     b. Figure out how many XCH mojos you want to use to issue your CAT. By default each CAT token will contain 1000 mojos, so you should multiply the number of tokens you want to mint by 1000. For example, if you want to mint 1 million tokens, you'll need 1 billion XCH mojos (1/1000 of an XCH).
 
-    c. Take note of your Receive Address in the standalone GUI. You'll need it for the next step.
+    c. Take note of your Receive Address in the Chia GUI. You'll need it for the next step.
 
     d. Run `cats --tail ./reference_tails/genesis_by_coin_id.clsp.hex --send-to <your receive address> --amount <XCH mojos> --as-bytes --select-coin`
 
@@ -194,17 +176,13 @@ You can find the TAIL we'll use for this example [here](https://github.com/Chia-
 
 2. Add a wallet ID for your new CAT:
 
-    a. Switch to your light wallet GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It won’t show up in your transactions, though. That feature has not yet been implemented.
+    a. Switch to the Chia GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It may or may not show up in your transactions.
 
     b. Now you can add a wallet ID for your new CAT. In the upper left corner, click "+ ADD TOKEN", then click "+ Custom". Enter the name of your CAT (it can be anything) in the first text field. For the second field, paste the &lt;Asset ID&gt; you saved from a few steps ago. Click ADD.
 
     c. You will now be taken to your new CAT wallet. The balance should show the number of XCH mojos you chose to use, divided by 1000. This is because CAT mojos by default are one-thousandth of a CAT.
     
-    > NOTE: There are currently two cosmetic bugs you might run into, covered in the next two steps.
-    
-    d. If you see a Total Balance of 0, you need to refresh your wallet. Run `chia start wallet-only -r`. You should now see the correct balance. This will be fixed in a future release.
-
-    e. Your cat's name might not show up in your wallet automatically. In this case, click the three dots next to "Status: Synced" and click "Rename Wallet". You can rename it to its proper name. This will be done automatically in a future release.
+    d. If you see a Total Balance of 0, you need to refresh your wallet. Run `chia start wallet-only -r`. You should now see the correct balance.
 
 You now have access to your CAT in the GUI. You can send and receive your new tokens just like you would with regular XCH.
 
@@ -216,17 +194,17 @@ If you're a visual learner, please see our [video tutorial for creating a multip
 
 Next we’ll create a CAT capable of minting tokens multiple times. This CAT uses a delegated TAIL, which is much more flexible than the previous one. As long as you sign a puzzlehash that you specify, you can mint new tokens using whatever TAIL you want. This allows for features such as rebate offers and distributed minting and retiring of tokens.
 
-You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/delegated_genesis_checker.clvm "Delegated TAIL").
+You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/delegated_genesis_checker.clvm "Delegated TAIL").
 
 We’ll set up this CAT to delegate the same TAIL we set up previously. What this means is that nobody else can mint new tokens until you allow it. Keep in mind that this is only one of many possible implementations of a delegated TAIL.
 
 1. Find a coin to mint, and create and push a new spendbundle:
 
-    a. Change to the "CAT-admin-tool-main" folder if you're not already there.
+    a. Change to the "CAT-admin-tool" folder if you're not already there.
 
     b. Figure out how many XCH mojos you want to use to issue your CAT. By default each CAT token will contain 1000 mojos, so you should multiply the number of tokens you want to mint by 1000. For example, if you want to mint 1 million tokens, you'll need 1 billion XCH mojos (1/1000 of an XCH).
 
-    c. Take note of your Receive Address in the standalone GUI.
+    c. Take note of your Receive Address in the Chia GUI.
 
     d. Run `chia keys show`. Take note of your &lt;Fingerprint&gt; and &lt;Master public key&gt;.
 
@@ -258,17 +236,13 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
 2. Add a wallet ID for your new CAT:
 
-    a. Switch to your light wallet GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It won’t show up in your transactions, though. That feature has not yet been implemented.
+    a. Switch to the Chia GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It might not show up in your transactions.
 
-    b. Now you can add a wallet ID for your new CAT. In the upper left corner, click "+ ADD TOKEN", then click "+ Custom". Enter the name of your CAT (it can be anything) in the Name field. For the Token and Asset Issuance Limitations field, paste the &lt;Asset ID&gt; you saved from a few steps ago. Click ADD.
+    b. Now you can add a wallet ID for your new CAT. In the upper left corner, click "+ ADD TOKEN", then click "+ Custom". Enter the name of your CAT (it can be anything) in the first text field. For the second text field, paste the &lt;Asset ID&gt; you saved from a few steps ago. Click ADD.
 
     c. You will now be taken to your new CAT wallet. The balance should show the number of XCH mojos you chose to use, divided by 1000. This is because CAT mojos by default are one-thousandth of a CAT.
     
-    > NOTE: There are currently two cosmetic bugs you might run into, covered in the next two steps.
-    
     d. If you see a Total Balance of 0, you need to refresh your wallet. Run `chia start wallet-only -r`. You should now see the correct balance. This will be fixed in a future release.
-
-    e. Your cat's name might not show up in your wallet automatically. In this case, click the three dots next to "Status: Synced" and click "Rename Wallet". You can rename it to its proper name. This will be done automatically in a future release.
 
     Just like the previous example, you now have access to your CAT in the GUI.
 
@@ -279,15 +253,11 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
 After you are comfortable with issuing your CAT on testnet, you may wish to move to mainnet. Please keep in mind that there are extra risks inherent to publishing code on a public blockchain. If your CAT and/or TAIL have not been created securely, your funds could potentially be bricked or stolen. **Proceed with caution.**
 
-That said, issuing a CAT to mainnet isn't very different from issuing one to testnet. You'll still need a synced full node and a light wallet.
-
-One difference is that for mainnet issuance, your full node could be based off of the `main` code branch. This will save you time in syncing your full node. Your light wallet will still need to be running on the `protocol_and_cats_rebased` branch.
+That said, issuing a CAT to mainnet isn't very different from issuing one to testnet. You'll still need a synced full node. You can also run off of the `main` code branch.
 
 When you are ready to issue your CAT to mainnet, the first step is to run `chia configure -t false`, which will instruct Chia to switch your configuration to mainnet.
 
 Next, you'll need to generate and protect your keys in a secure manner, which we'll discuss in the following section.
-
-> NOTE: You may be wondering how to get your CAT listed among the default options in our GUI. We will formalize this process around January 2022, but it has not yet been completed. But don't let that discourage you from creating your own CATs. They will be fully functional, even if they are not listed in our GUI.
 
 ## Generating a secure key pair
 
@@ -321,6 +291,4 @@ Here's how to generate a secure public/private key pair for issuing your new CAT
 
 ## Potential future additions
 
-As our Cat1 standard is still in draft form, this document will likely require multiple updates. In the future, we may add sections for issuing CATs with different TAILs, and we'll do a major revision when the `protocol_and_cats_rebased` branch is merged into the `main` branch.
-
-Be sure to check back for future updates. Good luck and happy minting!
+Now that the CAT1 standard has been finalized, we do not expect to see any major updates for quite some time. However, there is a chance that a CAT2 standard will be needed in the future. For now, good luck and happy minting!
