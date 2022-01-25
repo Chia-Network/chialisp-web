@@ -34,7 +34,7 @@ Any smart coin should be able to interact or communicate with any other smart co
 
 ## Chia Asset Tokens (CATs)
 
-The first Chialisp smart transaction that we integrated into chia-blockchain were [CATs](https://chialisp.com/docs/puzzles/cats) (formerly known as *coloured coins*). CATs allow you to create tokens on the Chia blockchain that are entirely controlled by you. This allows you to issue assets on the Chia blockchain that cannot be created or destroyed by others without your permission. This can be used for stable coins, stock issuance, voting shares, or anything else you can think of. Read more about nomenclature of [CATs](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
+[CATs](https://chialisp.com/docs/puzzles/cats) are tokens that you can create and/or trade on Chia's blockchain. The issuers of these tokens create the rules for their minting and retirement, using a "Token and Asset Issuance Limiter" (TAIL). The owners of these tokens have control over how they may be spent. CATs can be implemented as stable coins, stock issuance tokens, voting shares, or anything else you can think of. For more info, you can read about the nomenclature of [CATs](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
 
 ## Singletons
 
