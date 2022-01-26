@@ -19,11 +19,9 @@ Contents:
 
 Welcome to the world of CATs! We're excited to have you here, and we can't wait to see the creative ideas you come up with.
 
-This tutorial will help you jump right in and get started with issuing your own CATs. However, there are a few things you should know before we begin.
+This tutorial will help you jump right in and get started with issuing your own CATs. There are a few things you should know before we begin.
 
-The [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation") is finalized as of January 2022.
-
-To minimize your risk of running into unexpected results, we recommend that you do following (each of these will be discussed in more detail later in the tutorial):
+The [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation") is finalized as of January 2022. However, to minimize your risk of running into unexpected results, we recommend that you do following:
 
 * Generate a new public/private key pair for each CAT you issue. This key pair should be used for issuing one specific CAT **and nothing else**. It should also be the only key pair on your computer while issuing the CAT.
 * Test thoroughly on testnet before issuing your CAT to mainnet.
@@ -50,13 +48,13 @@ These concepts are discussed in greater detail in our [CAT1 standard](https://ch
 
 ## Setting up your Chia environment
 
-There are two phases of issuing a CAT: testing your issuance on testnet and actually issuing on mainnet. In both of these phases, you'll need a synced full node.
+There are two phases of issuing a CAT: testing your issuance on testnet and actually issuing on mainnet.
 
 We'll start with installing Chia's testnet.
 
 0. Ensure that you have a Python version between 3.7 and 3.9 installed by running `python3 version`.
 
-  >If you already have Chia version 1.3 or later installed, you can skip step 1.
+  >NOTE: If you already have Chia version 1.3 or later installed, you can skip step 1.
 
 1. Clone the `main` branch from GitHub and install Chia:
 
@@ -76,21 +74,9 @@ We'll start with installing Chia's testnet.
     
     h. Run `sh install-gui.sh` to install the Chia GUI.
 
-2. Download the testnet10 database and tell Chia to use the testnet:
-
-    Because your are running on the testnet, you can download a database to speed up the syncing of your full node.
+    i. Run `chia configure -t true` to switch to testnet10.
     
-    > **WARNING: Do not attempt this on mainnet.** 
-
-    a. Open a new browser window and go to [our download site](https://download.chia.net/?prefix=testnet10/ "Testnet10 database download").
-    
-    b. Click the file "blockchain_v1_testnet10.sqlite" to download it. Depending on your connection speed, this could take several minutes.
-    
-    c. Move the .sqlite file to the db folder, which is located in `~/.chia/mainnet/db/`.
-
-    d. Run `chia configure -t true` to switch to testnet10.
-    
-3. Run and sync the Chia GUI:
+2. Run and sync the Chia GUI:
 
     a. Before doing anything else, it’s a good idea to set your log_level to INFO. To do this, edit `~/.chia/mainnet/config/config.yaml` and change the value for "log_level:" to INFO. (It’s set to WARNING by default.)
     
@@ -100,7 +86,7 @@ We'll start with installing Chia's testnet.
     
     d. Run `npm run electron &` to run the Chia GUI as a daemon.
 
-    e. You will be given the option to run in "Farming Mode" or "Wallet Mode". Choose "Farming Mode", which will start run Chia as a full node.
+    e. You will be given the option to run in "Farming Mode" or "Wallet Mode". Choose "Wallet Mode", which will only run the light wallet. Note that you do not need to run a synced full node in order to issue a CAT.
 
     f. If you already have a "Private key with public fingerprint", select it when the GUI loads. Otherwise, select "CREATE A NEW PRIVATE KEY".
 
@@ -119,10 +105,6 @@ We'll start with installing Chia's testnet.
     d. Run `. ./venv/bin/activate` to activate the virtual environment.
 
     e. Run `pip install .`. This will take a few minutes. You will likely receive a few errors, which are safe to ignore.
-    
-    f. Run `pip install chia-dev-tools --no-deps`.
-    
-    g. Run `pip install pytest`. You can safely ignore the errors about missing requirements.
 
 5. Your environment should be all set, but let's make sure:
 
@@ -253,7 +235,7 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
 After you are comfortable with issuing your CAT on testnet, you may wish to move to mainnet. Please keep in mind that there are extra risks inherent to publishing code on a public blockchain. If your CAT and/or TAIL have not been created securely, your funds could potentially be bricked or stolen. **Proceed with caution.**
 
-That said, issuing a CAT to mainnet isn't very different from issuing one to testnet. You'll still need a synced full node. You can also run off of the `main` code branch.
+That said, issuing a CAT to mainnet isn't very different from issuing one to testnet. You can continue to run off of the `main` code branch, using the light wallet.
 
 When you are ready to issue your CAT to mainnet, the first step is to run `chia configure -t false`, which will instruct Chia to switch your configuration to mainnet.
 
