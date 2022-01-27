@@ -54,7 +54,7 @@ We'll start with installing Chia's testnet.
 
 0. Ensure that you have a Python version between 3.7 and 3.9 installed by running `python3 version`.
 
-  >NOTE: If you already have Chia version 1.3 or later installed, you can skip step 1.
+  >NOTE: If you already have Chia version 1.3 or later installed, you can skip step 1. If you are running on the mainnet, be sure to run `chia configure -t true` to switch to testnet10.
 
 1. Clone the `main` branch from GitHub and install Chia:
 
@@ -86,7 +86,7 @@ We'll start with installing Chia's testnet.
     
     d. Run `npm run electron &` to run the Chia GUI as a daemon.
 
-    e. You will be given the option to run in "Farming Mode" or "Wallet Mode". Choose "Wallet Mode", which will only run the light wallet. Note that you do not need to run a synced full node in order to issue a CAT.
+    e. You will be given the option to run in "Farming Mode" or "Wallet Mode". Choose "Wallet Mode", which will only run the light wallet. Note that you do not need to run a full node in order to issue a CAT.
 
     f. If you already have a "Private key with public fingerprint", select it when the GUI loads. Otherwise, select "CREATE A NEW PRIVATE KEY".
 
@@ -104,19 +104,25 @@ We'll start with installing Chia's testnet.
 
     d. Run `. ./venv/bin/activate` to activate the virtual environment.
 
-    e. Run `pip install .`. This will take a few minutes. You will likely receive a few errors, which are safe to ignore.
+    e. Your Linux installation may not come with Python's development tools installed by default. To be sure that these tools are installed, run `sudo apt-get install -y build-essential python3-dev`.
+
+    f. Run `pip install .`. This will take a few minutes.
+    
+    >NOTE: You might receive an error such as `ERROR: Failed building wheel for CAT-admin-tool`. This is likely safe to ignore. As long as you can run `cats --help` without errors, the tool has been installed properly.
+
+    g. Run `pip install chia-dev-tools --no-deps`.
+
+    h. Run `pip install pytest`. You can safely ignore the errors about missing requirements.
 
 5. Your environment should be all set, but let's make sure:
 
     a. Run `cats --help`. You should get a usage statement.
-    
+
     b. Run `cdv --help`. You should get another usage statement.
-    
-    c. Run `chia show -s`. You should get this message: "Current Blockchain Status: Full Node Synced", along with a listing of the latest block heights.
 
-    d. Verify that "Status: Synced" is showing in the upper right side of the Chia GUI.
+    c. Verify that "Status: Synced" is showing in the upper right side of the Chia GUI.
 
-    e. Make sure you have some TXCH in your wallet.
+    d. Make sure you have some TXCH in your wallet.
 
 Your environment is now set up and you are ready to start issuing CATs.
 
@@ -150,15 +156,19 @@ You can find the TAIL we'll use for this example [here](https://github.com/Chia-
 
     `cats --tail ./reference_tails/genesis_by_coin_id.clsp.hex --send-to <your receive address> --amount <XCH mojos> --as-bytes --curry 0x<Coin ID>`
 
-    The command will output two values, &lt;Asset ID&gt; and &lt;Spend Bundle&gt;. &lt;Asset ID&gt; will be the ID of this CAT, so it’s important to save this value for later. &lt;Spend Bundle&gt; is a large wall of text. This is the actual transaction that you will push to the blockchain, in byte format.
+    This command will give the following output:
 
-    f. Copy the value of &lt;Spend Bundle&gt; and run `cdv rpc pushtx <Spend Bundle>`. You should receive the message "status": "SUCCESS", "success": true.
+    `The transaction has been created, would you like to push it to the network? (Y/N)`
+
+    f. Enter `Y`.
+
+    g. The output will be `Asset ID: <Asset ID>`. Copy the &lt;Asset ID&gt;, which you'll need in the next step. Meanwhile, the transaction to create your CAT is being pushed to the blockchain.
 
     Congratulations! You have issued your first CAT. You still need to tell your wallet about it, though.
 
 2. Add a wallet ID for your new CAT:
 
-    a. Switch to the Chia GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It may or may not show up in your transactions.
+    a. Switch to the Chia GUI. Within a few minutes, your balance should decrease by the number of mojos you just minted. It will not show up in your transactions.
 
     b. Now you can add a wallet ID for your new CAT. In the upper left corner, click "+ ADD TOKEN", then click "+ Custom". Enter the name of your CAT (it can be anything) in the first text field. For the second field, paste the &lt;Asset ID&gt; you saved from a few steps ago. Click ADD.
 
@@ -196,7 +206,9 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
     Now that you have a coin, you can create a full delegated TAIL. In our case, the TAIL it delegates will be of the single-mint variety.
     
-    f. Run `cdv clsp curry ./reference_tails/genesis_by_coin_id.clsp.hex -a 0x<Coin ID>`. (Keep in mind the 0x before &lt;Coin ID&gt; is necessary.) The result of this command will be a &lt;delegated puzzle&gt;, which you’ll pass in as part of the solution to your main TAIL.
+    f. Run `cdv clsp curry ./reference_tails/genesis_by_coin_id.clsp.hex -a 0x<Coin ID>`.
+    
+    (Keep in mind the 0x before &lt;Coin ID&gt; is necessary.) The result of this command will be a &lt;delegated puzzle&gt;, which you’ll pass in as part of the solution to your main TAIL.
 
     g. Run the same command again, with the additional --treehash flag. This will give you the &lt;treehash&gt; of the puzzle you just created:
     
@@ -212,9 +224,13 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
     `cats --tail ./reference_tails/delegated_tail.clsp.hex --curry 0x<Master public key> --send-to <wallet address> -a <amount in mojos to issue> --as-bytes --solution "(<delegated puzzle> ())" --signature <Signature>`
 
-    This command will output two values, &lt;Asset ID&gt; and &lt;Spend Bundle&gt;. &lt;Asset ID&gt; will be the ID of this CAT, so it’s important to save this value for later. &lt;Spend Bundle&gt; is a large wall of text. This is the actual transaction that you will push to the blockchain, in byte format.
+    This command will give the following output:
 
-    j. Run `cdv rpc pushtx <Spend Bundle>`. You should receive the message "status": "SUCCESS", "success": true.
+    `The transaction has been created, would you like to push it to the network? (Y/N)`
+
+    j. Enter `Y`.
+
+    k. The output will be `Asset ID: <Asset ID>`. Copy the &lt;Asset ID&gt;, which you'll need in the next step. Meanwhile, the transaction to create your CAT is being pushed to the blockchain.
 
 2. Add a wallet ID for your new CAT:
 
@@ -224,7 +240,7 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
     c. You will now be taken to your new CAT wallet. The balance should show the number of XCH mojos you chose to use, divided by 1000. This is because CAT mojos are one-thousandth of a CAT.
     
-    d. If you see a Total Balance of 0, you need to refresh your wallet. Run `chia start wallet-only -r`. You should now see the correct balance. This will be fixed in a future release.
+    d. If you see a Total Balance of 0, you need to refresh your wallet. Run `chia start wallet-only -r`. You should now see the correct balance.
 
     Just like the previous example, you now have access to your CAT in the GUI.
 
