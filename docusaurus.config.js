@@ -92,7 +92,7 @@ module.exports = {
         src: 'img/full_logo_white.svg',
         href: '/',
       },
-      copyright: `Copyright © ${new Date().getFullYear()} Chia Network Inc. | <a href="https://chia.net/terms">Terms</a>`,
+      copyright: `© ${new Date().getFullYear()} Chia Network Inc. | <a href="https://chia.net/terms">Terms</a>`,
     },
   },
   presets: [
