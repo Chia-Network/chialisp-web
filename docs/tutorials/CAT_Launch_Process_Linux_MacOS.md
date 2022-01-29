@@ -36,7 +36,7 @@ CAT denominations, as well as the rules behind minting and melting, can take som
 
 * Most Chia wallets choose to display their value in XCH. However, this is a purely cosmetic choice because Chia's blockchain only knows about mojos. One XCH is equal to one trillion (1,000,000,000,000) mojos.
 * In a similar vein, Chia Network has made the design decision to map 1 CAT to 1000 XCH mojos. This ratio will be the same for all CATs.
-* Thoretically, it would be possible to set the CAT:mojo ratio to something other than 1:1000 for a specific CAT, but we strongly recommend against doing this. The official Chia wallet will not support CATs with a ratio other than 1:1000. Additionally, if you created your own wallet with support for different ratios, users of this wallet would almost certainly be confused and accidentally spend too much or too little money, by multiple orders of magnitude. Please don't attempt this.
+* Theoretically, it would be possible to set the CAT:mojo ratio to something other than 1:1000 for a specific CAT, but we strongly recommend against doing this. The official Chia wallet will not support CATs with a ratio other than 1:1000. Additionally, if you created your own wallet with support for different ratios, users of this wallet would almost certainly be confused and accidentally spend too much or too little money, by multiple orders of magnitude. Please don't attempt this.
 * The melt value of a single token is 1000 mojos. This remains true regardless of the token's face value or its circulating supply.
 * A token's face value and its melt value are not necessarily correlated, let alone matched.
 
@@ -96,15 +96,15 @@ We'll start with installing Chia's testnet.
 
 4. Set up the CAT admin tool, which will help you to issue your CATs:
 
-    a. Run `git clone https://github.com/Chia-Network/CAT-admin-tool.git -b main --recurse-submodules` to clone the CAT admin tool.
+    a. Your Linux installation may not come with Python's development tools installed by default. To be sure that these tools are installed, run `sudo apt-get install -y build-essential python3-dev`.
 
-    b. Run `cd CAT-admin-tool`.
+    b. Run `git clone https://github.com/Chia-Network/CAT-admin-tool.git -b main --recurse-submodules` to clone the CAT admin tool.
+
+    c. Run `cd CAT-admin-tool`.
     
-    c. Run `python3 -m venv venv` to create a virtual environment.
+    d. Run `python3 -m venv venv` to create a virtual environment.
 
-    d. Run `. ./venv/bin/activate` to activate the virtual environment.
-
-    e. Your Linux installation may not come with Python's development tools installed by default. To be sure that these tools are installed, run `sudo apt-get install -y build-essential python3-dev`.
+    e. Run `. ./venv/bin/activate` to activate the virtual environment.
 
     f. Run `pip install .`. This will take a few minutes.
     
