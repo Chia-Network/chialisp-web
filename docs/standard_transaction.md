@@ -70,7 +70,7 @@ Here's the full source and then we'll break it down:
     ; all of A0, A1, ... An must evaluate to non-null, or an exception is raised
     ; return the last item (if we get that far)
 
-    (defmacro assert (items)
+    (defmacro assert items
         (if (r items)
             (list if (f items) (c assert (r items)) (q . (x)))
             (f items)
