@@ -85,7 +85,7 @@ class SpendBundle:
 A **coin spend** contains exactly three things: The coin you are trying to spend (parent_coin_info, amount, puzzle_hash), the puzzle reveal (needs to tree hash to the puzzle hash), and the solution.
 
 ```python
-class CoinSolution:
+class CoinSpend:
   coin: Coin
   puzzle_reveal: SerializedProgram
   solution: SerializedProgram
