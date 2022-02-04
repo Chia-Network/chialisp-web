@@ -610,9 +610,9 @@ When a CLVM program is run, a cost is attributed to it. The minimum program cost
 There are three contributors to a CLVM program's total cost:
 1. Its size in bytes, where each byte has a cost of 12,000.
 2. The total computational cost of the CLVM operators that are executed in the program. The cost of these operators is listed below.
-3. The conditions outputted by the program. Only three conditions incur a cost: `CREATE_COIN`,| `AGG_SIG_UNSAFE`, and `AGG_SIG_ME`, which are also listed below.
+3. The conditions outputted by the program. Only three conditions incur a cost: `CREATE_COIN`, `AGG_SIG_UNSAFE`, and `AGG_SIG_ME`, which are also listed below.
 
-These three contributors are balanced so that they each contribute approximately the same amount of cost in block full of standard transactions.
+These three contributors are balanced so that they each contribute approximately the same amount of cost in a block full of standard transactions.
 
 The theoretical maximum size of a single block is 11,000,000,000 / 12,000 = 916,666 bytes. However, if you want to run a program that uses CLVM operators and conditions, the effective maximum size is ~500 KB.
 
