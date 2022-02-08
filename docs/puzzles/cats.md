@@ -82,9 +82,9 @@ We use a group accounting trick to guarantee this, which we will cover in more d
   * If the announcement comes from the CAT layer, it is prepended with `0xcb`.
   * If the announcement comes from the inner puzzle, it is prepended with `0xca`.
 
-* **CATs pass a list of pre-calculated Truths to the inner puzzle**
+* **CATs pass a list of pre-calculated Truths to their TAIL**
 
-  Many inner puzzles require information such as their coin ID and puzzlehash. Luckily, we already calculate much of this information in the CAT layer, so we bundle it together as a pre-validated collection of **Truths**. We then pass these Truths into the inner puzzle as the first parameter in the solution.
+  Many TAILs require information that has already been calculated in the CAT layer, so we bundle it together as a pre-validated collection of **Truths**. We then pass these Truths into the TAIL as the first non-curried parameter in the solution.
 
   The Truths are:
   * My ID - The ID of the coin
@@ -153,10 +153,15 @@ Several parameters must be passed to a TAIL's solution:
   * parent_is_cat - A flag indicating whether the parent has been validated as a CAT of the same type as this CAT
   * lineage_proof - (optional) Proof that the parent is a CAT of the same type as this CAT
   * delta - The Extra Delta value, as explained above
-  * inner_conditions - The conditions returned by the inner puzzle
+  * inner_conditions - The conditions returned by the inner puzzle (see below)
   * tail_solution - (optional) A list of opaque parameters
 
-Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if a "magic" condition is created in the inner puzzle. This "magic" condition is required to prevent people who can spend the TAIL from intercepting the spend and changing it against the spender's will.
+Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if a "magic" condition is created in the inner puzzle. This "magic" condition is required to prevent people who can spend the TAIL from intercepting the spend and changing it against the spender's will. The "magic" condition that triggers the TAIL to be run must look like this:
+
+`(51 <doesn't matter> -113 <TAIL puzzle> <TAIL solution>)`, where:
+  * `51` is the condition code for CREATE_COIN.
+  * `<doesn't matter>` can be anything, for example 0. (This would normally be a puzzlehash. It is ignored in this case.)
+  * `-113` is the "magic" amount, which signals to cat.clvm that the TAIL must be run. We chose to make this number negative because negative coins are invalid, so this would never be confused for a valid coin spend. Otherwise, there was no special reason for using -113.
 
 The TAIL should check diligently for the following things:
   * Is the Extra Delta minting or retiring any coins, and if so, do I approve?
