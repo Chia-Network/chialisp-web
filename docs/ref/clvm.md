@@ -605,7 +605,22 @@ When used as a parameter that may be checked for nil, zero is interpreted as nil
 
 ## Costs
 
-When a clvm program is run, a cost is attributed to it. The minimum program cost is 40. After each opcode is run, its cost is added to the total program cost. When the cost exceeds a threshold, the program is terminated, and no value is returned. Also, if the number of atoms or pairs exceeds 2^31, the program is terminated and no value is returned.
+When a CLVM program is run, a cost is attributed to it. The minimum program cost is 40. The maximum cost per block is 11,000,000,000. If the cost of an individual program exceeds this threshold, the program will be terminated and no value will be returned.
+
+There are three contributors to a CLVM program's total cost:
+1. Its size in bytes, where each byte has a cost of 12,000.
+2. The total computational cost of the CLVM operators that are executed in the program. The cost of these operators is listed below.
+3. The conditions outputted by the program. Only three conditions incur a cost: `CREATE_COIN`, `AGG_SIG_UNSAFE`, and `AGG_SIG_ME`, which are also listed below.
+
+These three contributors are balanced so that they each contribute approximately the same amount of cost in a block full of standard transactions.
+
+The theoretical maximum size of a single block is 11,000,000,000 / 12,000 = 916,666 bytes. However, if you want to run a program that uses CLVM operators and conditions, the effective maximum size is ~500 KB.
+
+Even this number is not realistic because it assumes that a single program will take up an entire block. The maximum number of vanilla transactions per block is ~2000. Therefore, if there is fee pressure on Chia's blockchain, a 500 KB program would need to include a larger fee than the top 2000 vanilla transactions in the mempool -- combined -- in order for a farmer to include it.
+
+To determine the total cost of a clvm program, you can run `brun -c <clvm>`.
+
+The following table shows the cost of each CLVM operator, as well as the cost of the outputted conditions.
 
 | operator | base cost | cost per arg | cost per byte |
 | -------- | --------- | ------------ | ------------- |
@@ -636,3 +651,5 @@ When a clvm program is run, a cost is attributed to it. The minimum program cost
 | | | | |
 | `CREATE_COIN` | 1800000 | - | - |
 | `AGG_SIG_UNSAFE`,`AGG_SIG_ME` | 1200000 | - | - |
+
+Aside from cost, the maximum number of atoms or pairs in a CLVM program is 2^31. If this threshold is exceeded, the program will be terminated and no value will be returned.

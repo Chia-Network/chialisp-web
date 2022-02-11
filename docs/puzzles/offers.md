@@ -350,13 +350,16 @@ Options:
 
 | Short Command | Long Command                 | Type  | Required | Description |
 |:-------------:|:----------------------------:|:-----:|:--------:|:------------|
-| -wp | --wallet-rpc-port | INTEGER | False | Set the port where the Wallet is hosting the RPC interface. See the rpc_port under wallet in config.yaml
-| -f  | --fingerprint     | INTEGER | False | Set the fingerprint to specify which wallet to use
-| -id | --id              | TEXT    | False | The ID of the offer that you wish to examine
-| -p  | --filepath        | TEXT    | False | The path to rewrite the offer file to (must be used in conjunction with --id)
-| -ia | --include-all     | None    | False | Include offers that have already been confirmed/canceled
-| -s  | --summaries       | None    | False | Show the assets being offered and requested for each offer
-| -h  | --help            | None    | False | Show a help message and exit
+| -wp | --wallet-rpc-port      | INTEGER | False | Set the port where the Wallet is hosting the RPC interface. See the rpc_port under wallet in config.yaml
+| -f  | --fingerprint          | INTEGER | False | Set the fingerprint to specify which wallet to use
+| -id | --id                   | TEXT    | False | The ID of the offer that you wish to examine
+| -p  | --filepath             | TEXT    | False | The path to rewrite the offer file to (must be used in conjunction with --id)
+| -em | --exclude-my-offers    | None    | False | Exclude your own offers from the output
+| -et | --exclude-taken-offers | None    | False | Exclude offers that you've accepted from the output
+| -ic | --include-completed    | None    | False | Include offers that have already been confirmed/canceled or failed
+| -s  | --summaries            | None    | False | Show the assets being offered and requested for each offer
+| -r  | --reverse              | None    | False | Reverse the order of the output
+| -h  | --help                 | None    | False | Show a help message and exit
 
 -----
 ### CLI examples
