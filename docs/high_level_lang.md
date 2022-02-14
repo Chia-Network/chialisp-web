@@ -67,7 +67,7 @@ However we will want to change 0xpubkey to a value passed to us through our solu
 **Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
 
 ```chialisp
-$ run '(qq (c (c (q . 50) (c (q (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
+$ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
 
 (c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) (a 5 11))
 ```
