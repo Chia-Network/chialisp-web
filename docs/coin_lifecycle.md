@@ -78,7 +78,7 @@ It is an object that contains exactly two things: a list of coin spends and an a
 
 ```python
 class SpendBundle:
-  coin_solutions: List[CoinSpend]
+  coin_spends: List[CoinSpend]
   aggregated_signature: G2Element
 ```
 
