@@ -62,7 +62,7 @@ To spend your coin, you only need to call RPC (broadcast transaction example) wi
 ```bash
 curl --insecure --cert ~/.chia/mainnet/config/ssl/full_node/private_full_node.crt --key ~/.chia/mainnet/config/ssl/full_node/private_full_node.key -d '{        "spend_bundle": {
             "aggregated_signature": "0xc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-            "coin_solutions": [
+            "coin_spends": [
                 {
                     "coin": {
                         "amount": 1,
@@ -76,7 +76,7 @@ curl --insecure --cert ~/.chia/mainnet/config/ssl/full_node/private_full_node.cr
         }}' -H "Content-Type: application/json" -X POST https://localhost:8555/push_tx
 ```
 
-The `spend_bundle` object contains an `aggregated_signature`, which we can later assert in the puzzle, and `coin_solutions`: a list of objects for all of the coins we are spending. If `aggregated_signature` is not necessary for your puzzle, use 0xc followed by 191 zeros (as in the example above). However, it's worth noting that a puzzle that doesn't use a signature is usually unsafe and should be used only for testing purposes.
+The `spend_bundle` object contains an `aggregated_signature`, which we can later assert in the puzzle, and `coin_spends`: a list of objects for all of the coins we are spending. If `aggregated_signature` is not necessary for your puzzle, use 0xc followed by 191 zeros (as in the example above). However, it's worth noting that a puzzle that doesn't use a signature is usually unsafe and should be used only for testing purposes.
 
 The `coin_solution` contains information about the `coin` it is spending (`amount`, `parent_coin_info`, and  `puzzle_hash`). It also includes a serialized puzzle as a `puzzle_reveal` and serialized `solution`.
 
