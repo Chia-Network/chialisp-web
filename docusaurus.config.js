@@ -117,6 +117,11 @@ module.exports = {
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
+        docs: {
+          sidebarPath: require.resolve('./sidebars.js'),
+          // Please change this to your repo.
+          editUrl: 'https://github.com/Chia-Network/{{ REPOSITORY_NAME }}/blob/main/',
+        },
       },
     ],
   ],
