@@ -605,7 +605,7 @@ When used as a parameter that may be checked for nil, zero is interpreted as nil
 
 ## Costs
 
-When a CLVM program is run, a cost is attributed to it. The minimum program cost is 40. The maximum cost per block is 11,000,000,000. If the cost of an individual program exceeds this threshold, the program will fail.
+When a CLVM program is run, a cost is attributed to it. The minimum program cost is 40. The maximum cost per block is 11,000,000,000. If the cost of an individual program exceeds this threshold, the program will fail. The maximum realistic size of a block is around 400 KB.
 
 To determine the total cost of a clvm program, you can run `brun -c <clvm>`.
 
@@ -841,8 +841,7 @@ To calculate the maximum cost per block, we simply add the generator program's e
 Theoretical maximum cost per block: `3,620,074,957 + 3,620,074,957 + 3,620,074,957 = 10,860,224,871` We round this number to 11,000,000,000.
 
 ### Maximum block size
-[todo: this section needs to be more prominent, maybe move to the top of the costs section]
-[most developers will want to know these details, and they'll care less about how we arrived at these numbers]
+
 The theoretical maximum size of a single block is `maximum cost per block / cost per byte`, or `11,000,000,000 / 12,000 = 916,667 bytes`. However, this number ignores the costs of all operators. If you want a CLVM program to do anything useful, the maximum size would be closer to 400 KB.
 
 Even this number is not realistic because it assumes that a single program will take up an entire block. The maximum number of vanilla transactions (with two outputs) per block is 1000. Therefore, if there is fee pressure on Chia's blockchain, a 400 KB program would need to include a larger fee than the top 1000 vanilla transactions in the mempool -- combined -- in order for a farmer to include it.
