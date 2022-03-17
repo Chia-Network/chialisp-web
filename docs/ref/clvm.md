@@ -337,7 +337,7 @@ The treatment of negative dividend and divisors is as follows:
 (/ -1 -1) =>  1
 ```
 
-### Flooring of negative nubmers
+### Flooring of negative numbers
 Note that a division with a remainder always rounds towards negative infinity, not toward zero.
 ```chialisp
 (/ -3 2) => -2
@@ -362,7 +362,7 @@ The `logand`, `logior` and `logxor` accept 0 or more parameters.
 There is an implicit *identity* argument, which is the value all parameters will apply to.
 The identity will just be returned in case 0 arguments are given.
 
-**logand** `(logand A B ...)` bitwise **AND** of one or more atoms. Identiy is `-1`.
+**logand** `(logand A B ...)` bitwise **AND** of one or more atoms. Identity is `-1`.
 
 ```chialisp
 (logand -128 0x7fffff)
@@ -605,51 +605,251 @@ When used as a parameter that may be checked for nil, zero is interpreted as nil
 
 ## Costs
 
-When a CLVM program is run, a cost is attributed to it. The minimum program cost is 40. The maximum cost per block is 11,000,000,000. If the cost of an individual program exceeds this threshold, the program will be terminated and no value will be returned.
-
-There are three contributors to a CLVM program's total cost:
-1. Its size in bytes, where each byte has a cost of 12,000.
-2. The total computational cost of the CLVM operators that are executed in the program. The cost of these operators is listed below.
-3. The conditions outputted by the program. Only three conditions incur a cost: `CREATE_COIN`, `AGG_SIG_UNSAFE`, and `AGG_SIG_ME`, which are also listed below.
-
-These three contributors are balanced so that they each contribute approximately the same amount of cost in a block full of standard transactions.
-
-The theoretical maximum size of a single block is 11,000,000,000 / 12,000 = 916,666 bytes. However, if you want to run a program that uses CLVM operators and conditions, the effective maximum size is ~500 KB.
-
-Even this number is not realistic because it assumes that a single program will take up an entire block. The maximum number of vanilla transactions per block is ~2000. Therefore, if there is fee pressure on Chia's blockchain, a 500 KB program would need to include a larger fee than the top 2000 vanilla transactions in the mempool -- combined -- in order for a farmer to include it.
+When a CLVM program is run, a cost is attributed to it. The minimum program cost is 40. The maximum cost per block is 11,000,000,000. If the cost of an individual program exceeds this threshold, the program will fail. The maximum realistic size of a block is around 400 KB.
 
 To determine the total cost of a clvm program, you can run `brun -c <clvm>`.
 
-The following table shows the cost of each CLVM operator, as well as the cost of the outputted conditions.
+This section begins with a breakdown of the specific cost for each operator and how to calculate costs by hand.
 
-| operator | base cost | cost per arg | cost per byte |
-| -------- | --------- | ------------ | ------------- |
-| `f` *first* | 30 | - | - |
-| `i` *if* | 33 | - | - |
-| `c` *cons* | 50 | - | - |
-| `r` *rest* | 30 | - | - |
-| `l` *listp* | 19 | - | - |
-| `q` *quote* | 20 | - | - |
-| `a` *apply* | 90 | - | - |
-| `=` | 117 | - | 1 |
-| `+` | 99 | 320 | 3 |
-| `/` | 988 | - | 4 |
-| `*` | 92 | 885 | [see here](https://github.com/Chia-Network/clvm_tools/blob/main/costs/README.md#multiplication) |
-| `logand`, `logior`, `logxor` | 100 | 264| 3 |
-| `lognot` | 331 | - | 3 |
-| `>` | 498 | - | 2 |
-| `>s` | 117 | - | 1 |
-| `strlen` | 173 | - | 1 |
-| `concat` | 142 | 135 | 3 |
-| `divmod` | 1116 | - | 6 |
-| `sha256` | 87 | 134 | 2 |
-| `ash` | 596 | - | 3 |
-| `lsh` | 277 | - | 3 |
-| `not`, `any`, `all` | 200 | 300 | - |
-| `point_add` | 101094 | 1343980 | - |
-| `pubkey_for_exp` | 1325730 | - | 38 |
-| | | | |
-| `CREATE_COIN` | 1800000 | - | - |
-| `AGG_SIG_UNSAFE`,`AGG_SIG_ME` | 1200000 | - | - |
+* [Cost tables](#cost-tables)
+* [Evaluating cost for a sample brun program](#evaluating-cost-for-a-sample-brun-program)
 
-Aside from cost, the maximum number of atoms or pairs in a CLVM program is 2^31. If this threshold is exceeded, the program will be terminated and no value will be returned.
+Later, we'll discuss our rationale for having costs in the first place. We'll also detail the theoretical and realistic maximum cost and size per block. 
+
+* [Minimum spec machine for farming](#minimum-spec-machine-for-farming)
+* [Maximum cost per block](#maximum-cost-per-block)
+
+## Cost tables
+
+The costs used in Chia's consensus come from the Rust implementation of CLVM, specifically from these locations:
+  * [more_ops.rs#L24](https://github.com/Chia-Network/clvm_rs/blob/main/src/more_ops.rs#L24)
+  * [core_ops.rs#L7](https://github.com/Chia-Network/clvm_rs/blob/main/src/core_ops.rs#L7)
+  * [run_program.rs#L11](https://github.com/Chia-Network/clvm_rs/blob/main/src/run_program.rs#L11)
+
+We'll start with a table showing the two base costs, namely a mandatory cost and a cost per byte of memory.
+
+| type                   | base cost   | cost per byte |
+| ---------------------- | ----------- | ------------- |
+| mandatory cost         | 1           | -             |
+| `MALLOC_COST_PER_BYTE` | -           | 10            |
+
+* The "mandatory cost" is charged for all operators to process data
+* `MALLOC_COST_PER_BYTE` is charged for allocating new atoms, as the return value(s) from operators. Atoms 0 and 1 don't count, they are free. E.g. `(> A B)`, which returns `true` or `false`, is not charged the `MALLOC_COST_PER_BYTE`.
+
+Next we'll show the cost of each CLVM operator, as well as the cost of the outputted conditions.
+
+| operator            | base cost | cost per arg | cost per byte |
+| ------------------- | --------- | ------------ | ------------- |
+| `f` *first*         | 30        | -            | -             |
+| `i` *if*            | 33        | -            | -             |
+| `c` *cons*          | 50        | -            | -             |
+| `r` *rest*          | 30        | -            | -             |
+| `l` *listp*         | 19        | -            | -             |
+| `q` *quote*         | 20        | -            | -             |
+| `a` *apply*         | 90        | -            | -             |
+| `=`                 | 117       | -            | 1             |
+| `+`                 | 99        | 320          | 3             |
+| `/`                 | 988       | -            | 4             |
+| `*`                 | 92        | 885          | [see here](https://github.com/Chia-Network/clvm_tools/blob/main/costs/README.md#multiplication) |
+| `logand`, `logior`, `logxor` | 100 | 264       | 3             |
+| `lognot`            | 331       | -            | 3             |
+| `>`                 | 498       | -            | 2             |
+| `>s`                | 117       | -            | 1             |
+| `strlen`            | 173       | -            | 1             |
+| `concat`            | 142       | 135          | 3             |
+| `divmod`            | 1116      | -            | 6             |
+| `sha256`            | 87        | 134          | 2             |
+| `ash`               | 596       | -            | 3             |
+| `lsh`               | 277       | -            | 3             |
+| `not`, `any`, `all` | 200       | 300          | -             |
+| `point_add`         | 101094    | 1343980      | -             |
+| `pubkey_for_exp`    | 1325730   | -            | 38            |
+|                     |           |              |               |
+
+Finally, three of CLVM's conditions also have an associated cost:
+
+| operator            | cost    |
+| ------------------- | ------- |
+| `CREATE_COIN`       | 1800000 |
+| `AGG_SIG_UNSAFE`    | 1200000 |
+| `AGG_SIG_ME`        | 1200000 |
+
+Aside from cost, the maximum number of atoms or pairs (counted separately) in a CLVM program is 2^31 apiece. If this threshold is exceeded, the program will fail. However, this is likely a moot point because it's probably not possible to write a program with this many atoms or pairs without exceeding the maximum cost per block.
+
+## Evaluating cost for a sample brun program
+
+In this section, we'll show you how to calculate the cost of a simple CLVM program by hand. The program we'll use is
+
+brun "(concat (q . `gu`) (q . `ide`))"
+
+Where "gu" and "ide" are quoted, so that they are interpreted as values rather than programs.
+
+The `brun` command takes two arguments, a program and its "environment". If no environment is specified on the command line (as is the case in this example), we use an empty environment, "()".
+
+At the lowest level of the interpreter, we interpret an atom as one of three things:
+
+1. A quote (cost 20)
+2. A path lookup into the environment (base cost of 44 + 4 for each bit)
+  > Note that there might be a penalty cost. See the [Penalty cost](#penalty-cost) section for more info
+3. An operator (mandatory cost of 1 + the cost of executing the operator)
+
+Next we can calculate the cost of the program, "(concat (q . `gu`) (q . `ide`))":
+* `concat` eval (mandatory cost):   1
+* `q . gu` (cost of a quote):      20 
+* `q . ide` (cost of a quote):     20 
+* `concat` (execution cost):      142
+* `concat` arg cost ("gu"):       135 
+* `concat` arg cost ("ide"):      135
+* `concat` two bytes ("gu"):        6 (2 bytes * 3 cost per byte)
+* `concat` three bytes ("ide"):     9 (3 bytes * 3 cost per byte)
+* `malloc` five bytes ("guide"):   50 (5 bytes * 10 malloc cost per byte)
+
+Program cost = 518
+
+This is confirmed by running `brun` from the command line:
+
+```powershell
+PS C:\Users\User> brun -c --quiet '(concat (q . gu) (q . ide))'
+cost = 518
+```
+
+### Penalty cost
+
+At first glance, it might appear that the following two programs should have the same cost. However, the cost of the second program is 10 higher than that of the first:
+
+```
+$ brun -c '(+ (q . 126) (q . 1))' 
+cost = 796
+127
+```
+
+```
+$ brun -c '(+ (q . 127) (q . 1))'
+cost = 806
+128
+```
+
+The reason these programs cost different is that the latter needs a leading zero in its result. When dumping the hexadecimal representation of the output, this becomes clearer:
+
+```
+$ brun -d -c '(+ (q . 126) (q . 1))'
+cost = 796
+7f
+```
+```
+$ brun -d -c '(+ (q . 127) (q . 1))'
+cost = 806
+820080
+```
+
+Now that you know _what_ the cost of each CLVM operator is, as well as _how_ to hand-calculate costs, we'll discuss _why_ we decided to structure costs in this manner. It all begins with the minimum spec machine for farming, the humble Raspberry Pi 4.
+
+## Minimum spec machine for farming
+
+The minimum spec machine to run a full node is the Raspberry Pi 4. How do we know if this machine can stay synced? The worst case scenario occurs when multiple full transaction blocks are created with the minimum amount of time between them. This will temporarily put maximum load on the system. If the Pi can stay synced in this scenario, then it easily should be able to stay synced under normal load.
+
+The first question we must answer is how much time elapses between transaction blocks. Chia's consensus mandates that at least three signage points must be reached before infusion_iterations may occur, so the minimum time between blocks is
+
+`3 signage points * signage point time`, which equals
+
+`3 signage points * (600 seconds per sub-slot / 64 signage points per sub-slot)`, which equals
+
+`3 signage points * 9.375 seconds per signage point`, which equals
+
+`28.125 seconds`
+
+  > Note: The **average** time between transaction blocks is [51.95 seconds](https://docs.chia.net/docs/03consensus/foliage#transaction-block-time). The lower a given time interval between transaction blocks (down to 28.125 seconds), the lower the probability of a transaction block being created in that time interval.
+
+A transaction block is considered "full" when it contains 2000 outputs. For this document, we'll assume this translates to 1000 vanilla transactions, each with two inputs and two outputs. This would give the network an average of 19.25 (1000/51.95) transactions per second.
+
+  > Note: A transaction with only one input and one output is also possible. In theory, a block could therefore hold up to 2000 transactions, in which case the network would process an average of 38.5 (2000/51.95) transactions per second.
+
+With this goal in mind, Chia has created a **generator program** that processes 2000 compressed inputs and outputs. This program simulates a "full block".
+
+To calculate the total amount of time for a Raspberry Pi 4 to process a full block, we must take into account three factors:
+* The time required to run the generator program (2000 inputs and outputs)
+  * The Raspberry Pi 4 accomplishes this in 5.2 seconds
+* The time required to validate 2000 public keys
+  * 2.2 seconds
+* The time required to validate 2000 aggregate signatures
+  * 10.63 seconds
+
+Therefore, the total amount of time required for a Raspberry Pi 4 to process a full block is 5.2 + 2.2 + 10.63 = 18.03 seconds. This is 10.095 seconds faster than the minimum time between blocks, and 33.92 seconds faster than the average. When considering other factors such as network latency and time required to fetch a full proof ([640 ms on a slow HDD](https://docs.chia.net/docs/03consensus/proof-of-space#farming)), this still allows plenty of leeway for a Raspberry Pi 4 to stay synced and collect farming rewards.
+
+## Minimum spec machine for syncing
+
+As a benchmark, we use the Raspberry Pi 4, Chia's minimum spec machine for farming. A Raspberry Pi 4 has four cores, so it can validate a pre-existing block in 18.03 / 4 = 4.5075 seconds, which is around 11.5 times the average real-time rate of 51.95 seconds. Even in the worst-case scenario where every transaction block is full, the Pi can sync faster than the chain is being created.
+
+## Maximum cost per block
+
+Now that we've established that a Raspberry Pi 4 can, indeed, sync and farm, even when every transaction block is full, we'll calculate the maximum cost per block. 
+
+There are three categories that go into determining a block's maximum cost:
+1. Generator program cost, which is split into two parts
+    * Execution cost
+    * Signature validation cost
+2. Generator program size (each byte has a cost)
+3. Generator program coins (each new coin has a cost)
+
+In the case of calculating the maximum cost, these three categories are to be given equal weight. We'll go through each of the categories individually.
+
+#### Generator program execution cost
+
+(This is the first half of 1, above.)
+
+An Intel Macbook Pro was used as a reference platform to determine baseline costs based on CPU usage. The costs were then hand-tweaked for various reasons:
+
+* To ascribe additional cost to operations that allocate memory, i.e. the operand per-byte cost was inflated. This additional cost is called `MALLOC_PER_BYTE_COST` and amounts to 10 cost per byte.
+* The especially CPU intensive BLS operations (`point_add` and `pubkey_for_exp`) had their cost inflated to not differ too much from the Raspberry Pi 4.
+* Some operations that do not allocate memory and end up being common in relatively simple programs had their cost deflated. Specifically, `if`, `cons`, `listp`, `first`, and `rest`.
+
+The result is that the generator program has an execution cost of 1,317,054,957.
+
+#### Generator program signature validation cost
+
+(This is the second half of 1, above.)
+
+The signature validation cost is based on computation time. BLS operations involve public key and aggregate signature validation, which are multiplied by the number of outputs.
+
+* Time per public key validation: 0.179370 ms
+* Time per aggregate signature validation: 0.972140 ms
+* Total time for 2000 key and signature validations: (0.179370 + 0.972140) * 2000 = 2303.02 ms
+
+Each 1 cost is designed to require 1 nanosecond, so we need to multiply the result by 1 million (ns/ms).
+* Cost for the generator program's BLS operations: `2303.02 * 1,000,000 = 2,303,020,000`.
+
+Using this info, we can also calculate the cost of each `AGG_SIG_UNSAFE` and `AGG_SIG_ME` condition in all CLVM programs:
+* Cost per BLS condition: `(0.179370 + 0.972140) * 1,000,000 = 1,151,510`. We round this number up to 1,200,000.
+
+### Generator program cost
+
+(This is the total cost of 1, above.)
+
+Taking the previous two calculations into account, the total cost to execute and run the BLS operations of the generator program is: `1,317,054,957 + 2,303,020,000 = 3,620,074,957`.
+
+### Generator program size
+
+(This is the cost of 2, above.)
+
+We know that 1, 2, and 3 all will be assigned equal maximum costs, which we've already established is 3,620,074,957. This is the size-based cost of the generator program.
+
+The generator program itself is 298,249 bytes. Each byte, therefore has a cost of `3,620,074,957 / 298,249 = 12,137.76`. We round this number to 12,000 per byte. This is the cost per bye of all CLVM programs.
+
+### Generator program coins
+
+(This is the cost of 3, above.)
+
+Just like the previous calculation, the total cost of the generator program's coins is 3,620,074,957. The generator program creates 2000 coins, so the cost per `CREATE_COIN` in all CLVM programs is `3,620,074,957 / 2000 = 1,810,037.4785`. We round this number to 1,800,000.
+
+### Maximum cost per block
+
+To calculate the maximum cost per block, we simply add the generator program's execution, size, and coin costs:
+
+Theoretical maximum cost per block: `3,620,074,957 + 3,620,074,957 + 3,620,074,957 = 10,860,224,871` We round this number to 11,000,000,000.
+
+### Maximum block size
+
+The theoretical maximum size of a single block is `maximum cost per block / cost per byte`, or `11,000,000,000 / 12,000 = 916,667 bytes`. However, this number ignores the costs of all operators. If you want a CLVM program to do anything useful, the maximum size would be closer to 400 KB.
+
+Even this number is not realistic because it assumes that a single program will take up an entire block. The maximum number of vanilla transactions (with two outputs) per block is 1000. Therefore, if there is fee pressure on Chia's blockchain, a 400 KB program would need to include a larger fee than the top 1000 vanilla transactions in the mempool -- combined -- in order for a farmer to include it.
+
