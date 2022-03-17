@@ -616,8 +616,8 @@ This section begins with a breakdown of the specific cost for each operator and 
 
 Later, we'll discuss our rationale for having costs in the first place. We'll also detail the theoretical and realistic maximum cost and size per block. 
 
-* [Lowest common denominator to stay synced](#lowest-common-denominator-to-stay-synced)
-* [Maximum cost per block rationale](#maximum-cost-per-block-rationale)
+* [Minimum spec machine for farming](#minimum-spec-machine-for-farming)
+* [Maximum cost per block](#maximum-cost-per-block)
 
 ## Cost tables
 
@@ -626,14 +626,17 @@ The costs used in Chia's consensus come from the Rust implementation of CLVM, sp
   * [core_ops.rs#L7](https://github.com/Chia-Network/clvm_rs/blob/main/src/core_ops.rs#L7)
   * [run_program.rs#L11](https://github.com/Chia-Network/clvm_rs/blob/main/src/run_program.rs#L11)
 
-We'll start with a table showing the two costs that must be applied to all operators, namely a mandatory cost and a cost per byte of memory.
+We'll start with a table showing the two base costs, namely a mandatory cost and a cost per byte of memory.
 
 | type                   | base cost   | cost per byte |
 | ---------------------- | ----------- | ------------- |
 | mandatory cost         | 1           | -             |
 | `MALLOC_COST_PER_BYTE` | -           | 10            |
 
-The following table shows the cost of each CLVM operator, as well as the cost of the outputted conditions.
+* The "mandatory cost" is charged for all operators to process data
+* `MALLOC_COST_PER_BYTE` is charged for allocating new atoms, as the return value(s) from operators. Atoms 0 and 1 don't count, they are free. E.g. `(> A B)`, which returns `true` or `false`, is not charged the `MALLOC_COST_PER_BYTE`.
+
+Next we'll show the cost of each CLVM operator, as well as the cost of the outputted conditions.
 
 | operator            | base cost | cost per arg | cost per byte |
 | ------------------- | --------- | ------------ | ------------- |
@@ -671,11 +674,15 @@ Finally, three of CLVM's conditions also have an associated cost:
 | `AGG_SIG_UNSAFE`    | 1200000 |
 | `AGG_SIG_ME`        | 1200000 |
 
-Aside from cost, the maximum number of atoms or pairs in a CLVM program is 2^31. If this threshold is exceeded, the program will fail.
+Aside from cost, the maximum number of atoms or pairs (counted separately) in a CLVM program is 2^31 apiece. If this threshold is exceeded, the program will fail. However, this is likely a moot point because it's probably not possible to write a program with this many atoms or pairs without exceeding the maximum cost per block.
 
 ## Evaluating cost for a sample brun program
 
-In this section, we'll show you how to calculate the cost of a simple CLVM program by hand. The program we'll use is `brun (concat (q . fu) (q . bar))`.
+In this section, we'll show you how to calculate the cost of a simple CLVM program by hand. The program we'll use is
+
+brun "(concat (q . `gu`) (q . `ide`))"
+
+Where "gu" and "ide" are quoted, so that they are interpreted as values rather than programs.
 
 The `brun` command takes two arguments, a program and its "environment". If no environment is specified on the command line (as is the case in this example), we use an empty environment, "()".
 
@@ -686,23 +693,23 @@ At the lowest level of the interpreter, we interpret an atom as one of three thi
   > Note that there might be a penalty cost. See the [Penalty cost](#penalty-cost) section for more info
 3. An operator (mandatory cost of 1 + the cost of executing the operator)
 
-Next we can calculate the cost of the program, `(concat (q . fu) (q . bar))`:
+Next we can calculate the cost of the program, "(concat (q . `gu`) (q . `ide`))":
 * `concat` eval (mandatory cost):   1
-* `q . fu` (cost of a quote):      20 
-* `q . bar` (cost of a quote):     20 
+* `q . gu` (cost of a quote):      20 
+* `q . ide` (cost of a quote):     20 
 * `concat` (execution cost):      142
-* `concat` arg cost ("fu"):       135 
-* `concat` arg cost ("bar"):      135
-* `concat` two bytes ("fu"):        6 (2 bytes * 3 cost per byte)
-* `concat` three bytes ("bar"):     9 (3 bytes * 3 cost per byte)
-* `malloc` five bytes ("fubar"):   50 (5 bytes * 10 malloc cost per byte)
+* `concat` arg cost ("gu"):       135 
+* `concat` arg cost ("ide"):      135
+* `concat` two bytes ("gu"):        6 (2 bytes * 3 cost per byte)
+* `concat` three bytes ("ide"):     9 (3 bytes * 3 cost per byte)
+* `malloc` five bytes ("guide"):   50 (5 bytes * 10 malloc cost per byte)
 
 Program cost = 518
 
 This is confirmed by running `brun` from the command line:
 
 ```powershell
-PS C:\Users\User> brun -c --quiet '(concat (q . fu) (q . bar))'
+PS C:\Users\User> brun -c --quiet '(concat (q . gu) (q . ide))'
 cost = 518
 ```
 
@@ -737,7 +744,7 @@ cost = 806
 
 Now that you know _what_ the cost of each CLVM operator is, as well as _how_ to hand-calculate costs, we'll discuss _why_ we decided to structure costs in this manner. It all begins with the minimum spec machine for farming, the humble Raspberry Pi 4.
 
-## Lowest common denominator to stay synced
+## Minimum spec machine for farming
 
 The minimum spec machine to run a full node is the Raspberry Pi 4. How do we know if this machine can stay synced? The worst case scenario occurs when multiple full transaction blocks are created with the minimum amount of time between them. This will temporarily put maximum load on the system. If the Pi can stay synced in this scenario, then it easily should be able to stay synced under normal load.
 
@@ -769,11 +776,11 @@ To calculate the total amount of time for a Raspberry Pi 4 to process a full blo
 
 Therefore, the total amount of time required for a Raspberry Pi 4 to process a full block is 5.2 + 2.2 + 10.63 = 18.03 seconds. This is 10.095 seconds faster than the minimum time between blocks, and 33.92 seconds faster than the average. When considering other factors such as network latency and time required to fetch a full proof ([640 ms on a slow HDD](https://docs.chia.net/docs/03consensus/proof-of-space#farming)), this still allows plenty of leeway for a Raspberry Pi 4 to stay synced and collect farming rewards.
 
-## Maximum cost per block rationale
+## Minimum spec machine for syncing
 
-A Raspberry Pi 4 has four cores, so it can validate a pre-existing block in 18.03 / 4 = 4.5075 seconds, which is around 11.5 times the average real-time rate of 51.95 seconds. Even in the worst-case scenario where every transaction block is full, the Pi can sync faster than the chain is being created.
+As a benchmark, we use the Raspberry Pi 4, Chia's minimum spec machine for farming. A Raspberry Pi 4 has four cores, so it can validate a pre-existing block in 18.03 / 4 = 4.5075 seconds, which is around 11.5 times the average real-time rate of 51.95 seconds. Even in the worst-case scenario where every transaction block is full, the Pi can sync faster than the chain is being created.
 
-### Calculating the maximum cost per block
+## Maximum cost per block
 
 Now that we've established that a Raspberry Pi 4 can, indeed, sync and farm, even when every transaction block is full, we'll calculate the maximum cost per block. 
 
