@@ -59,7 +59,7 @@ The natural interoperability that Chialisp provides is also relevant because it 
 
 ## Developer Documentation
 
-- [ChiaLisp Compiler Repository](https://github.com/Chia-Network/clvm)
+- [Chialisp Compiler Repository](https://github.com/Chia-Network/clvm)
 - [A video introduction to developing in Chialisp](https://chialisp.com/docs/tutorials/developing_applications)
 - [clvm_tools for developing in Chialisp](https://github.com/Chia-Network/clvm_tools)
 - [CLVM Basics](/docs/)

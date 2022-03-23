@@ -1,11 +1,11 @@
 ---
 id: faq
-title: ChiaLisp and CLVM FAQ
-sidebar_label: ChiaLisp and CLVM FAQ
+title: Chialisp and CLVM FAQ
+sidebar_label: Chialisp and CLVM FAQ
 ---
 * [Why is my number being evaluated to `()`, a.k.a. `nil`?](#q-why-is-my-number-being-evaluated-to--aka-nil)
 * [Is it possible to store data or maintain state in smart coins?](#q-is-it-possible-to-store-data-or-maintain-state-in-smart-coins)
-* [What is the difference between ChiaLisp, CLVM bytecode, CLVM assembly and the Conditions Language?](#q-what-is-the-difference-between-chialisp-clvm-bytecode-clvm-assembly-and-the-conditions-language)
+* [What is the difference between Chialisp, CLVM bytecode, CLVM assembly and the Conditions Language?](#q-what-is-the-difference-between-chialisp-clvm-bytecode-clvm-assembly-and-the-conditions-language)
 * [What is a CAT?](#q-what-is-a-cat)
 * [What is a TAIL?](#q-what-is-a-tail)
 * [How can I receive some tokens?](#q-how-can-i-receive-some-tokens)
@@ -19,22 +19,22 @@ ____
 
 **A:** In clvm (the `brun` command), integers are evaluated as references to arguments in the argument tree.
 If no argument tree is given on the command line, the default is an empty argument tree. When an argument is not found, `nil` is returned.
-In ChiaLisp (the `run` command), integers are compiled to quoted atoms, which will give you the value you expected.
+In Chialisp (the `run` command), integers are compiled to quoted atoms, which will give you the value you expected.
 ____
 
 ### Q: Is it possible to store data or maintain state in smart coins?
 
 **A:** Yes, but probably not how you are thinking.
-Quite deliberately the ChiaLisp environment is designed so that state is stored exclusively in coins.
+Quite deliberately the Chialisp environment is designed so that state is stored exclusively in coins.
 Remember Chia uses smart coins, not smart contracts. This leads to a different kind of design to smart contracts.
 A common design pattern in Chia smart coins is that they will recreate themselves with the same puzzle but with some "state" changed.
 ___
 
-### Q: What is the difference between ChiaLisp, CLVM bytecode, CLVM assembly and the Conditions Language?
+### Q: What is the difference between Chialisp, CLVM bytecode, CLVM assembly and the Conditions Language?
 
-**A:** ChiaLisp is the higher level language which can be compiled into the lower level language called CLVM.
+**A:** Chialisp is the higher level language which can be compiled into the lower level language called CLVM.
 
-CLVM Assembly is the lower level language that ChiaLisp is compiled to.
+CLVM Assembly is the lower level language that Chialisp is compiled to.
 
 CLVM Bytecode is the serialized form of CLVM Assembly.
 

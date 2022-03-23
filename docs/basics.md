@@ -5,7 +5,7 @@ slug: /
 sidebar_label: 1 - CLVM Basics
 ---
 
-CLVM is the compiled, minimal version of ChiaLisp that is used by the Chia network.
+CLVM is the compiled, minimal version of Chialisp that is used by the Chia network.
 Chialisp compiles into CLVM so it's important to understand how it works.
 The full set of operators is documented [here](/docs/ref/clvm).
 
