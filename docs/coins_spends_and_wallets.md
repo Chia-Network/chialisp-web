@@ -5,7 +5,7 @@ title: 2 - Coins, Spends and Wallets
 
 This guide assumes knowledge of [the basics of CLVM](/docs/) so if you haven't read that page, please do so before reading this.
 
-This section of the guide will cover evaluating a program inside a program, how ChiaLisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using ChiaLisp.
+This section of the guide will cover evaluating a program inside a program, how Chialisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using Chialisp.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
 ## Puzzles and Solutions
@@ -66,7 +66,7 @@ By the end of the next section of the guide, hopefully it should be clear.
 
 ## Puzzles and Solutions in Practice
 
-So far we have covered ChiaLisp programs that will evaluate to some result.
+So far we have covered Chialisp programs that will evaluate to some result.
 Remember the first part represents a puzzle which is committed to locking up a coin, and the second part is a solution anybody can submit:
 
 ```chialisp
@@ -204,7 +204,7 @@ Conversely lets consider a coin locked up with the following puzzle:
 1
 ```
 
-This example may look a little weird, because most ChiaLisp programs are lists, and this is just an atom, but it is still a valid program.
+This example may look a little weird, because most Chialisp programs are lists, and this is just an atom, but it is still a valid program.
 This puzzle simply returns the entire solution.
 You can think about this in terms of power and control.
 The person that locked the coin up has given all the power to the person who provides the solution.
@@ -218,7 +218,7 @@ $ brun '1' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
 ```
 
 In this situation, not only can anybody spend the coin, they can spend it however they like!
-This balance of power determines a lot of how puzzles are designed in ChiaLisp.
+This balance of power determines a lot of how puzzles are designed in Chialisp.
 
 For example, let's create a puzzle that lets the spender choose the output, but with one stipulation.
 
@@ -350,5 +350,5 @@ $ brun '(c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) ()))) (a 5 11))' '("hel
 Coin ownership refers to the concept of creating a coin with a puzzle that means it can only be spent when signed by the private key of the coin's "owner".
 The goal of wallet software is to generate, interpret and manage these kinds of coins and puzzles.
 
-The next part of this guide will go further in depth in ChiaLisp, and cover how to write more complex puzzles.
+The next part of this guide will go further in depth in Chialisp, and cover how to write more complex puzzles.
 If any of the material in this part of the guide has got you confused, try returning to it after the next part.

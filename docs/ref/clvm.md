@@ -4,14 +4,14 @@ title: CLVM Reference Manual
 sidebar_label: CLVM Reference
 ---
 
-The clvm is a small, tightly defined VM that defines the semantics of CLVM programs run during Chia blockchain validation. It serves as a target language for higher level languages, especially ChiaLisp.
+The clvm is a small, tightly defined VM that defines the semantics of CLVM programs run during Chia blockchain validation. It serves as a target language for higher level languages, especially Chialisp.
 
 
 ## Definitions
 
 * **CLVM Assembly** - The textual representation of a CLVM program.
 * **CLVM Bytecode** - The serialized form of a CLVM program.
-* **ChiaLisp** - A higher-level language, built on top of CLVM.
+* **Chialisp** - A higher-level language, built on top of CLVM.
 * **CLVM Object** - The underlying data type in the CLVM. An atom or a cons pair.
 * **Atom** - The datatype for values in the CLVM. Atoms are immutable byte arrays. Atoms are untyped and are used to encode all strings, integers, and keys. The only things in the CLVM which are not atoms are cons pairs. Atom properties are length, and the bytes in the atom.
 * **cons pair** - An immutable ordered pair of references to other CLVM objects. One of two data types in the CLVM. The syntax for a cons pair is a dotted pair. Also called `cons cell` or `cons box`.
@@ -564,7 +564,7 @@ At the moment, `softfork` always returns `0` (aka `()` or nil), and takes `cost`
 
 At first glance, it seems pretty useless since it doesn't do anything, and just wastes cost doing it.
 
-The idea is, after a soft fork, the meaning of the arguments may change. In fact, we can hide completely new dialects of ChiaLisp inside here, that has new operators that calculate new things.
+The idea is, after a soft fork, the meaning of the arguments may change. In fact, we can hide completely new dialects of Chialisp inside here, that has new operators that calculate new things.
 
 For example, suppose we want to add secp256k1 operators like `+s` for adding two points on this ECDSA curve for bitcoin compatibility. We can't just do this in vanilla clvm because that would make a program `(+s p1 p2)` return different values before and after the soft fork. So instead we hide it under `softfork`.
 

@@ -5,13 +5,13 @@ title: 3 - Deeper into CLVM
 
 This guide assumes knowledge of [the basics of CLVM](/docs/) so if you haven't read that, please do so before reading this.
 
-This section of the guide will cover how ChiaLisp relates to transactions and coins on the Chia network.
+This section of the guide will cover how Chialisp relates to transactions and coins on the Chia network.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
-## Lazy Evaluation in ChiaLisp
+## Lazy Evaluation in Chialisp
 
 As we've seen in earlier sections, programs are often structured around `(i A B C)` to control flow.
-ChiaLisp evaluates programs as trees, where the leaves are evaluated first.
+Chialisp evaluates programs as trees, where the leaves are evaluated first.
 This can cause unexpected problems if you are not aware of it.
 Consider the following program which uses `x` which immediately halts and throws an error if it is evaluated.
 
@@ -20,7 +20,7 @@ $ brun '(i (q . 1) (q . 100) (x (q . "still being evaluated")))'
 FAIL: clvm raise (0x7374696c6c206265696e67206576616c7561746564)
 ```
 
-This is because ChiaLisp evaluates both of the leaves even though it will only follow the path of one.
+This is because Chialisp evaluates both of the leaves even though it will only follow the path of one.
 
 To get around this we can use the following design pattern to replace (i A B C).
 
