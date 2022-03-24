@@ -607,12 +607,13 @@ When used as a parameter that may be checked for nil, zero is interpreted as nil
 
 When a CLVM program is run, a cost is attributed to it. The minimum program cost is 40. The maximum cost per block is 11,000,000,000. If the cost of an individual program exceeds this threshold, the program will fail. The maximum realistic size of a block is around 400 KB.
 
-To determine the total cost of a clvm program, you can run `brun -c <clvm>`.
+To determine the total cost of a clvm program, you can run `brun -c <clvm>`, but this doesn't include the cost of the program's size or its conditions. All of these costs will be explained in detail below.
 
 This section begins with a breakdown of the specific cost for each operator and how to calculate costs by hand.
 
 * [Cost tables](#cost-tables)
 * [Evaluating cost for a sample brun program](#evaluating-cost-for-a-sample-brun-program)
+* [Evaluating cost for a typical transaction](#evaluating-cost-for-a-typical-transaction)
 
 Later, we'll discuss our rationale for having costs in the first place. We'll also detail the theoretical and realistic maximum cost and size per block. 
 
@@ -666,13 +667,15 @@ Next we'll show the cost of each CLVM operator, as well as the cost of the outpu
 | `pubkey_for_exp`    | 1325730   | -            | 38            |
 |                     |           |              |               |
 
-Finally, three of CLVM's conditions also have an associated cost:
+Next, three of CLVM's conditions also have an associated cost:
 
 | operator            | cost    |
 | ------------------- | ------- |
 | `CREATE_COIN`       | 1800000 |
 | `AGG_SIG_UNSAFE`    | 1200000 |
 | `AGG_SIG_ME`        | 1200000 |
+
+Finally, each byte of data that gets added to the blockchain has a cost of 12,000. Spendbundles are created using serialized bytecode, calculated by running [opc](https://chialisp.com/docs/debugging#opd-and-opc) on the original CLVM code. Each two-character pair of this serialized bytecode translates to one byte on the blockchain, with a cost of 12,000.
 
 Aside from cost, the maximum number of atoms or pairs (counted separately) in a CLVM program is 2^31 apiece. If this threshold is exceeded, the program will fail. However, this is likely a moot point because it's probably not possible to write a program with this many atoms or pairs without exceeding the maximum cost per block.
 
@@ -746,11 +749,13 @@ cost = 806
 
 Now let's look at a real-world example of calculating cost. The _standard_ transaction is one that adds and removes one or more vanilla XCH coins from the coin set. While it is possible to both add and remove exactly one coin in a standard transaction, a more _typical_ transaction would involve adding and removing two coins, giving the transaction two inputs and two outputs.
 
-This would happen if Alice spent two coins to send money to Bob, and received one coin back as change.
+This would happen if Alice spent two coins to send money to Bob, and received one coin back as change. We'll detail two techniques to calculate the cost of this transaction.
 
 ### Obtaining transaction info from a wallet
 
-Let's look at an example of a transaction where Alice sent money to Bob and received change, from the perspective of Alice's computer. First, we'll run `get_transactions` to obtain the transaction ID:
+This technique is straightforward, but it will only give a rough estimage of cost. We'll look at a more accurate technique in the next section.
+
+The example we'll use is a transaction where Alice sent money to Bob and received change. The commands will be performed on Alice's computer. First, we'll run `get_transactions` to obtain the transaction ID:
 
 ```bash
 (venv) chia-blockchain $ chia wallet get_transactions
@@ -758,7 +763,7 @@ Transaction cd4e915dc8fd6eb932b5e1be67088eb9af48a560a6ddbc55c53ee44eaf191ee0
 Status: Confirmed
 Amount sent: 1.01 XCH
 To address: xch1989s7f4dn43963gsdqus7z6ydm7upuqzfae4ftts7rm80k4848csewg085
-Created at: 2022-03-20 21:03:09
+Created at: 2022-03-20 06:03:09
 ```
 
 Next, we'll get more info by running `get_transaction`, entering the ID we just obtained:
@@ -833,13 +838,17 @@ Back to the original question: what was the CLVM cost of this transaction? One w
 Cost: 17187295
 ```
 
-The cost was 17,187,295. The minimum transaction fee is 5 mojos per cost (anything less than this will be treated as 0). In this case, the minimum fee is `5 * 17,187,295 = 85,936,475 mojos`. For this specific transaction, including a fee greater than this number would cause it jump ahead of the zero-fee transactions in the mempool.
+The cost was 17,187,295. Note that this command is simulating a small block that contains only the single spendbundle. In reality, this spendbundle would be aggregated into a larger block, possibly with 999 similar transactions. Therefore, this cost is only an estimation. However, for many applications, this simple technique will be sufficient.
 
-In general, if you don't know the exact cost of a transaction before it is run, it's a good idea to round the fee up to 100 million mojos.
+As for fee calculations, the minimum transaction fee is 5 mojos per cost (anything less than this will be treated as 0). In this case, the minimum fee is `5 * 17,187,295 = 85,936,475 mojos`. For this specific transaction, including a fee greater than this number would cause it jump ahead of the zero-fee transactions in the mempool.
 
-### Obtaining transaction info using RPC
+However, because the cost is just an estimate, and generally speaking, you might not want to calculate the cost of every transaction before it is run, it's a good idea to round the fee up to 100 million mojos.
 
-To obtain the same info using RPC commands, get the record of the coin you want to examine:
+### Obtaining transaction info using RPC and brun
+
+`brun -c` will give the actual cost of a program, but it is still necessary to calculate some costs manually, as we'll explain in this section.
+
+First, obtain the same info as before, this time using RPC commands to get the record of the coin you want to examine:
 
 ```bash
 (venv) chia-blockchain $ cdv rpc coinrecords --by id 0x484ed352cd7e7e396bdbee72302e40653c2d880bd134d29f75f07ffffe4c7a0f
@@ -894,9 +903,16 @@ cost = 39652
 ((50 0x9496e8abd4a5b09f10b71e43b779f7ed8d5c1c92e3c5a6b70cd78bc2fb32347cc5fdca3f6acafb143f185029cd422010 0x87f20f182aa0b488027d678fd1cdb63f9fb583347cbf2744d2e7f5ae5ab49102) (51 0x29cb0f26ad9d625d451068390f0b446efdc0f0024f7354ad70f0f677daa7a9f1 0x00eb28b0f400) (51 0xf56f5af041272572fe528e794c364fbe2be444ab77de62a1796772804a4c9fef 0x00da20034f7c) (60 0x48c2db108c24bf3192913b6cd5bca66688a9b2fc0e1821e306f7b01848a7b24d))
 ```
 
-The cost of this program was 39,652. However, there are two important things to note here:
-1. This cost does not include the CLVM conditions, specifically condition 50 (AGG_SIG_ME) and 51 (CREATE_COIN)
-2. Another coin was spent in the same transaction, which is not included here
+The cost of this program was 39,652. However, there are three important things to note here:
+1. This only gives the program cost of executing the CLVM code. It does not include the per-byte cost of 12,000. Let's calculate that cost now.
+  * The serialized puzzle (before running `opd`) is 582 characters, or 291 bytes (2 characters per byte)
+  * The serialized solution is 278 characters, or 139 bytes
+  * The sum of these two is 430 bytes. With a cost of 12,000 per byte, the program's size cost is 5,160,000
+2. This cost does not include the CLVM conditions, specifically condition 50 (AGG_SIG_ME) and 51 (CREATE_COIN)
+  * AGG_SIG_ME cost is 1,200,000
+  * CREATE_COIN cost is 1,800,000 per coin, and there were two coins
+  * The total condition cost is 4,800,000
+3. Another coin was spent in the same transaction, which is not included here
 
 Let's run the same commands to figure out the cost of the other coin spend:
 
@@ -947,16 +963,29 @@ cost = 15032
 ((50 0x848f09f98800442737684dd76071f25a0bd100b51e727aabafeddb062dbc3d2b3ac64bc87f084a6d16e4e89e1417de14 0x03db13c4e422e5eea98463c02b2c15994b620e0a45aa2db6f7785d3ba28f46cf) (61 0x23f61666150d2a467ee7b81a77954c93255d65c0c43108f1bb14ac420fd59c42))
 ```
 
-The cost for this coin spend (without the AGG_SIG_ME condition) was 15,032. Let's add up the costs to get the total cost for this transaction:
+The CLVM cost for this coin spend was 15,032.
+
+We still need to calculate this program's size cost.
+  * The serialized puzzle is 582 characters, or 291 bytes
+  * The serialized solution is 94 characters, or 47 bytes
+  * The sum of these two is 338 bytes. With a cost of 12,000 per byte, the program's size cost is 4,056,000
+
+Let's add up the costs to get the total cost for this transaction:
 * First coin
-    * CLVM: 39652
-    * AGG_SIG_ME: 1200000
-    * CREATE_COIN 1: 1800000
-    * CREATE_COIN 2: 1800000 
+    * CLVM:             39,652
+    * AGG_SIG_ME:    1,200,000
+    * CREATE_COIN 1: 1,800,000
+    * CREATE_COIN 2: 1,800,000 
+    * Program size:  5,160,000
 * Second coin
-    * CLVM: 15032
-    * AGG_SIG_ME: 1200000
-* Total: 6,054,684
+    * CLVM:             15,032
+    * AGG_SIG_ME:    1,200,000
+    * Program size:  4,056,000
+* Total:            15,270,684
+
+This is an accurate assessment of the cost for this particular transaction.
+
+Just like before, we have to multiple the cost by five to obtain the miniumum fee. In this case, the result is `5 * 15,270,684 = 76,353,420 mojos`. It's still a good idea to round this fee up to 100 million mojos to ensure that your transaction will skip ahead of the zero-fee transactions in the mempool.
 
 Now that you know _what_ the cost of each CLVM operator is, as well as _how_ to calculate costs, we'll discuss _why_ we decided to structure costs in this manner. It all begins with the minimum spec machine for farming, the humble Raspberry Pi 4.
 
