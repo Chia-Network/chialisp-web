@@ -99,6 +99,10 @@ We use a group accounting trick to guarantee this, which we will cover in more d
   * CAT Mod Hash Hash - The hash of the CAT Mod Hash
   * CAT TAIL Program Hash - The hash of the TAIL program that was curried into the CAT
 
+* **CATs have the option to use hinting**
+
+  Hinting is a way to signal the CAT's type to a Chia wallet. The hint is typically an inner puzzle hash. For more info, see our [FAQ](/docs/faq#q-what-is-hinting "Hinting, explained").
+
 
 ## Spend Accounting
 
