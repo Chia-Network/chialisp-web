@@ -105,7 +105,7 @@ Offers have many properties that we think will make them a valuable tool for Chi
 
 * **Non-custodial**: Neither Maker nor Taker are required to send their funds to a trusted intermediary, such as an escrow service or an exchange. This removes the need for Over The Counter (OTC) desks and other middlemen, who require their customers to submit funds before they allow transactions to complete.
 
-* **Commission-free**: Because offers don't use escrow services or other middlemen, there are also none of the typical fees associated with those intermediaries. (Offers _are_ subject to transaction fees, just like all transactions on Chia's network.)
+* **Commission-free**: Because offers don't use escrow services or other middlemen, there are also none of the typical fees associated with those intermediaries. (Offers _are_ subject to Chia network transaction fees, just like all transactions on Chia's network.)
 
 * **Multi-asset**: A Maker can create an offer for multiple assets on both ends of the offer. For example, they could offer 1 XCH and 1.75 CKC for 100,000 SBX and 3 MRMT.
 
