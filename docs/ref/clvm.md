@@ -823,7 +823,7 @@ To recap, before the transaction:
 * Bob had zero coins
 * The total value was 1.946839958396 XCH
 
-After the trasaction:
+After the transaction:
 * Alice had one coin worth 0.936839958396 XCH
 * Bob had one coin worth 1.01 XCH
 * The total value was 1.946839958396 XCH (same as before the transaction)
