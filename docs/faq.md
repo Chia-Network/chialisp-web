@@ -12,6 +12,7 @@ sidebar_label: Chialisp and CLVM FAQ
 * [Can I make my own CAT?](#q-can-i-make-my-own-cat)
 * [What sort of CATs are in development?](#q-what-sort-of-cats-are-in-development)
 * [How can I get my CAT listed in Chia's wallet GUI?](#q-how-can-i-get-my-cat-listed-in-chias-wallet-gui)
+* [What is hinting?](#q-what-is-hinting)
 
 ____
 
@@ -80,3 +81,24 @@ ____
 ### Q: How can I get my CAT listed in Chia's wallet GUI?
 
 **A:** Sometime in the first half of 2022, we plan to release a process to apply for your CAT to be listed in our wallet GUI. Keep in mind that this will be a tightly-controlled process, where few CATs will be accepted. But don't let that stop you from creating your own CATs -- they will still work, even if they are not listed in our GUI.
+
+-----
+
+### Q: What is hinting?
+
+**A:** A hint is an extra value that is mapped to a coin, which is then indexed by the full nodes. Given a hint, a wallet can discover all coins which include that hint. Additionally, once a wallet has found a coin that includes a hint, the wallet will have one extra piece of information to determine how the coin should be interpreted.
+
+Typically, a hint will be the coin's inner puzzlehash. When a wallet sees a hint, it fetches the parent coin spend and attempts to use the hint to ascertain the coin's type. For example, if the coin is a CAT, the wallet can determine the CAT's TAIL, and therefore its type, without additional input from an end user.
+
+Thus, hints are powerful because they enable wallets to auto-discover CATs and NFTs associated with that wallet. If hints didn't exist, end users would have to tell their wallets which CATs or NFTs to look for. In the case of an air drop, if there were no hinting, the wallet's owner might not even know about an asset, so it would never be discovered.
+
+#### When and how are hints applied?
+
+As explained in the [Conditions](/docs/coins_spends_and_wallets#conditions "Condition codes") section, the syntax for the `CREATE_COIN` condition is `(51 puzzlehash amount (memo memo ...))`. The final argument (in parentheses, after `amount`) is the _memo_ list. This list can be arbitrarily long, and its interpretation depends on how it is structured. There are three possibilities:
+
+* If the memo list doesn't exist, then the CREATE_COIN condition proceeds without it. In other words, the list is optional
+* If the first `memo` argument is not exactly 32 bytes, then the CREATE_COIN condition proceeds without it. In this case, the entire memo list is treated as a no-op
+* If the first `memo` argument is exactly 32 bytes, then it is treated as a hint and subsequent arguments are ignored
+
+#### Why are multiple `memo` arguments allowed?
+We currently don't have a need for multiple hints. However, we may want to use them in the future, so we added the subsequent memo arguments as place-holders. For now, they are ignored.
