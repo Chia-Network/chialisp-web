@@ -81,16 +81,19 @@ When you curry, you commit to solution values so that the individual solving the
 Let's take a look at how this is implemented in Chialisp:
 
 ```chialisp
-;; utility function used by curry
-(defun fix_curry_args (items core)
- (if items
-     (qq (c (q . (unquote (f items))) (unquote (fix_curry_args (r items) core))))
-     core
- )
-)
+; curry.clvm
+(
+  ;; utility function used by curry
+  (defun fix_curry_args (items core)
+    (if items
+      (qq (c (q . (unquote (f items))) (unquote (fix_curry_args (r items) core))))
+      core
+    )
+  )
 
-; (curry sum (list 50 60)) => returns a function that is like (sum 50 60 ...)
-(defun curry (func list_of_args) (qq (a (q . (unquote func)) (unquote (fix_curry_args list_of_args (q . 1))))))
+  ; (curry sum (list 50 60)) => returns a function that is like (sum 50 60 ...)
+  (defun curry (func list_of_args) (qq (a (q . (unquote func)) (unquote (fix_curry_args list_of_args (q . 1))))))
+)
 ```
 
 The reason this is so useful is because you may want to create the blueprint of a puzzle, but use different values for certain parameters every time you create it.
@@ -135,6 +138,7 @@ This means every time that you want to lock up a coin with a new password, you h
 It would be much nicer if we fully generalized it:
 
 ```chialisp
+; password_coin.clvm
 (mod (PASSWORD_HASH password new_puzhash amount)
   (defconstant CREATE_COIN 51)
 
@@ -157,7 +161,7 @@ When we create this coin we need the password hash to be committed to. Before de
 ```chialisp
 ; curry_password_coin.clvm
 (mod (password_hash password_coin_mod)
-  (include "curry.clvm") ; From above
+  (include "curry.clvm")
 
   (curry password_coin_mod (list password_hash))
 )
@@ -166,7 +170,7 @@ When we create this coin we need the password hash to be committed to. Before de
 If we compile this function and pass it parameters like this:
 
 ```
-brun <curry password coin mod> '((q . 0xcafef00d) (q . <password coin mod>))'
+brun <curry_password_coin mod> '((q . 0xcafef00d) (q . <password_coin mod>))'
 ```
 
 we will receive a puzzle that looks very similar to our password coin module, but has been expanded to include the hash we passed in.
