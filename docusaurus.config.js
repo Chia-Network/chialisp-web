@@ -64,6 +64,10 @@ module.exports = {
           title: 'Community',
           items: [
             {
+              label: 'Chia Developers Forum',
+              href: 'https://developers.chia.net/',
+            },
+            {
               label: 'Keybase',
               href: 'https://keybase.io/team/chia_network.public',
             },
