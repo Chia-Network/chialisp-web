@@ -146,7 +146,7 @@ $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e
 "wrong password"
 
 $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q . 51) (c 5 (c (q . 100) ()))) (q . "wrong password"))' '("hello" 0xdeadbeef)'
-((51 0xdeadbeef 100))
+(51 0xdeadbeef 100)
 ```
 
 There is one final change we need to make before this is a complete smart transaction.
