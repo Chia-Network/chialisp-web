@@ -120,7 +120,7 @@ Let's create a few examples puzzles and solutions to demonstrate how this is use
 Let's create a coin that can be spent by anybody as long as they know the password.
 
 To implement this we would have the hash of the password committed into the puzzle and, if presented with the correct password, the puzzle will return instructions to create a new coin with a puzzle hash given in the solution.
-For the following example the password is "hello" which has the hash value 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824.
+For the following example the password is "hello" which has the hash value `0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824`.
 The implementation for the above coin would be thus:
 
 ```chialisp
@@ -146,7 +146,7 @@ $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e
 "wrong password"
 
 $ brun '(i (= (sha256 2) (q . 0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824)) (c (q . 51) (c 5 (c (q . 100) ()))) (q . "wrong password"))' '("hello" 0xdeadbeef)'
-((51 0xdeadbeef 100))
+(51 0xdeadbeef 100)
 ```
 
 There is one final change we need to make before this is a complete smart transaction.
@@ -185,15 +185,17 @@ Suppose we lock a coin up using the following puzzle:
 (q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))
 ```
 
-Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzlehash 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a and the amount 100.
+Regardless of what solution is passed this puzzle will *always* return instructions to create a new coin with the puzzlehash `0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a` and the amount `100`.
 
 ```chialisp
 $ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '(80 90 "hello")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 
-$ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' '("it doesn't matter what we put here")'
+$ brun '(q . ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100)))' $'("it doesn\'t matter what we put here")'
 ((51 0x365bdd80582fcc2e4868076ab9f24b482a1f83f6d88fd795c362c43544380e7a 100))
 ```
+
+*Note: in the latter example, the solution is escaped due to the single quote.*
 
 In this example the result of spending the coin is entirely determined from the puzzle.
 Even though anybody could initiate the spend of the coin, the person that locked the coin up has all the power in the way that the coin is spent as the solution doesn't matter at all.
@@ -225,7 +227,7 @@ For example, let's create a puzzle that lets the spender choose the output, but 
 ```chialisp
 (c (q . (51 0xcafef00d 200)) 1)
 ```
-This will let the spender return any conditions they want via the solution but will always add the condition to create a coin with the puzzle hash 0xcafef00d and value 200.
+This will let the spender return any conditions they want via the solution but will always add the condition to create a coin with the puzzle hash `0xcafef00d` and value `200`.
 
 ```chialisp
 $ brun '(c (q . (51 0xcafef00d 200)) 1)' '((51 0xf00dbabe 75) (51 0xfadeddab 15) (51 0x1234abcd 10))'
@@ -258,7 +260,7 @@ The spend will not pass unless there is exactly that combination of signatures. 
 To 'send a coin to somebody' you simply create a puzzle that requires the recipient's signature, but then allows them to return any other conditions that they like.
 This means that the coin cannot be spent by anybody else, but the outputs are entirely decided by the recipient.
 
-We can construct the following smart transaction where AGG_SIG_ME is 50 and the recipient's pubkey is `0xfadedcab`.
+We can construct the following smart transaction where AGG_SIG_ME is `50` and the recipient's pubkey is `0xfadedcab`.
 
 ```chialisp
 (c (c (q . 50) (c (q . 0xfadedcab) (c (sha256 2) (q . ())))) 3)
@@ -266,8 +268,8 @@ We can construct the following smart transaction where AGG_SIG_ME is 50 and the 
 
 This puzzle forces the resultant evaluation to contain `(50 pubkey *hash_of_first_solution_arg*)` but then adds on all of the conditions presented in the solution.
 
-Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as 0xdeadbeef.
-The recipient wants to spend the coin to create a new coin which is locked up with the puzzle 0xcafef00d.
+Let's test it out in clvm_tools - for this example the recipient's pubkey will be represented as `0xdeadbeef`.
+The recipient wants to spend the coin to create a new coin which is locked up with the puzzle `0xcafef00d`.
 
 ```chialisp
 $ brun '(c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) 3)' '("hello" (51 0xcafef00d 200))'
