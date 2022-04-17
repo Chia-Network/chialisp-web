@@ -185,7 +185,7 @@ It also means that if the set of rules is compromised, people may be able to min
 
 The CAT1 standard currently includes three example TAILs, though many more are possible.
 
-* [One-Time Minting](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Chialisp code for the One-Time Minting TAIL")
+* [One-Time Minting](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis_by_coin_id.clvm "Chialisp code for the One-Time Minting TAIL")
 
   The default way in which we currently issue CATs is with a TAIL that only allows coin creation from a specific coin ID. In Chia, coins can only be spent once, so this results in a one-time minting of a CAT. After the issuance, there will never be any more or less of the CAT, and no one will be able to run the same TAIL ever again.
 
@@ -195,7 +195,7 @@ The CAT1 standard currently includes three example TAILs, though many more are p
   
   Keep in mind that AGG_SIG_ME only allows the signature to work on a single coin. Therefore, the creator cannot release a signature for everyone to use; instead the creator must personally sign every TAIL execution.
 
-* [Delegated TAIL](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/delegated_genesis_checker.clvm "Chialisp code for the Delegated TAIL")
+* [Delegated TAIL](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/delegated_tail.clvm "Chialisp code for the Delegated TAIL")
 
   This is the best balance of security and flexibility that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific coin, it requires a signature from a specific puzzlehash. When the puzzlehash has been signed, the creator may run that puzzle in place of the TAIL.
   
