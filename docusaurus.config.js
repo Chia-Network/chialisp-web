@@ -26,11 +26,7 @@ module.exports = {
           position: 'left',
         },
   //      {to: 'blog', label: 'Blog', position: 'left'},
-        {
-          href: 'https://chialisp.com/training', 
-          label: 'Training', 
-          position:'left'
-        },
+       
         {
           href: 'https://chia.net', 
           label: 'Chia.net', 

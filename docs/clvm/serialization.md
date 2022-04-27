@@ -1,7 +1,6 @@
 ---
 id: serialization
-title: CLVM Reference Manual
-sidebar_label: Serialization
+title: CLVM Serialization
 ---
 
 ## Serialization

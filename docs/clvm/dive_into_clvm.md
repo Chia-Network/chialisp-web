@@ -1,14 +1,14 @@
 ---
-id: deeper_into_clvm
-title: 3 - Deeper into CLVM
+id: dive_into_clvm
+title: Dive into CLVM
 ---
 
-This guide assumes knowledge of [the basics of CLVM](/docs/) so if you haven't read that, please do so before reading this.
+This guide assumes knowledge of [the basics of CLVM](/docs/clvm/basics) so if you haven't read that, please do so before reading this.
 
 This section of the guide will cover how Chialisp relates to transactions and coins on the Chia network.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
-## Lazy Evaluation in Chialisp
+## Lazy Evaluation in CLVM
 
 As we've seen in earlier sections, programs are often structured around `(i A B C)` to control flow.
 Chialisp evaluates programs as trees, where the leaves are evaluated first.

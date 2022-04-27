@@ -1,6 +1,6 @@
 ---
 id: glossary
-title: The Great Chia Glossary
+title: Glossary
 ---
 
 This guide will act as a glossary for many of the concepts utilized in Chia.

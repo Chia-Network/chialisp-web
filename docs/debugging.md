@@ -1,6 +1,6 @@
 ---
 id: debugging
-title: 9 - Debugging
+title: Debugging
 ---
 
 Due to the nature of Chialisp programs, it can often be difficult to determine where exactly something is going wrong.

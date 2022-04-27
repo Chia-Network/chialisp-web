@@ -1,28 +1,27 @@
 module.exports = {
-  someSidebar: {
+  someSidebar: [{
+    'Getting Started':[
+      'getting_started/getting_started',
+      'getting_started/smart_coin_101',
+    ],
     Chialisp: [
-      'basics',
-      'coins_spends_and_wallets',
-      'deeper_into_clvm',
+      'introduction',
       'high_level_lang',
       'common_functions',
-      'standard_transaction',
       'coin_lifecycle',
       'security',
       'debugging',
       'optimization',
-      'glossary'
+      'standard_transaction',{
+      'Standard Puzzles': [
+        'puzzles/singletons',
+        'puzzles/pooling',
+        'puzzles/cats',
+        'puzzles/offers'
+      ],}
     ],
-    CLVM: [
-      'ref/clvm',
-      'ref/serialization'
-    ],
-    Puzzles: [
-      'puzzles/singletons',
-      'puzzles/pooling',
-      'puzzles/cats',
-      'puzzles/offers'
-    ],
+   
+
     Tutorials: [
       'tutorials/why_chia_is_great',
       'tutorials/developing_applications',
@@ -43,6 +42,16 @@ module.exports = {
       'tutorials/offers_gui_tutorial',
       'tutorials/offers_cli_tutorial'
     ],
-    FAQ: ['faq'],
+    CLVM: [
+      'clvm/basics',
+      'clvm/coins_spends_and_wallets',
+      'clvm/dive_into_clvm',
+      'clvm/lang_reference',
+      'clvm/serialization'
+    ],
   },
+  'glossary',
+  'faq',
+  'resources',
+],
 };

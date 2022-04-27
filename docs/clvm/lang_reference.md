@@ -1,13 +1,12 @@
 ---
-id: clvm
-title: CLVM Reference Manual
-sidebar_label: CLVM Reference
+id: lang_reference
+title: CLVM Language Reference
 ---
 
 The clvm is a small, tightly defined VM that defines the semantics of CLVM programs run during Chia blockchain validation. It serves as a target language for higher level languages, especially Chialisp.
 
 
-## Definitions
+## Terminology
 
 * **CLVM Assembly** - The textual representation of a CLVM program.
 * **Chialisp** - A higher-level language, built on top of CLVM.
@@ -31,7 +30,7 @@ The clvm is a small, tightly defined VM that defines the semantics of CLVM progr
 
 A CLVM program must have an unambiguous definition and meaning, so that Chia block validation and consensus is deterministic. Programs are treated as Merkle trees, uniquely identified by the hash at their root. The program hash can be used to verify that two programs are identical.
 
-# Readable assembly format
+## Readable assembly format
 
 The in-memory objects the CLVM operates on are atoms and cons pairs, but for programming convenience there is a human readable string format for input and output. This format is what is passed to the `brun` tool. This text representation of CLVM programs and data is not used anywhere in blockchain validation and has no impact on consensus. There are multiple ways of encoding the same CLVM object in the human readable serialization format, so going backwards to pretty print a CLVM object in this format requires guessing as to the best representation.
 
@@ -43,7 +42,7 @@ Proper lists are built from linked cons pairs, and assume a nil terminator. For 
 
 Note that `0`, `''`, and `()` all are parsed to the same value, but 0x0 is not.
 
-# Program Evaluation
+## Program Evaluation
 
 The syntax of CLVM assembly is similar to Lisp. It is a parenthesized [prefix notation](https://en.wikipedia.org/wiki/Polish_notation) that puts the operator before the arguments when reading left to right.
 
@@ -262,13 +261,13 @@ While running a clvm program, checks are made to ensure the CLVM does not enter 
 
 An error will cause the program to abort.
 
-# Operator Summary
+## Operator Summary
 
-## The built-in opcodes
+### The built-in opcodes
 
 Opcodes are functions built in to the CLVM. They are available to any running program.
 
-## List Operators
+### List Operators
 
 **c** *cons* `(c A B)` takes exactly two operands and returns a cons pair with the two objects in it (A in the left, B in the right)
 
@@ -619,7 +618,7 @@ Later, we'll discuss our rationale for having costs in the first place. We'll al
 * [Minimum spec machine for farming](#minimum-spec-machine-for-farming)
 * [Maximum cost per block](#maximum-cost-per-block)
 
-## Cost tables
+### Cost tables
 
 The costs used in Chia's consensus come from the Rust implementation of CLVM, specifically from these locations:
   * [more_ops.rs#L24](https://github.com/Chia-Network/clvm_rs/blob/main/src/more_ops.rs#L24)
@@ -678,7 +677,7 @@ Finally, each byte of data that gets added to the blockchain has a cost of 12 00
 
 Aside from cost, the maximum number of atoms or pairs (counted separately) in a CLVM program is 2^31 apiece. If this threshold is exceeded, the program will fail. However, this is likely a moot point because it's probably not possible to write a program with this many atoms or pairs without exceeding the maximum cost per block.
 
-## Evaluating cost for a sample brun program
+### Evaluating cost for a sample brun program
 
 In this section, we'll show you how to calculate the cost of a simple CLVM program by hand. The program we'll use is
 
@@ -744,7 +743,7 @@ cost = 806
 820080
 ```
 
-## Evaluating cost for a typical transaction
+### Evaluating cost for a typical transaction
 
 Now let's look at a real-world example of calculating cost. The _standard_ transaction is one that adds and removes one or more vanilla XCH coins from the coin set. While it is possible to both add and remove exactly one coin in a standard transaction, a more _typical_ transaction would involve adding and removing two coins, giving the transaction two inputs and two outputs.
 

@@ -1,6 +1,6 @@
 ---
 id: high_level_lang
-title: 4 - The High Level Language, Compiler, and Functions
+title: Language, Compiler, and Functions
 ---
 
 This guide assumes that you have already read the previous parts.

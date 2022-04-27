@@ -1,6 +1,6 @@
 ---
 id: coin_lifecycle
-title: 7 - Lifecycle of a Coin
+title: Lifecycle of a Coin
 ---
 
 You should now understand how to create Chialisp puzzles that lock up coins with a particular set of rules.

@@ -1,6 +1,6 @@
 ---
 id: common_functions
-title: 5 - Common Functions in Chialisp
+title: Common Functions
 ---
 
 When you start to write full smart coins, you will start to realize that you will need certain common functionality in a lot of puzzles.
