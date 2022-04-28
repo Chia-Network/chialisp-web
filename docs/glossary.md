@@ -33,7 +33,7 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 
 * **Solution (Scriptsig)** - This is some Chialisp which is passed to the puzzle for evaluation when a transaction is submitted. For more information about how transactions work, and how solutions can generate new coins check out this [guide](/docs/coins_spends_and_wallets)
 
-* **CLVM** - The CLVM is the Chialisp Virtual Machine which is the sandboxed environment that puzzles and solutions are run in. The CLVM only runs the compiled minimal version of Chialisp, though a compiler can convert the higher level Chialisp to the compiled minimal version. See more about that [here](/docs/high_level_lang)
+* **CLVM** - The CLVM is the Chialisp Virtual Machine which is the sandboxed environment that puzzles and solutions are run in. The CLVM only runs the compiled minimal version of Chialisp, though a compiler can convert the higher level Chialisp to the compiled minimal version. See more about that [here](docs/clvm/basics)
 
 * **Aggregated Signature/AggSig** - Aggregated Signatures allow us to condense multiple signatures into a single aggregated signature, such that if we know a public key and value we can verify if it exists inside of the single aggregate. This uses BLS non-interactive aggregation.
 
