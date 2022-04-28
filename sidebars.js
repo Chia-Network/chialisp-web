@@ -5,7 +5,6 @@ module.exports = {
       'getting_started/smart_coin_101',
     ],
     Chialisp: [
-      'introduction',
       'high_level_lang',
       'common_functions',
       'coin_lifecycle',

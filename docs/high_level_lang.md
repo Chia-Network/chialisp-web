@@ -1,40 +1,65 @@
 ---
 id: high_level_lang
-title: Language, Compiler, and Functions
+title: Language Overview
+slug: /
 ---
 
-This guide assumes that you have already read the previous parts.
-It is highly recommended that you do so as the higher level language is built directly on top of the lower level language.
+Chialisp is a high-level, LSIP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus. It can never be changed. While CLVM powers Chialip, they shares many fundemantals concepts. Click through the [CLVM basic](clvm/basics) to Learn more about CLVM. 
 
-## CLVM vs Chialisp
+If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/getting_started) first.
 
-Until now, we have been using what we call CLVM to write our programs.
-CLVM is what is serialized and stored directly on the blockchain and is a matter of consensus. It can never be changed.
+## Values
 
-Normally, we will write a higher level language called **Chialisp** instead of CLVM.
-Chialisp compiles into CLVM, and since it is going through the compiler first, it can actually be changed to add more features.
-Chialisp shares a lot of the fundamentals of how programs work with CLVM, but also includes some helpful functionality to make writing large programs easier.
+There is no variables in Chialisp. Values are stored in two different objects: [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects, the objects in a cons box can either be an atom or another cons box.
 
-## Run
 
-The first difference you need to be aware of for the higher level language is that you should call `run` instead of `brun`.
-This lets the runtime know that it should be including higher level operators and behavior.
+### Atoms
+An atom is a string of bytes. These bytes can be interpreted both as a signed big-endian integer and a byte string, depending on the operator using it. 
 
-The first higher level feature you should be aware of is that **it is no longer necessary to quote atoms!**
+All atoms are immutable, therefore all operators that perform computations on atoms create new atoms for the result.
 
-Compare `brun` and `run` here:
+Atoms can be printed in three different ways, decimal, hexadecimal and as a string. Hexadecimal values are prefixed by 0x, and strings are quoted in ".
+
+### Cons Boxes
+
+Cons boxes are represented as a parentheses with two elements separated by a `.`.
+For example:
+```chialisp
+(200 . "hello")
+
+("hello" . ("world" . "!!!"))
+```
+Are legal cons boxes, but the following is not.
+```chialisp
+(200 . 300 . 400)
+```
+A cons box always has two elements.
+However, we can chain cons boxes together to construct lists.
+
+
+## Lists and Opeartors 
+
+The building blocks of Chialisps are lists and opertors. A list is any space-separated, ordered group of one or more elements inside brackets. A valid Chialisp list requires: 
+
+1. The first item in the list must be a valid operator
+2. Every item after the first must be a valid list
+
+Take arithematic addion operator '+' for example, the list (+ 2 3) computes the sum of integeger 2 and 3. 
 
 ```chialisp
-$ brun '(+ 200 200)'
-FAIL: first of non-cons ()
-$ run '(+ 200 200)'
-400
+$ run '(+ 2 3)'
+5
 ```
 
-Run also gives us access to a number of convenient high level operators, which we will cover now.
+Strict defintion of list is a representation of consecutive cons boxes terminated in a null atom (). Keep in mind the following expressions are equal:
+```chialisp
+(200 . (300 . (400 . ())))
 
-## list
+(200 300 400)
+```
+### Operators 
 
+#### list
 `list` takes any number of parameters and returns them put inside a list.
 This saves us from having to manually create nested `(c (A) (c (B) (q ())))` calls, which can get messy quickly.
 
@@ -43,7 +68,7 @@ $ run '(list 100 "test" 0xdeadbeef)'
 (100 "test" 0xdeadbeef)
 ```
 
-## if
+#### if
 
 `if` automatically puts our `i` statement into the lazy evaluation form so we do not need to worry about the unused code path being evaluated.
 
@@ -55,7 +80,7 @@ $ run '(if 0 (q . "success") (x))' '(100)'
 FAIL: clvm raise ()
 ```
 
-## qq unquote
+#### qq 
 
 `qq` allows us to quote something with selected portions being evaluated inside by using `unquote`.
 The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute out sections of predetermined code.
@@ -64,7 +89,7 @@ Suppose we are writing a program that returns another coin's puzzle.
 We know that a puzzle takes the form: `(c (c (q . 50) (c (q . 0xpubkey) (c (sha256 2) (q . ())))) (a 5 11))`
 However we will want to change 0xpubkey to a value passed to us through our solution.
 
-**Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
+Note: `@` allows us to access the arguments in the higher level language (`@` == 1)
 
 ```chialisp
 $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
@@ -73,7 +98,7 @@ $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11))
 ```
 
 
-## Compiling to CLVM with Mod
+#### mod
 
 It is important to remember that in practice smart coins will run using the lower level language, so none of the above operators will work on the network.
 What we *can* do however is compile them down to the lower level language.
@@ -127,7 +152,7 @@ A few things to note:
 - Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
 
 
-## Factorial
+### Example: Factorial
 
 ```chialisp
 (mod (arg_one)
@@ -152,7 +177,7 @@ $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 
 120
 ```
 
-## Squaring a List
+### Example: Squaring a List
 
 Now lets do an example which uses macros as well.
 When writing a macro it must be quasiquoted with the parameters being unquoted.
