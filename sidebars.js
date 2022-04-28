@@ -1,6 +1,6 @@
 module.exports = {
   someSidebar: [{
-    'Getting Started':[
+    'Getting Started': [
       'getting_started/getting_started',
       'getting_started/smart_coin_101',
     ],
@@ -12,32 +12,38 @@ module.exports = {
       'security',
       'debugging',
       'optimization',
-      'standard_transaction',{
-      'Standard Puzzles': [
-        'puzzles/singletons',
-        'puzzles/pooling',
-        'puzzles/cats',
-        'puzzles/offers'
-      ],}
+      'standard_transaction', {
+        'Standard Puzzles': [
+          'puzzles/singletons',
+          'puzzles/pooling',
+          'puzzles/cats',
+          'puzzles/offers'
+        ],
+      }
     ],
-   
+
 
     Tutorials: [
-      'tutorials/why_chia_is_great',
-      'tutorials/developing_applications',
-      'tutorials/tools_and_setup',
-      'tutorials/programming_chialisp',
-      'tutorials/coin_lifecycle_and_testing',
-      'tutorials/singletons',
-      'tutorials/high-level-tips-1',
-      'tutorials/high-level-tips-2',
-      'tutorials/high-level-tips-3',
+      {
+        'Chialisp Tutorial Video Series': [
+          'tutorials/why_chia_is_great',
+          'tutorials/developing_applications',
+          'tutorials/tools_and_setup',
+          'tutorials/programming_chialisp',
+          'tutorials/coin_lifecycle_and_testing',
+          'tutorials/singletons',
+          'tutorials/high-level-tips-1',
+          'tutorials/high-level-tips-2',
+          'tutorials/high-level-tips-3',
+          'tutorials/single_issuance_CAT',
+        ],
+      },
       'tutorials/custom_puzzle_lock',
       'tutorials/coin_spend_rpc',
       'tutorials/structure_of_a_chia_application',
       'tutorials/CAT_Launch_Process_Linux_MacOS',
       'tutorials/CAT_Launch_Process_Windows',
-      'tutorials/single_issuance_CAT',
+     
       'tutorials/multiple_issuance_CAT',
       'tutorials/offers_gui_tutorial',
       'tutorials/offers_cli_tutorial'
@@ -50,8 +56,8 @@ module.exports = {
       'clvm/serialization'
     ],
   },
-  'glossary',
-  'faq',
-  'resources',
-],
+    'glossary',
+    'faq',
+    'resources',
+  ],
 };

@@ -32,4 +32,7 @@ Using lisp programs like this allows you to have *layers of smart coins* in whic
 * **Interoperability.** Every smart coin in the Chia ecosystem, no matter how complex, is fundamentally a coin that is locked up with a Chialisp puzzle. The input to any puzzle will always be a lisp data structure, and the output will always be a list of **conditions** that all puzzles share. This means that everything in Chia interoperates with everything else.
 Any smart coin should be able to interact or communicate with any other smart coin, regardless of whether either coin was specifically designed to do so.
 
-## [Get Started with Chialisp](/docs/getting_started/getting_started)
+--- 
+## [>> Get Started with Chialisp >>](/docs/getting_started/getting_started)
+
+---
