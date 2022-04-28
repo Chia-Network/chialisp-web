@@ -4,7 +4,7 @@ title: Language Overview
 slug: /
 ---
 
-Chialisp is a high-level, LSIP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus. It can never be changed. While CLVM powers Chialip, they shares many fundemantals concepts. Click through the [CLVM basic](clvm/basics) to Learn more about CLVM. 
+Chialisp is a high-level, LISP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus. It can never be changed. While CLVM powers Chialip, they shares many fundemantals concepts. Click through the [CLVM basic](clvm/basics) to Learn more about CLVM. 
 
 If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/getting_started) first.
 

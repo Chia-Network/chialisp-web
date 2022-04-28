@@ -27,7 +27,7 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 
 * **Mempool** - The set of transactions that are pending in a full node to be farmed into a block.  The full node will presumably try to optimize the transactions it includes in a block in order to extract the most fees.
 
-* **Chialisp** - Chialisp is the Turing-complete functional language which the puzzles for spending coin are programmed in. For more information see our [CLVM Guide](/docs/)
+* **Chialisp** - Chialisp is the Turing-complete functional language which the puzzles for spending coin are programmed in. For more information see our [Chialisp Guide](/docs/)
 
 * **Puzzle (Scriptpubkey)** - A Chialisp program which specifies the behavior of a coin when it is spent. A puzzle can either reject a solution or output a set of conditions.
 
