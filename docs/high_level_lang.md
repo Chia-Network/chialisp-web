@@ -216,9 +216,3 @@ $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ()))
 (100 81 64 49)
 ```
 
-## Conclusion
-
-You should now have the context and knowledge needed to write your own Chialisp programs.
-Remember from [our discussion of coins](/docs/coins_spends_and_wallets/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
-
-If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).

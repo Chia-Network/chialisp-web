@@ -7,6 +7,7 @@ module.exports = {
     Chialisp: [
       'high_level_lang',
       'common_functions',
+      'intro_chialisp_puzzles',
       'coin_lifecycle',
       'security',
       'debugging',
