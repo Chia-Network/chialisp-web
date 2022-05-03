@@ -139,8 +139,6 @@ $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11))
 ## Program Structure
 
 ### mod
-A executable Chialisp program or puzzle starts with operator`mod`. `mod` acts similar to a pragma or a compiler directive. It lets the runtime know that that the code is written in Chialisp.
-
 `(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the rest are the higher level script which is to be compiled.
 
 Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program

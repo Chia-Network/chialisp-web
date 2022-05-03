@@ -33,6 +33,6 @@ Using lisp programs like this allows you to have *layers of smart coins* in whic
 Any smart coin should be able to interact or communicate with any other smart coin, regardless of whether either coin was specifically designed to do so.
 
 --- 
-## [>> Get Started with Chialisp >>](/docs/getting_started/getting_started)
+## [>> Get Started with Chialisp >>](/docs/getting_started/intro_to_chialisp)
 
 ---
