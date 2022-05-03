@@ -6,7 +6,7 @@ slug: /
 
 Chialisp is a high-level, LISP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus; it can never be changed. While CLVM powers Chialip, they share many fundemantal concepts. Click through the [CLVM basic](clvm/basics) to Learn more about CLVM. 
 
-If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/getting_started) first.
+If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/intro_to_chialisp) first.
 
 ## Values
 There is no variables in Chialisp. Values are stored in two different objects: [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects, the objects in a cons box can either be an atom or another cons box.
