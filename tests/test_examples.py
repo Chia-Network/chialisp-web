@@ -4,7 +4,7 @@ from colorama import Fore, Style
 
 examples = []
 
-with open("docs/ref/clvm.md") as f:
+with open("docs/ref/lang_reference.md") as f:
     in_chialisp_block = False
     current_example = None
     line_num = -1
