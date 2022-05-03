@@ -58,9 +58,9 @@ As you can see, just about everything in this language is based on lists, hence 
 
 ## Modules
 
-The `mod` operator compiles a Chialisp module and its definitions into a single executable [CLVM](https://chialisp.com/docs/ref/clvm) program. It's how you use more complicated features such as functions and constants.
+The `mod` operator creates a context for converting the usage of constants into a single expression. It's how you use more complicated features such as functions and including library files.
 
-Note that any definitions inside of the module will not have access to the module's solution, and must be passed in directly. In other words, there is no concept of [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
+Note that any definitions inside of the module will not have access to the its solution, so values will have to be passed in manually. In other words, there is no concept of [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
 
 This module will add two arbitrary values together:
 
