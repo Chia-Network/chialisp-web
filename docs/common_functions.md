@@ -1,44 +1,12 @@
 ---
 id: common_functions
-title: Common Functions
+title: Common Design Patterns  
 ---
 
 When you start to write full smart coins, you will start to realize that you will need certain common functionality in a lot of puzzles.
 Let's go over how to include them and what some of them are:
 
-## include
 
-If you want to import some functionality that you use frequently without having to copy/paste it between files, you can use `include`:
-
-```chialisp
-;; condition_codes.clvm
-(
-  (defconstant AGG_SIG_ME 50)
-  (defconstant CREATE_COIN 51)
-)
-```
-
-```chialisp
-;;main.clvm
-(mod (pubkey msg puzzle_hash amount)
-
-  (include "condition_codes.clvm")
-
-  (list (list AGG_SIG_ME pubkey msg) (list CREATE_COIN puzzle_hash amount))
-
-)
-```
-
-When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for includable files.
-If our condition_codes.clvm file was in the directory `./libraries/chialisp/` then you would pass that to `run` so that it knows where to find it:
-
-```
-run -i ./libraries/chialisp/ main.clvm
-```
-
-Also note that the include files are a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.
-You can then use any of those constants/functions when writing your program, without having to import each one individually.
-The compiler will only include things that you use, so don't worry about including a large library file when attempting to optimize the size of your program.
 
 ## sha256tree
 
