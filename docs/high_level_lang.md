@@ -134,14 +134,14 @@ $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11))
 ```
 
 
+
+
+## Program Structure
+
 ### mod
+A executable Chialisp program or puzzle starts with operator`mod`. `mod` acts similar to a pragma or a compiler directive. It lets the runtime know that that the code is written in Chialisp.
 
-It is important to remember that in practice smart coins will run using the lower level language, so none of the above operators will work on the network.
-What we *can* do however is compile them down to the lower level language.
-This is where `mod` comes in.
-`mod` is an operator that lets the runtime know that it needs to be compiling the code rather than actually running it.
-
-`(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the last is the higher level script which is to be compiled.
+`(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the rest are the higher level script which is to be compiled.
 
 Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program
 
@@ -159,7 +159,6 @@ $ brun '(c 2 ())' '(100 200 300)'
 
 You may be wondering what other parameters `mod` takes, between variable names and source code.
 
-## Program Structure
 
 ### include
 
