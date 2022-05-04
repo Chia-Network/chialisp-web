@@ -3,8 +3,6 @@ id: intro_to_chialisp
 title: Intro to Chialisp
 ---
 
-# Introduction to Chialisp
-
 [Chialisp](https://chialisp.com) is a language based on [Lisp](<https://en.wikipedia.org/wiki/Lisp_(programming_language)>) that is used on the Chia blockchain to dictate how and when [coins](https://docs.chia.net/docs/01introduction/chia-system-overview#coins-and-transactions) can be spent. It's designed to be as simple and efficient as possible, but still provide broad functionality and [Turing Completeness](https://en.wikipedia.org/wiki/Turing_completeness).
 
 Throughout this guide you will learn the basics of Chialisp, and by the end you should have the skills required to write working programs using it. No prior knowledge of Lisp is required.
@@ -13,13 +11,18 @@ Throughout this guide you will learn the basics of Chialisp, and by the end you 
 
 You can follow [this guide](https://github.com/Chia-Network/chia-dev-tools/#install) to install and use Chia Dev Tools. You will be using these tools and a simple text editor of your choice to write and run snippets of code.
 
+
 Once you have it set up, run the following command:
 
 ```bash
-run "hello_world"
+run "test_chialisp"
 ```
 
-If it is working correctly, it should output `"hello_world"`. You can now follow along with any of the code in the coming sections.
+:::note
+The `run` command compiles the Chialisp code. In this case, the code is a simple string.
+:::
+
+If it is working correctly, it should output `"test_chialisp"`. You can now follow along with any of the code in the coming sections.
 
 ## Atoms
 
