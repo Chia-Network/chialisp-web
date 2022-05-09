@@ -11,6 +11,8 @@ This document will guide you through the process of minting NFTs that comply wit
 * [Note about Python on Windows](#note-about-python-on-windows)
 * [Install and configure Chia](#install-and-configure-chia)
 * [Mint an NFT](#mint-an-nft)
+* [Transfer an NFT](#transfer-an-nft)
+* [Add a URL to an NFT](#add-a-url-to-an-nft)
 * [DID wallet RPCs](#did-wallet-rpcs)
 * [NFT wallet RPCs](#nft-wallet-rpcs)
 
@@ -283,6 +285,7 @@ Note that a wall with a `type` of `10` is an NFT wallet.
 [https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg](https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg)
 
 Here are three (of many) ways in which to obtain the hash:
+    
   i. If you're on Windows, you'll need to run this command from git bash
   ```powershell
   $ curl https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg | sha256sum
@@ -386,6 +389,16 @@ If successful, you will receive a JSON output, including the coin additions and 
     "wallet_id": 3
 }
 ```
+
+---
+
+## Transfer an NFT
+[todo]
+
+---
+
+## Add a URL to an NFT
+[todo]
 
 ---
 
@@ -897,72 +910,229 @@ Example:
 
 ### `nft_mint_nft`
 
-Functionality: Create an offer of XCH/CATs for XCH/CATs.
+Functionality: Mint a new NFT
 
-Usage: `chia wallet make_offer [OPTIONS]`
+Usage: `chia rpc wallet [OPTIONS] nft_mint_nft [REQUEST]`
 
-Options:
+Options: 
 
-Example: 
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -j            | --json-file                  | TEXT  | False    | Instead of REQUEST, provide a json file containing the request data
+| -h            | --help                       | None  | False    | Show a help message and exit
+
+Request Parameters:
+
+| Parameter         | Required | Description |
+|:-----------------:|:--------:|:------------|
+| wallet_id         | True     | The `Wallet ID` in wihch to mint an NFT, obtainable by running `chia wallet show`
+| uris              | True     | A list of URIs to mark the location(s) of the NFT
+| hash              | True     | The hash of the NFT. This should use sha256 for proper verification against the URI list
+| artist_percentage | False    | For NFT1, this will be the royalty that will go to the original artist each time the NFT is sold. The percentage is multiplied by 100 -- for example, to set a 15% royalty, set this value to 1500. However, this feature is disabled in NFT0. The default value is 0
+| artist_address    | False    | The wallet address of the original artist. Royalties will be sent to this address. For NFT0, this feature is disabled. For NFT1, this could be either an XCH address or a DID address
+
+Example:
 
 ```json
 // Request
+chia rpc wallet nft_mint_nft '{
+  \"wallet_id\": 3, 
+  \"uris\": [
+    \"https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg\"
+  ], 
+  \"hash\": \"14836b86a48e1b2b5e857213af97534704475b4c155d34b2cb83ed4b7cba2bb0\", 
+  \"artist_percentage\": 1500, 
+  \"artist_address\": \"txch1yxpslrx30k7lnngpfczr3ltrge0ap25f4739jet5lz069lhn5szsu49uyh\"
+}'
 
 // Response
+{
+    "nft": {
+        "additions": [
+          ...
+        ],
+        "amount": 1,
+        "confirmed": false,
+        "confirmed_at_height": 0,
+        "created_at_time": 1651912565,
+        "fee_amount": 0,
+        "memos": [],
+        "name": "0xdd14793f28b8d3d94782a5d99398094e6d0e612e3101a0fe806c474dab2feb48",
+        "removals": [
+          ...
+        ],
+        "sent": 0,
+        "sent_to": [],
+        "spend_bundle": {
+          ...
+        },
+        "to_puzzle_hash": "0xae3c67057b390a1d6192d7f48e4585dd626eed9c1ac7b941668fb53cc432c034",
+        "trade_id": null,
+        "type": 1,
+        "wallet_id": 3
+    },
+    "success": true,
+    "wallet_id": 3
+}
 ```
 
 ---
 
 ### `nft_get_nfts`
 
-Functionality: Create an offer of XCH/CATs for XCH/CATs.
+Functionality: Show all NFTs in a given wallet
 
-Usage: `chia wallet make_offer [OPTIONS]`
+Usage: `chia rpc wallet [OPTIONS] nft_get_nfts [REQUEST]`
 
-Options:
+Options: 
 
-Example: 
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -j            | --json-file                  | TEXT  | False    | Instead of REQUEST, provide a json file containing the request data
+| -h            | --help                       | None  | False    | Show a help message and exit
+
+Request Parameters:
+
+| Parameter   | Required | Description |
+|:-----------:|:--------:|:------------|
+| wallet_id     | True     | The `Wallet ID` from which to retrieve the NFTs, obtainable by running `chia wallet show`
+
+Example:
 
 ```json
 // Request
+chia rpc wallet nft_get_nfts '{\"wallet_id\": 3}'
 
 // Response
+{
+    "nft_list": [
+        [
+            {
+                "coin": {
+                    "amount": 1,
+                    "parent_coin_info": "0xa2cde90cc29793f305c2d2f06f1036311c8ed894b73f5a755c38f88502c4d145",
+                    "puzzle_hash": "0xe7dc6689665e6fffa03651030de3dc0a9a268aa8a0f81b563b805a37f8fd8e21"
+                },
+                "full_puzzle": 
+                ...,
+                "lineage_proof": {
+                    "amount": 1,
+                    "inner_puzzle_hash": "0x0270e884ef2beb0a5c3b685f9edc3dc572fbfe73f7f07971ae7ee1aa681ccc00",
+                    "parent_name": "0x831404fe4d27616a5527e8a0e86b9ef92ea5ec5f01240d19a421ac9e907eafa1"
+                }
+            },
+            [
+                "0xff75ffc04468747470733a2f2f696d616765732e706578656c732e636f6d2f70686f746f732f31313035333037322f706578656c732d70686f746f2d31313035333037322e6a70656780",
+                "0xff68c04031343833366238366134386531623262356538353732313361663937353334373034343735623463313535643334623263623833656434623763626132626230"
+            ]
+        ],
+        [
+            {
+                "coin": {
+                    "amount": 1,
+                    "parent_coin_info": "0x0c0dff49a3c9ec0f5b24160f4740803653477288eebf99894fa90e0ec963314e",
+                    "puzzle_hash": "0x2e722eb8182a223e7a8a6dde54b5729601cdbb6d0eeafd6879be4aaf45ec3461"
+                },
+                "full_puzzle": ...,
+                "lineage_proof": {
+                    "amount": 1,
+                    "inner_puzzle_hash": "0xca2a90c0f6d701d21ee195898cd04c0d2a54ab26aa43d8677f60cb0a516408d1",
+                    "parent_name": "0xca13470716d7dc09c36614066e4180c0ad7a54a51367e7824c75778b13c747f3"
+                }
+            },
+            [
+                "0xff75ffc04468747470733a2f2f696d616765732e706578656c732e636f6d2f70686f746f732f31313035333037322f706578656c732d70686f746f2d31313035333037322e6a70656780",
+                "0xff68c04031343833366238366134386531623262356538353732313361663937353334373034343735623463313535643334623263623833656434623763626132626230"
+            ]
+        ],
+        [
+            {
+                "coin": {
+                    "amount": 1,
+                    "parent_coin_info": "0xf5e9c797a875e31b3ec1b381a08c28b17f6273dd9ab6d7bde88e23bd3b18d654",
+                    "puzzle_hash": "0xc70e8483089f32b4a5ca2ba34f3d2524cb8823cda8592b412a424deec8e84299"
+                },
+                "full_puzzle": 
+                ...,
+                "lineage_proof": {
+                    "amount": 1,
+                    "inner_puzzle_hash": "0x123b4e88eacfc482d5b447bb3ff3ccbf3b385c9e7c04e8b5594a83fc9d53e1fd",
+                    "parent_name": "0x0a53f69de29dd378cfb10bae816297c5491c39de2d2a67815f341bd120c70fa2"
+                }
+            },
+            [
+                "0xff75ffc04468747470733a2f2f696d616765732e706578656c732e636f6d2f70686f746f732f31313035333037322f706578656c732d70686f746f2d31313035333037322e6a70656780",
+                "0xff6886313432626230"
+            ]
+        ]
+    ],
+    "success": true,
+    "wallet_id": 3
+}
 ```
 
 ---
 
 ### `nft_transfer_nft`
 
-Functionality: Create an offer of XCH/CATs for XCH/CATs.
+Functionality: Transfer an NFT [todo verify]
 
-Usage: `chia wallet make_offer [OPTIONS]`
+Usage: `chia rpc wallet [OPTIONS] nft_transfer_nft [REQUEST]`
 
-Options:
+Options: 
 
-Example: 
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -j            | --json-file                  | TEXT  | False    | Instead of REQUEST, provide a json file containing the request data
+| -h            | --help                       | None  | False    | Show a help message and exit
+
+Request Parameters:
+
+| Parameter      | Required | Description |
+|:--------------:|:--------:|:------------|
+| wallet_id      | True     | The `Wallet ID` of the NFT to transfer, obtainable by running `chia wallet show`
+| target_address | True     | The address to transfer the NFT to. For NFT0 this must be an XCH address. For NFT1 this could also be a DID address
+| nft_coin_id    | True     | The coin ID of the NFT to transfer
+
+Example:
 
 ```json
 // Request
-
+[todo]
+chia rpc wallet nft_transfer_nft '{\"wallet_id\": 3, \"target_address\": \"txch1yxpslrx30k7lnngpfczr3ltrge0ap25f4739jet5lz069lhn5szsu49uyh\", \"nft_coin_id"\: \"0x63676ce8e95c81ac4b91eba28a5f8680d465fdfeb646461392ddc1b24c6de74a\"}'
 // Response
+[todo]
+Error: Got unexpected extra argument ("0x63676ce8e95c81ac4b91eba28a5f8680d465fdfeb646461392ddc1b24c6de74a"})
 ```
 
 ---
 
 ### `nft_add_url`
 
-Functionality: Create an offer of XCH/CATs for XCH/CATs.
+Functionality: Add a new URL to the location URI list [todo maybe not implemented yet]
 
-Usage: `chia wallet make_offer [OPTIONS]`
+Usage: `chia rpc wallet [OPTIONS] nft_add_url [REQUEST]`
 
-Options:
+Options: 
 
-Example: 
+| Short Command | Long Command                 | Type  | Required | Description |
+|:-------------:|:----------------------------:|:-----:|:--------:|:------------|
+| -j            | --json-file                  | TEXT  | False    | Instead of REQUEST, provide a json file containing the request data
+| -h            | --help                       | None  | False    | Show a help message and exit
+
+Request Parameters:
+
+| Parameter   | Required | Description |
+|:-----------:|:--------:|:------------|
+| wallet_id     | True     | The `Wallet ID` of the DID wallet to transfer, obtainable by running `chia wallet show`
+
+Example:
 
 ```json
 // Request
-
+[todo]
 // Response
+[todo]
 ```
 
 ---
