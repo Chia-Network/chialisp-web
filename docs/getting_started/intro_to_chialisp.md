@@ -11,18 +11,15 @@ Throughout this guide you will learn the basics of Chialisp, and by the end you 
 
 You can follow [this guide](https://github.com/Chia-Network/chia-dev-tools/#install) to install and use Chia Dev Tools. You will be using these tools and a simple text editor of your choice to write and run snippets of code.
 
-
 Once you have it set up, run the following command:
 
 ```bash
-run "test_chialisp"
+run "test"
 ```
 
-:::note
-The `run` command compiles the Chialisp code. In this case, the code is a simple string.
-:::
+The `run` command compiles Chialisp code. In this case, we are compiling a simple string to make sure it is installed properly.
 
-If it is working correctly, it should output `"test_chialisp"`. You can now follow along with any of the code in the coming sections.
+If it is working correctly, it should output `"test"`. You can now follow along with any of the code in the coming sections.
 
 ## Atoms
 
@@ -76,13 +73,18 @@ This module will add two arbitrary values together:
 And this is an example of a constant and function:
 
 ```chialisp
+;;; Raises the number by one order of magnitude.
+
 (mod (value)
+    ; Defines a constant value with a name.
     (defconstant ORDER_OF_MAGNITUDE 10)
 
+    ; Defines a function that can be called with a value.
     (defun raise_magnitude (value)
         (* value ORDER_OF_MAGNITUDE)
     )
 
+    ; Calls the previously defined function.
     (raise_magnitude value)
 )
 ```
@@ -100,17 +102,20 @@ By now you have seen how some aspects of the language work, and we can use these
 Put this in a file named `factorial.clsp`:
 
 ```chialisp
-;;; Calculates a factorial.
+;;; Calculates a factorial recursively.
 ;;; f(n) = n * f(n - 1)
 ;;; f(n) = n if n <= 2
 
 (mod (number)
+    ; Defines the factorial function.
     (defun factorial (number)
         (if (> number 1)
             (* number (factorial (- number 1)))
             1
         )
     )
+
+    ; Calls the function with the number provided.
     (factorial number)
 )
 ```
