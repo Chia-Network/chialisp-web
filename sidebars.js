@@ -3,6 +3,7 @@ module.exports = {
         {
             'Getting Started': [
                 'getting_started/intro_to_chialisp',
+                'getting_started/setting_up_testnet',
                 'getting_started/first_smart_coin',
             ],
             Chialisp: [
