@@ -1,51 +1,82 @@
 ---
 id: high_level_lang
-title: 4 - The High Level Language, Compiler, and Functions
+title: Language Overview
+slug: /
 ---
 
-This guide assumes that you have already read the previous parts.
-It is highly recommended that you do so as the higher level language is built directly on top of the lower level language.
+Chialisp is a high-level, LISP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus; it can never be changed. While CLVM powers Chialip, they share many fundemantal concepts. Click through the [CLVM basic](clvm/basics) to Learn more about CLVM. 
 
-## CLVM vs Chialisp
+If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/intro_to_chialisp) first.
 
-Until now, we have been using what we call CLVM to write our programs.
-CLVM is what is serialized and stored directly on the blockchain and is a matter of consensus. It can never be changed.
+## Values
+There is no variables in Chialisp. Values are stored in two different objects: [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects, the objects in a cons box can either be an atom or another cons box.
 
-Normally, we will write a higher level language called **Chialisp** instead of CLVM.
-Chialisp compiles into CLVM, and since it is going through the compiler first, it can actually be changed to add more features.
-Chialisp shares a lot of the fundamentals of how programs work with CLVM, but also includes some helpful functionality to make writing large programs easier.
+### Atoms
+An atom is a string of bytes. These bytes can be interpreted both as a signed big-endian integer and a byte string, depending on the operator using it. 
 
-## Run
+All atoms are immutable, therefore operators that perform computations on atoms create new atoms for the result.
 
-The first difference you need to be aware of for the higher level language is that you should call `run` instead of `brun`.
-This lets the runtime know that it should be including higher level operators and behavior.
+Atoms can be printed in three different ways: decimal, hexadecimal and as a string. Hexadecimal values are prefixed by `0x`, and strings are quoted in `"`.
 
-The first higher level feature you should be aware of is that **it is no longer necessary to quote atoms!**
-
-Compare `brun` and `run` here:
-
+### Cons Boxes
+Cons boxes are represented as a parentheses with two elements separated by a `.`.
+For example,
 ```chialisp
-$ brun '(+ 200 200)'
-FAIL: first of non-cons ()
-$ run '(+ 200 200)'
-400
+(200 . "hello")
+
+("hello" . ("world" . "!!!"))
 ```
 
-Run also gives us access to a number of convenient high level operators, which we will cover now.
 
-## list
-
-`list` takes any number of parameters and returns them put inside a list.
-This saves us from having to manually create nested `(c (A) (c (B) (q ())))` calls, which can get messy quickly.
-
+A cons box always has two elements. For example, the following is not a valid cons box,
 ```chialisp
-$ run '(list 100 "test" 0xdeadbeef)'
-(100 "test" 0xdeadbeef)
+(200 . 300 . 400)
 ```
 
-## if
+## Chialisp program
 
-`if` automatically puts our `i` statement into the lazy evaluation form so we do not need to worry about the unused code path being evaluated.
+The building blocks of Chialisp program are lists and opertors. A list is any space-separated, ordered group of one or more items inside parenthesis brackets. Strict defintion of list is a representation of consecutive cons boxes terminated in a null atom `()`. 
+Chialisp simplefied the representation by allowing omitting implied inner parenthesis brakets in the list. For example, the following expressions are equal:
+```chialisp
+(200 . (300 . (400 . ())))
+
+(200 300 400)
+```
+
+A Chialisp program is a list of [prefix notation](https://en.wikipedia.org/wiki/Polish_notation) form. A valid Chialisp program requires:
+1. The first item in the list must be a valid operator
+2. Every item after the first must be a valid program
+
+Take arithematic addion operator '+' for example, the list (+ 2 3) computes the sum of integeger 2 and 3. 
+
+```chialisp
+$ run '(+ 2 3)'
+5
+```
+
+## Operators 
+### Arithematic Operators
+The arithmetic operators `+, -, *, /` and divmod treat their arguments as signed integers.
+
+`+ (+ a0 a1 ...)` takes any number of integer operands and sums them. If given no arguments, zero is returned.
+
+`- (- a0 a1 ...)` takes one or more integer operands and adds a0 to the negative of the rest. Giving zero arguments returns 0.
+
+`* (* a0 a1 ...)` takes any number of integer operands and returns the product.
+
+`/ (/ A B)` divides two integers and returns the floored quotient. Rounding:
+```
+(/ 1  2) => ()
+(/ 2  2) => 1
+(/ 4  2) => 2
+```
+
+### Control Flow
+#### Condition
+
+`if (if A B C)` takes exactly three operands A, B, C. If A is (), return C
+
+`if` does lazy evaluation form so we do not need to worry about the unused code path being evaluated.
 
 ```chialisp
 $ run '(if 1 (q . "success") (x))' '(100)'
@@ -55,7 +86,37 @@ $ run '(if 0 (q . "success") (x))' '(100)'
 FAIL: clvm raise ()
 ```
 
-## qq unquote
+
+`x` raise exception `(x X Y ...)` takes an arbitrary number of arguments (even zero). Immediately fail, with the argument list passed up into the (python) exception. No other CLVM instructions are run after this instruction is evaluated.
+
+
+`=` equal.
+  `(= A B)` returns 1 if A and B are both atoms and both equal. Otherwise (). Do not use this to test if two programs are identical. That is determined by their tree hash. Nil tests equal to zero, but nil is not equal to a single zero byte.
+
+`>` *greater than.
+ `(> A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise (). (> A B) means A > B in infix syntax.
+
+`>s` greater than bytes.
+  `(>s A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise (). Compare to strcmp. (>s "a" "b") => ()
+
+`not` `(not A)` returns 1 if A evaluates to (). Otherwise, returns ().
+
+`all` `(all A B ...)` takes an arbitrary number of arguments (even zero). Returns () if any of the arguments evaluate to (). Otherwise, returns 1.
+
+`any` `(any A B ...)` takes an arbitrary number of arguments (even zero). Returns 1 if any of the arguments evaluate to something other than (). Otherwise, returns ().
+
+### Constructing a List
+`list` takes any number of parameters and returns them put inside a list.
+This saves us from having to manually create nested `(c (A) (c (B) (q ())))` calls, which can get messy quickly.
+
+```chialisp
+$ run '(list 100 "test" 0xdeadbeef)'
+(100 "test" 0xdeadbeef)
+```
+
+
+
+### qq 
 
 `qq` allows us to quote something with selected portions being evaluated inside by using `unquote`.
 The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute out sections of predetermined code.
@@ -64,23 +125,21 @@ Suppose we are writing a program that returns another coin's puzzle.
 We know that a puzzle takes the form: `(c (c (q . 50) (c (q . 0xpubkey) (c (sha256 2) (q . ())))) (a 5 11))`
 However we will want to change 0xpubkey to a value passed to us through our solution.
 
-**Note: `@` allows us to access the arguments in the higher level language (`@` == 1)**
+Note: `@` allows us to access the arguments in the higher level language (`@` == 1)
 
 ```chialisp
-$ run '(qq (c (c (q . 50) (c (q (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
+$ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
 
 (c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) (a 5 11))
 ```
 
 
-## Compiling to CLVM with Mod
 
-It is important to remember that in practice smart coins will run using the lower level language, so none of the above operators will work on the network.
-What we *can* do however is compile them down to the lower level language.
-This is where `mod` comes in.
-`mod` is an operator that lets the runtime know that it needs to be compiling the code rather than actually running it.
 
-`(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the last is the higher level script which is to be compiled.
+## Program Structure
+
+### mod
+`(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the rest are the higher level script which is to be compiled.
 
 Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program
 
@@ -98,7 +157,42 @@ $ brun '(c 2 ())' '(100 200 300)'
 
 You may be wondering what other parameters `mod` takes, between variable names and source code.
 
-## Functions, Macros and Constants
+
+### include
+
+If you want to import some functionality that you use frequently without having to copy/paste it between files, you can use `include`:
+
+```chialisp
+;; condition_codes.clvm
+(
+  (defconstant AGG_SIG_ME 50)
+  (defconstant CREATE_COIN 51)
+)
+```
+
+```chialisp
+;;main.clvm
+(mod (pubkey msg puzzle_hash amount)
+
+  (include "condition_codes.clvm")
+
+  (list (list AGG_SIG_ME pubkey msg) (list CREATE_COIN puzzle_hash amount))
+
+)
+```
+
+When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for includable files.
+If our condition_codes.clvm file was in the directory `./libraries/chialisp/` then you would pass that to `run` so that it knows where to find it:
+
+```
+run -i ./libraries/chialisp/ main.clvm
+```
+
+Also note that the include files are a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.
+You can then use any of those constants/functions when writing your program, without having to import each one individually.
+The compiler will only include things that you use, so don't worry about including a large library file when attempting to optimize the size of your program.
+
+### Functions, Macros and Constants
 
 In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defun-inline`, `defmacro` and `defconstant`.
 
@@ -127,7 +221,7 @@ A few things to note:
 - Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
 
 
-## Factorial
+### Example: Factorial
 
 ```chialisp
 (mod (arg_one)
@@ -152,7 +246,7 @@ $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 
 120
 ```
 
-## Squaring a List
+### Example: Squaring a List
 
 Now lets do an example which uses macros as well.
 When writing a macro it must be quasiquoted with the parameters being unquoted.
@@ -191,9 +285,3 @@ $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ()))
 (100 81 64 49)
 ```
 
-## Conclusion
-
-You should now have the context and knowledge needed to write your own Chialisp programs.
-Remember from [our discussion of coins](/docs/coins_spends_and_wallets/) that these programs run on the blockchain and instruct the blockchain what to do with the coin's value.
-
-If you have further questions feel free to ask on [Keybase](https://keybase.io/team/chia_network.public).

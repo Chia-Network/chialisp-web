@@ -1,44 +1,12 @@
 ---
 id: common_functions
-title: 5 - Common Functions in Chialisp
+title: Common Design Patterns  
 ---
 
 When you start to write full smart coins, you will start to realize that you will need certain common functionality in a lot of puzzles.
 Let's go over how to include them and what some of them are:
 
-## include
 
-If you want to import some functionality that you use frequently without having to copy/paste it between files, you can use `include`:
-
-```chialisp
-;; condition_codes.clvm
-(
-  (defconstant AGG_SIG_ME 50)
-  (defconstant CREATE_COIN 51)
-)
-```
-
-```chialisp
-;;main.clvm
-(mod (pubkey msg puzzle_hash amount)
-
-  (include "condition_codes.clvm")
-
-  (list (list AGG_SIG_ME pubkey msg) (list CREATE_COIN puzzle_hash amount))
-
-)
-```
-
-When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for includable files.
-If our condition_codes.clvm file was in the directory `./libraries/chialisp/` then you would pass that to `run` so that it knows where to find it:
-
-```
-run -i ./libraries/chialisp/ main.clvm
-```
-
-Also note that the include files are a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.
-You can then use any of those constants/functions when writing your program, without having to import each one individually.
-The compiler will only include things that you use, so don't worry about including a large library file when attempting to optimize the size of your program.
 
 ## sha256tree
 
@@ -67,22 +35,33 @@ You can assert puzzles of other coins, condense puzzles for easier signing, and 
 
 ## Currying
 
+_Currying_ is named in honor of the mathematician Haskell Curry. In math, currying is the technique of converting a function that takes multiple arguments into a sequence of functions that each take a single argument. For more information on the mathematical concept of currying, see [Wikipedia](https://en.wikipedia.org/wiki/Currying "Currying in math").
+
+In Chialisp, currying is a technique of pre-committing a portion of the solution to a puzzle. It works like hard-coding, but it's more versatile because it allows for the same puzzle to be reused. 
+
+For example, if a puzzle requires a password in its solution, a Chialisp developer could hard-code the password into the puzzle. But what if the developer later wanted to create a new smart coin with a different password? He or she would have to make a copy of the puzzle and swap out all instances of the old password for the new one. This would be quite inconvenient, especially in a puzzle with a complex solution.
+
+The developer could avoid this inconvenience by using a variable for the password. But that wouldn't be secure -- a farmer could change the password and steal the coin. This is where currying comes in -- it allows the developer to pre-commit without hard-coding.
+
 Currying is an extremely important concept in Chialisp that is responsible for almost the entirety of how state is stored in coins.
 The idea is to pass in arguments to a puzzle *before* it is hashed.
 When you curry, you commit to solution values so that the individual solving the puzzle cannot change them.
 Let's take a look at how this is implemented in Chialisp:
 
 ```chialisp
-;; utility function used by curry
-(defun fix_curry_args (items core)
- (if items
-     (qq (c (q . (unquote (f items))) (unquote (fix_curry_args (r items) core))))
-     core
- )
-)
+; curry.clvm
+(
+  ;; utility function used by curry
+  (defun fix_curry_args (items core)
+    (if items
+      (qq (c (q . (unquote (f items))) (unquote (fix_curry_args (r items) core))))
+      core
+    )
+  )
 
-; (curry sum (list 50 60)) => returns a function that is like (sum 50 60 ...)
-(defun curry (func list_of_args) (qq (a (q . (unquote func)) (unquote (fix_curry_args list_of_args (q . 1))))))
+  ; (curry sum (list 50 60)) => returns a function that is like (sum 50 60 ...)
+  (defun curry (func list_of_args) (qq (a (q . (unquote func)) (unquote (fix_curry_args list_of_args (q . 1))))))
+)
 ```
 
 The reason this is so useful is because you may want to create the blueprint of a puzzle, but use different values for certain parameters every time you create it.
@@ -127,6 +106,7 @@ This means every time that you want to lock up a coin with a new password, you h
 It would be much nicer if we fully generalized it:
 
 ```chialisp
+; password_coin.clvm
 (mod (PASSWORD_HASH password new_puzhash amount)
   (defconstant CREATE_COIN 51)
 
@@ -149,7 +129,7 @@ When we create this coin we need the password hash to be committed to. Before de
 ```chialisp
 ; curry_password_coin.clvm
 (mod (password_hash password_coin_mod)
-  (include "curry.clvm") ; From above
+  (include "curry.clvm")
 
   (curry password_coin_mod (list password_hash))
 )
@@ -158,7 +138,7 @@ When we create this coin we need the password hash to be committed to. Before de
 If we compile this function and pass it parameters like this:
 
 ```
-brun <curry password coin mod> '((q . 0xcafef00d) (q . <password coin mod>))'
+brun <curry_password_coin mod> '((q . 0xcafef00d) (q . <password_coin mod>))'
 ```
 
 we will receive a puzzle that looks very similar to our password coin module, but has been expanded to include the hash we passed in.

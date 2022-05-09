@@ -1,6 +1,6 @@
 ---
 id: coin_lifecycle
-title: 7 - Lifecycle of a Coin
+title: Lifecycle of a Coin
 ---
 
 You should now understand how to create Chialisp puzzles that lock up coins with a particular set of rules.
@@ -78,14 +78,14 @@ It is an object that contains exactly two things: a list of coin spends and an a
 
 ```python
 class SpendBundle:
-  coin_solutions: List[CoinSpend]
+  coin_spends: List[CoinSpend]
   aggregated_signature: G2Element
 ```
 
 A **coin spend** contains exactly three things: The coin you are trying to spend (parent_coin_info, amount, puzzle_hash), the puzzle reveal (needs to tree hash to the puzzle hash), and the solution.
 
 ```python
-class CoinSolution:
+class CoinSpend:
   coin: Coin
   puzzle_reveal: SerializedProgram
   solution: SerializedProgram

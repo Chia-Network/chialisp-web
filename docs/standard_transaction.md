@@ -1,6 +1,6 @@
 ---
 id: standard_transaction
-title: 6 - The Standard Transaction
+title: The Standard Transaction
 ---
 
 You should now be well versed in a number of ways to lock up a coin using a Chialisp puzzle.
@@ -37,9 +37,10 @@ We then calculate the public key of this new private key, and add it to our exis
 If the solver can correctly reveal BOTH the hidden puzzle and the original public key, then our puzzle can derive the synthetic public key and make sure that it matches the one that is curried in.
 
 You may wonder why we add the public key from our derived private key to the original public key when it's already part of the derivation.
-This is because we use the synthetic public key to sign for our delegated spends as well.
-When you add two public keys, the private key for the resulting public key is the sum of the original private keys.
-If we didn't add the original public key then anyone who knew the hidden puzzle could derive the synthetic private key and could then perform delegated spends!  Adding original public key ensures that there is still a secret component of the synthetic private key, even though half of can be known.
+This is because we use the synthetic public key to verify the signature of our delegated spends as well. 
+When you add two public keys, the sum of their private keys gives the private key for the resulting public key.
+If we didn't add the original public key then anyone who knew the hidden puzzle could derive the synthetic private key and could then perform delegated spends!  Adding the original public key ensures that there is still a secret component of the synthetic private key, even though half of it can be known.
+This secret component is the private key for the original public key.
 
 This technique is also neat because it allows us to hide the hidden puzzle in a piece of information that was already necessary for the delegated spend.
 It's impossible to guess what the hidden puzzle is, even if it's a standard hidden puzzle!  It's even hard to tell if there's a hidden puzzle at all.
@@ -70,7 +71,7 @@ Here's the full source and then we'll break it down:
     ; all of A0, A1, ... An must evaluate to non-null, or an exception is raised
     ; return the last item (if we get that far)
 
-    (defmacro assert (items)
+    (defmacro assert items
         (if (r items)
             (list if (f items) (c assert (r items)) (q . (x)))
             (f items)

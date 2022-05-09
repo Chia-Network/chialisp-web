@@ -1,6 +1,6 @@
 ---
 id: optimization
-title: 10 - Optimization
+title: Optimization
 ---
 
 Before you deploy a smart coin to the network, you should closely examine the code to find ways to optimize its execution.
