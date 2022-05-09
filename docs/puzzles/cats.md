@@ -3,10 +3,23 @@ id: cats
 title: Chia Asset Tokens (CATs)
 ---
 
+Contents:
+
+* [Introduction to CATs](#introduction-to-cats)
+* [Design choices](#design-choices)
+* [Spend Accounting](#spend-accounting)
+* [Extra Delta](#extra-delta)
+* [The Token and Asset Issuance Limiter (TAIL) Program](#the-token-and-asset-issuance-limiter-tail-program)
+* [The limits of a TAIL's power](#the-limits-of-a-tails-power)
+* [TAIL Examples](#tail-examples)
+* [CAT denominations, value, and retirement rules](#cat-denominations-value-and-retirement-rules)
+* [Conclusion](#conclusion)
+
+-----
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
-The CAT1 Standard is the first (and so far only) CAT Standard. CAT1 is a draft standard as of Nov 16, 2021. After a comment period from the Chia community, CAT1 will be finalized. This may include additional capabilities, and could result in some breaking changes to existing CATs. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
+The CAT1 Standard is the first (and so far only) CAT Standard. It was finalized in January 2022. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
 
 >**Reminder:**
 >
@@ -20,11 +33,11 @@ The CAT1 Standard is the first (and so far only) CAT Standard. CAT1 is a draft s
 
 CATs have the property of being "marked" in a way that makes them unusable as regular XCH. However, it is usually possible to "melt" CATs back into XCH later. CATs are often used as credits, or tokens - kind of like casino chips.
 
-The chialisp code that **all CATs** share is [here](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/cat.clvm "cat.clvm - the source code that all CATs share"). Without following this puzzle format, wallets will not be able to recognize a token as a CAT.
+The chialisp code that **all CATs** share is [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/cat.clvm "cat.clvm - the source code that all CATs share"). Without following this puzzle format, wallets will not be able to recognize a token as a CAT.
 
 The entire purpose of the code linked above is to ensure that the supply of a specific CAT never changes unless a specific set of “rules of issuance” is followed. Each CAT has its own unique rules of issuance, **which is the only distinction between different types of CATs**. These issuance rules take the form of an arbitrary Chialisp program that follows a specific structure.  We call that program the **Token and Asset Issuance Limitations (TAIL)**.
 
-The CAT layer is an [outer puzzle](https://chialisp.com/docs/common_functions#outer-and-inner-puzzles "Chilisp documentation for how to create outer and inner puzzles"), which contains two curried parameters:
+The CAT layer is an [outer puzzle](https://chialisp.com/docs/common_functions#outer-and-inner-puzzles "Chialisp documentation for how to create outer and inner puzzles"), which contains two curried parameters:
 1. An inner puzzle, which controls the CAT's ownership.
 2. The puzzlehash of a TAIL, which defines three aspects of a CAT:
    * The CAT's type. (Two CATs with the same TAIL are of the same type, even if they contain different inner puzzles.)
@@ -69,9 +82,9 @@ We use a group accounting trick to guarantee this, which we will cover in more d
   * If the announcement comes from the CAT layer, it is prepended with `0xcb`.
   * If the announcement comes from the inner puzzle, it is prepended with `0xca`.
 
-* **CATs pass a list of pre-calculated Truths to the inner puzzle**
+* **CATs pass a list of pre-calculated Truths to their TAIL**
 
-  Many inner puzzles require information such as their coin ID and puzzlehash. Luckily, we already calculate much of this information in the CAT layer, so we bundle it together as a pre-validated collection of **Truths**. We then pass these Truths into the inner puzzle as the first parameter in the solution.
+  Many TAILs require information that has already been calculated in the CAT layer, so we bundle it together as a pre-validated collection of **Truths**. We then pass these Truths into the TAIL as the first non-curried parameter in the solution.
 
   The Truths are:
   * My ID - The ID of the coin
@@ -85,6 +98,10 @@ We use a group accounting trick to guarantee this, which we will cover in more d
   * CAT Mod Hash - The hash of the CAT before anything is curried
   * CAT Mod Hash Hash - The hash of the CAT Mod Hash
   * CAT TAIL Program Hash - The hash of the TAIL program that was curried into the CAT
+
+* **CATs have the option to use hinting**
+
+  Hinting is a way to signal the CAT's type to a Chia wallet. The hint is typically an inner puzzle hash. For more info, see our [FAQ](/docs/faq#q-what-is-hinting "Hinting, explained").
 
 
 ## Spend Accounting
@@ -140,10 +157,15 @@ Several parameters must be passed to a TAIL's solution:
   * parent_is_cat - A flag indicating whether the parent has been validated as a CAT of the same type as this CAT
   * lineage_proof - (optional) Proof that the parent is a CAT of the same type as this CAT
   * delta - The Extra Delta value, as explained above
-  * inner_conditions - The conditions returned by the inner puzzle
+  * inner_conditions - The conditions returned by the inner puzzle (see below)
   * tail_solution - (optional) A list of opaque parameters
 
-Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if a "magic" condition is created in the inner puzzle. This "magic" condition is required to prevent people who can spend the TAIL from intercepting the spend and changing it against the spender's will.
+Although the TAIL is powerful, it is **not necessarily** run every time the coin is spent. The TAIL is run if a "magic" condition is created in the inner puzzle. This "magic" condition is required to prevent people who can spend the TAIL from intercepting the spend and changing it against the spender's will. The "magic" condition that triggers the TAIL to be run must look like this:
+
+`(51 <doesn't matter> -113 <TAIL puzzle> <TAIL solution>)`, where:
+  * `51` is the condition code for CREATE_COIN.
+  * `<doesn't matter>` can be anything, for example 0. (This would normally be a puzzlehash. It is ignored in this case.)
+  * `-113` is the "magic" amount, which signals to cat.clvm that the TAIL must be run. We chose to make this number negative because negative coins are invalid, so this would never be confused for a valid coin spend. Otherwise, there was no special reason for using -113.
 
 The TAIL should check diligently for the following things:
   * Is the Extra Delta minting or retiring any coins, and if so, do I approve?
@@ -163,17 +185,17 @@ It also means that if the set of rules is compromised, people may be able to min
 
 The CAT1 standard currently includes three example TAILs, though many more are possible.
 
-* [One-Time Minting](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Chialisp code for the One-Time Minting TAIL")
+* [One-Time Minting](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis_by_coin_id.clvm "Chialisp code for the One-Time Minting TAIL")
 
   The default way in which we currently issue CATs is with a TAIL that only allows coin creation from a specific coin ID. In Chia, coins can only be spent once, so this results in a one-time minting of a CAT. After the issuance, there will never be any more or less of the CAT, and no one will be able to run the same TAIL ever again.
 
-* [Everything With Signature](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/everything_with_signature.clvm "Chialisp code for the Everything With Signature TAIL")
+* [Everything With Signature](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/everything_with_signature.clvm "Chialisp code for the Everything With Signature TAIL")
   
   The polar opposite of the TAIL above is the ability of the creator to do whatever they want, as long as they provide a signature from their public key. This key is curried into the TAIL, which returns a single AGG_SIG_ME condition asking for a matching signature. If the creator can provide that signature, then the spend passes and any supply rules that were violated are ignored.
   
   Keep in mind that AGG_SIG_ME only allows the signature to work on a single coin. Therefore, the creator cannot release a signature for everyone to use; instead the creator must personally sign every TAIL execution.
 
-* [Delegated TAIL](https://github.com/Chia-Network/chia-blockchain/blob/protocol_and_cats_rebased/chia/wallet/puzzles/delegated_genesis_checker.clvm "Chialisp code for the Delegated TAIL")
+* [Delegated TAIL](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/delegated_tail.clvm "Chialisp code for the Delegated TAIL")
 
   This is the best balance of security and flexibility that we currently have. The Delegated TAIL is similar to the "Everything With Signature" example, except instead of requiring a signature from a specific coin, it requires a signature from a specific puzzlehash. When the puzzlehash has been signed, the creator may run that puzzle in place of the TAIL.
   
@@ -187,6 +209,63 @@ The CAT1 standard currently includes three example TAILs, though many more are p
   
   There is another consideration to make when you are signing new Delegated TAILs. Once you sign it and publish the signature, it is out there forever. Be careful what permissions you grant because you can never take them back.
   
-  
+## CAT denominations, value, and retirement rules
+
+Some design decisions regarding the granularity and denomination of CATs versus XCH:
+
+* Most Chia wallets choose to display their value in XCH. However, this is a purely cosmetic choice because Chia's blockchain only knows about mojos. One XCH is equal to one trillion (1,000,000,000,000) mojos.
+* In a similar vein, Chia Network has made the design decision to map 1 CAT to 1000 XCH mojos. This ratio will be the same for all CATs.
+* Theoretically, it would be possible to set the CAT:mojo ratio to something other than 1:1000 for a specific CAT, but we strongly recommend against doing this. The official Chia wallet will not support CATs with a ratio other than 1:1000. Additionally, if you created your own wallet with support for different ratios, users of this wallet would almost certainly be confused and accidentally spend too much or too little money, by multiple orders of magnitude. Please don't attempt this.
+* The melt value of a single token is 1000 mojos. This remains true regardless of the token's face value or its circulating supply.
+* A token's face value and its melt value are not necessarily correlated, let alone matched.
+
+By analogy, on multiple occasions the US Treasury has floated the idea of minting a $1 trillion coin made from platinum. Leaving aside the practical implications of doing this, the magnitude of the difference between this hypothetical coin's face value and melt value would be similar to that of CATs and XCH. The coin would be worth $1 trillion dollars, but if someone melted it and sold the platinum, they'd only receive a minuscule fraction of that amount.
+
+On the other end of the spectrum, consider the US penny. Its base metals (97.5% zinc and 2.5% copper) are worth around two cents. So in theory, if you could melt a penny into zinc and copper while minimizing your costs, you could sell these metals for a sizable profit.
+
+**The value of XCH and CATs**
+
+The face value of both XCH and CATs is market-driven -- the coins are worth whatever someone is willing to pay for them.
+
+If a CAT achieves a certain level of financial success, its face value will be greater than its melt value, just like the $1 trillion coin would be worth more than the metal it was minted from. For example:
+
+* A meme token could trade for one-millionth of an XCH, or 1,000,000 mojos. The token is worth very little money, but it's still 1000 times more valuable than its melt value of 1000 mojos.
+* A dollar-backed stablecoin will have a face value of $1. Its melt value will be 1000 mojos.
+* A highly successful token could even sell for more than one XCH -- there are no rules preventing this from happening. Its melt value would still be 1000 mojos.
+
+One real-world analogy for these three cases is that you could start with a piece of metal and mint a coin worth a fraction of a cent, or $1, or $10,000, or really any other value. But no matter the face value, the melt value would always remain the same.
+
+**CAT retirement use cases and rules**
+
+It's important to keep in mind that a CAT's TAIL (and nothing else) decides the rules for retirement, _if_ it allows retirement at all. For example, our single-mint TAIL only works with a specific coin, so it does not allow retirement. CATs that use this TAIL can never be melted, no matter how small their face value.
+
+Our delegated TAIL leaves it entirely up to the CAT's creator whether -- and how -- retirement can happen.
+
+Beyond our pre-packaged examples, TAILs with a wide range of functionality are also possible. To illustrate just some of this functionality, let's consider four potential reasons for retirement, along with who gets to retire the tokens:
+
+**1. Removal from circulation (must be the creator AND owner)**
+
+  For certain categories of CATs (for example, stablecoins and redemption tokens), retirement will be allowed, but only by the creator, who also must own the tokens. In the case of a stablecoin, the creator may need to remove some tokens from circulation if backing funds are reduced. For redemption tokens, the owner may exchange a token with the creator for something of value. The token no longer has any face value, so its creator will remove it from circulation.
+
+**2. Value exchange (must be the owner)**
+
+  Some CATs might allow their owners to melt tokens in order to gain something else of value, for example NFTs or other CATs. In fact, an entire marketplace could emerge from this concept. Some possible examples:
+
+  * The creator of a set of NFTs also creates a small issuance of "golden tickets" that can be used to pick out any individual NFT before the set is made publicly available.
+  * A celebrity mints some tokens that can be exchanged for something of non-monetary value, such as a meeting with said celebrity.
+  * The holder of a CAT must submit a "proof of melt" in order to enter a contest.
+
+**3. Ephemeral tokens (must be the creator OR a preset algorithm)**
+
+  A CAT could be created as a limited-time offer or as a game of Musical Chairs. In these cases, tokens would be melted _against the owner's will_. This could be done either at random or as a deliberate type of slashing. 
+
+**4. Melt-value retrieval (must be the owner)**
+
+  If a CAT is not financially successful, its melt value could exceed its face value, in the same way that the metals that compose a US penny are worth more than one cent. In this case, it might make financial sense for the CAT's owner to retire a token by melting it into 1000 XCH mojos. Because of the low melt value of tokens, this motivation for melting will likely be rare.
+
+In each of these examples, the rules of retirement for a specific CAT are clearly spelled out in the TAIL. If a TAIL allows for retirement against the owner's will, the owner will be able to ascertain this information before acquiring the token.
+
+
 ## Conclusion
+
 The CAT1 standard is an exciting addition to Chia's ecosystem. It allows near-limitless functionality for issuing fungible tokens. We're excited to see what kind of creative ideas the Chia community comes up with!

@@ -7,7 +7,7 @@ sidebar_label: High Level Tips - Security, Checking Arguments & Signatures
 In this video, Adam Kelly discusses security and checking arguments and signatures. 
 
 <figure class="video-container">
-<iframe src="//www.youtube.com/embed/T4noZyNJkFA" frameborder="0" allowfullscreen width="100%"></iframe>
+<iframe src="//www.youtube.com/embed/T4noZyNJkFA" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen width="100%"></iframe>
 </figure>
 
 ---
