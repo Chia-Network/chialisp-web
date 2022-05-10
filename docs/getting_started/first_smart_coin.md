@@ -3,7 +3,7 @@ id: first_smart_coin
 title: First Smart Coin
 ---
 
-By now, you should understand what Chialisp is and how you can use it to write simple programs and modules that can be run on the command-line. In this guide, we are going to write a simple **puzzle**, lock a coin with it, and finally spend the coin following the rules we specified.
+By now, you should understand what Chialisp is and how you can use it to write programs and modules that can be run on the command-line. In this guide, we are going to write a simple **puzzle**, use it to lock a **coin** with a password, and finally spend it. This example is insecure for a variety of reasons which will be explained after, but it's a good tool for learning how smart coins work.
 
 ## Prerequisites
 
@@ -15,31 +15,9 @@ While this guide can be followed on the command-line like the first, we recommen
 
 :::
 
-## Puzzles
+## Password Puzzle
 
-We've mentioned previously that Chialisp can be used to write puzzles, but you may be wondering what exactly a puzzle is. A puzzle is a special module that is used to lock a **coin** with a set of rules. These rules affect how and when they can be spent, and what happens when they are.
-
-## Coins
-
-Everything on the Chia Blockchain, including the standard transactions used to move money between wallets, is a coin. Coins are identified by their id, which is just a [sha256 hashed](https://en.wikipedia.org/wiki/Cryptographic_hash_function) representation of the following three components:
-
--   `parent_coin_id`, which is the id of the coin that created this one.
--   `puzzle_hash`, which is the hash of the puzzle used to spend the coin.
--   `amount`, which is the amount of money locked with the coin, in mojos (a trillionth of an XCH).
-
-A coin can be spent by revealing its puzzle and providing a solution. The solution is then passed to its puzzle to output a list of **conditions**.
-
-## Conditions
-
-A condition is a condition code followed by its arguments. They can do a variety of things, from the creation of new coins and requiring other spends to happen at the same time, to various assertions related to the state of the blockchain.
-
-A complete list of conditions can be found [here](https://chialisp.com/docs/coins_spends_and_wallets#conditions), but we will only be using one in this tutorial: condition `51`, or `CREATE_COIN`, creates a new coin with the given `puzzle_hash` and `amount` if the spend is valid. It is used to send money to another puzzle hash (which is analagous to an address).
-
-## Putting it Together
-
-We will now put those concepts to use to write a puzzle that will lock coins with a simple password. While this is insecure for a variety of reasons which will be explained after, it's a good example to try out on the Testnet just to get a feel for how coins work.
-
-Write the following Chialisp in a file named `password.clsp`:
+Write the following Chialisp code in a file named `password.clsp`:
 
 ```chialisp
 ;;; This puzzle locks coins with a password.
@@ -69,9 +47,58 @@ Write the following Chialisp in a file named `password.clsp`:
 3. If the hash of the password matches the curried in value, output the `conditions`.
 4. Otherwise, throw an error to prevent the spend from occurring.
 
-### But What is Currying?
+## Puzzles
+
+We've mentioned previously that Chialisp can be used to write puzzles, but you may be wondering what exactly a puzzle is. A puzzle is a special module that is used to lock a coin with a set of rules. These rules affect how and when they can be spent, and what happens when they are.
+
+### Currying
 
 Currying is similar to creating a constant in the puzzle, except that it can be redefined as something else either programmatically or on the command-line with every use. It's the ideal pattern when creating a general purpose puzzle that requires external information, since you wouldn't want to hard code it and change it every time.
+
+### Conditions
+
+A condition consists of a condition number followed by its arguments. They can do a variety of things, from the creation of new coins and requiring other spends to happen at the same time, to various assertions related to the state of the blockchain.
+
+A complete list of conditions can be found [here](https://chialisp.com/docs/coins_spends_and_wallets#conditions), but we will only be using one in this tutorial: condition `51`, or `CREATE_COIN`, creates a new coin with the given `puzzle_hash` and `amount` if the spend is valid. It is used to send money to another puzzle hash (which is analagous to an address).
+
+## Coins
+
+Everything on the Chia Blockchain, including the standard transactions used to move money between wallets, is a coin. Coins are identified by their id, which is just a [sha256 hashed](https://en.wikipedia.org/wiki/Cryptographic_hash_function) representation of the following three components:
+
+-   `parent_coin_id`, which is the id of the coin that created this one.
+-   `puzzle_hash`, which is the hash of the puzzle used to spend the coin.
+-   `amount`, which is the amount of money locked with the coin, in mojos (a trillionth of an XCH).
+
+Multiple coins can have the same puzzle hash, and a coin can create multiple children. The only limitation is that no two coins can have the same parent, puzzle hash, and amount, as their ids would be the same.
+
+A coin can be spent by revealing its puzzle and providing a solution. The solution is then passed to its puzzle, which outputs a list of conditions.
+
+## Putting it Together
+
+We will now use these concepts and the `password.clsp` file you just wrote to create and spend a coin.
+
+### Creating the Coin
+
+The first step is to curry the puzzle with the password of your choice and get its puzzle hash and serialized form:
+
+```bash
+opc -H $(cdv clsp curry password.clsp --args "password")
+```
+
+Write down both values this produces, the first one being the puzzle hash, and the second being the puzzle reveal. Make sure that you put `0x` in front of the puzzle hash whenever you use it.
+
+You can convert the puzzle hash to an address and send funds to it like so:
+
+```bash
+cdv encode --prefix txch "0xPuzzleHash"
+chia wallet send --amount 0.000000000001 --fee 0.00005 --address "txch1address"
+```
+
+This will send 1 mojo with a fee of 100 million mojos (the current recommended amount to get the transaction to go through quickly) to the address you specify, therefore creating your coin!
+
+### Spending the Coin
+
+Todo
 
 ## Potential Questions
 
@@ -90,3 +117,7 @@ A simple solution to that would be to use a new random password every time you c
 While there are other ways, the most common solution to that is to simply require a [digital signature](https://en.wikipedia.org/wiki/BLS_digital_signature) instead of a password. This is a cryptographically secure way of ensuring that the solution is not tampered with. If it is, the spend will no longer be valid. We will worry about this in a future guide, so you can safely ignore this concept for now.
 
 So, while a password example is a good idea for learning and testing purposes, it is certainly not feasible for real-world use.
+
+## Conclusion
+
+This is only scratching the surface of what's possible to do with smart coins on the Chia Blockchain. But it's a good foundation of understanding for more complicated examples to come. Every guide in this series builds off of the others, so make sure to take a break to let it soak in, and refresh your memory on concepts that you need to when you come back. We're looking forward to the awesome things you will build with this technology!

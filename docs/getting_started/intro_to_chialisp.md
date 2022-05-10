@@ -150,7 +150,7 @@ Which then simplifies like this:
 
 Everything that would normally be written using iteration, for example array modification, is instead written using recursion in Chialisp. It can be hard to understand at first, but eventually it will make more and more sense.
 
-## Keep Going!
+## Conclusion
 
 Hopefully this guide has been a good introduction into the world of Chialisp. We know it's a lot to take in, so feel free to take a break before continuing on with more guides or the documentation.
 
