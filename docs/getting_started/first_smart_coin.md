@@ -121,23 +121,25 @@ chia wallet get_address
 cdv decode "txch1WalletAddress"
 ```
 
-Then, get the solution in hex, with the password and your wallet puzzle hash:
-
-```bash
-opc "('password' ((51 0xWalletPuzzleHash 9900000000)))"
-```
-
 :::caution
 
 Make sure you put the `0x` prefix in front of the wallet's puzzle hash in this command. It isn't required for the other commands, but in this case it will compile as a string without it, which you don't want.
 
 :::
 
+Then, get the solution in hex, with the password and your wallet puzzle hash:
+
+```bash
+opc "('password' ((51 0xWalletPuzzleHash 9900000000)))"
+```
+
 This will produce a solution with the password that will create a new coin with the amount minus a fee of 100 million mojos. A coin will go back to your wallet when you spend the coin with this solution.
 
 We will not be using an aggregated signature for the spend bundle, so we will specify the signature equivalent of zero. Just paste the long value in the below spend bundle.
 
-Write the following in a file named `spendbundle.json`, with the information you gathered:
+Use the coin information you gathered with the `coinrecords` command, the `puzzle_reveal` from the first `opc` command you ran, and the `solution` from the second.
+
+Write the following in a file named `spendbundle.json`:
 
 ```json
 {
@@ -154,6 +156,12 @@ Write the following in a file named `spendbundle.json`, with the information you
     ],
     "aggregated_signature": "0xc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 }
+```
+
+Finally, run the following command to push the transaction to the Testnet:
+
+```bash
+cdv rpc pushtx spendbundle.json
 ```
 
 If all went well, this should spend the coin! Otherwise, retrace your steps carefully to try to find what went wrong. If you still can't figure it out, don't hesitate to ask us on our [Keybase](https://keybase.io/team/chia_network.public) and we will answer as soon as we can.
