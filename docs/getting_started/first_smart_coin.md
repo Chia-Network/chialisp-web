@@ -79,30 +79,88 @@ We will now use these concepts and the `password.clsp` file you just wrote to cr
 
 ### Creating the Coin
 
-The first step is to curry the puzzle with the password of your choice and get its puzzle hash and serialized form:
+:::danger
+
+Don't use a password that you use or plan to use for anything else, as this is not a secure smart coin. The most ideal choice for this is any number of random characters of your choice, such as `x7h2dDkE`. Just write it down for later.
+
+:::
+
+The first step is to curry the puzzle with the password's hash and get the puzzle hash and puzzle reveal:
 
 ```bash
-opc -H $(cdv clsp curry password.clsp --args "password")
+opc -H $(cdv clsp curry password.clsp --args $(run "(sha256 'password')"))
 ```
 
-Write down both values this produces, the first one being the puzzle hash, and the second being the puzzle reveal. Make sure that you put `0x` in front of the puzzle hash whenever you use it.
+Write down both values this produces, the first one being the puzzle hash, and the second being the puzzle reveal.
 
 You can convert the puzzle hash to an address and send funds to it like so:
 
 ```bash
-cdv encode --prefix txch "0xPuzzleHash"
-chia wallet send --amount 0.000000000001 --fee 0.00005 --address "txch1address"
+cdv encode --prefix txch "PuzzleHash"
+chia wallet send --amount 0.01 --fee 0.00005 --address "txch1Address"
 ```
 
-This will send 1 mojo with a fee of 100 million mojos (the current recommended amount to get the transaction to go through quickly) to the address you specify, therefore creating your coin!
+This will send 10 billion mojos with a fee of 100 million mojos (the current recommended amount to get the transaction to go through quickly) to the address you specify, therefore creating your coin!
 
 ### Spending the Coin
 
-Todo
+There's only one thing left to do, which is to spend the coin that we just created. We are going to be using a few RPC calls to do this.
+
+First, we need to find the coin that we just created by its puzzle hash:
+
+```bash
+cdv rpc coinrecords --only-unspent --by puzzlehash "PuzzleHash"
+```
+
+Take note of the values in the `coin` object in the output.
+
+Get the puzzle hash of your wallet address:
+
+```bash
+chia wallet get_address
+cdv decode "txch1WalletAddress"
+```
+
+Then, get the solution in hex, with the password and your wallet puzzle hash:
+
+```bash
+opc "('password' ((51 0xWalletPuzzleHash 9900000000)))"
+```
+
+:::caution
+
+Make sure you put the `0x` prefix in front of the wallet's puzzle hash in this command. It isn't required for the other commands, but in this case it will compile as a string without it, which you don't want.
+
+:::
+
+This will produce a solution with the password that will create a new coin with the amount minus a fee of 100 million mojos. A coin will go back to your wallet when you spend the coin with this solution.
+
+We will not be using an aggregated signature for the spend bundle, so we will specify the signature equivalent of zero. Just paste the long value in the below spend bundle.
+
+Write the following in a file named `spendbundle.json`, with the information you gathered:
+
+```json
+{
+    "coin_spends": [
+        {
+            "coin": {
+                "amount": 10000000000,
+                "parent_coin_info": "0xParentCoinInfo",
+                "puzzle_hash": "0xPuzzleHash"
+            },
+            "puzzle_reveal": "PuzzleReveal",
+            "solution": "Solution"
+        }
+    ],
+    "aggregated_signature": "0xc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+}
+```
+
+If all went well, this should spend the coin! Otherwise, retrace your steps carefully to try to find what went wrong. If you still can't figure it out, don't hesitate to ask us on our [Keybase](https://keybase.io/team/chia_network.public) and we will answer as soon as we can.
 
 ## Potential Questions
 
-Here are some questions you may have had when creating and spending the coin. If you have any others, feel free to ask on our [Keybase](https://keybase.io/team/chia_network.public) and we will answer as soon as we can.
+Here are some questions you may have had when creating and spending the coin.
 
 ### Why Allow Arbitrary Conditions?
 
