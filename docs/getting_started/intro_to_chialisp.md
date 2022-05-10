@@ -120,7 +120,13 @@ Put this in a file named `factorial.clsp`:
 )
 ```
 
-If you run this example with `brun $(run factorial.clsp) "(5)"`, it will compile it and run the result with a solution where `number` is 5. The result of this should be the factorial of that number, which is 120. There were a few new operators used in these examples. For more information, you should refer to the [operator reference](https://chialisp.com/docs/ref/clvm#the-built-in-opcodes). Below is a detailed explanation of how this works.
+Run this example with the following command:
+
+```bash
+brun "$(run factorial.clsp)" "(5)"
+```
+
+It will compile it and run the result with a solution where `number` is 5. The result of this should be the factorial of that number, which is 120. There were a few new operators used in these examples. For more information, you should refer to the [operator reference](https://chialisp.com/docs/ref/clvm#the-built-in-opcodes). Below is a detailed explanation of how this works.
 
 1. The module takes in a `number` parameter.
 2. The `factorial` function also takes in a `number` parameter.
