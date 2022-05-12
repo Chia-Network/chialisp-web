@@ -1,5 +1,10 @@
 module.exports = {
   someSidebar: {
+    'Getting Started': [
+      'getting_started/intro_to_chialisp',
+      'getting_started/setting_up_testnet',
+      'getting_started/first_smart_coin',
+    ],
     Chialisp: [
       'basics',
       'coins_spends_and_wallets',
@@ -11,17 +16,14 @@ module.exports = {
       'security',
       'debugging',
       'optimization',
-      'glossary'
+      'glossary',
     ],
-    CLVM: [
-      'ref/clvm',
-      'ref/serialization'
-    ],
+    CLVM: ['ref/clvm', 'ref/serialization'],
     Puzzles: [
       'puzzles/singletons',
       'puzzles/pooling',
       'puzzles/cats',
-      'puzzles/offers'
+      'puzzles/offers',
     ],
     Tutorials: [
       'tutorials/why_chia_is_great',
@@ -41,7 +43,7 @@ module.exports = {
       'tutorials/single_issuance_CAT',
       'tutorials/multiple_issuance_CAT',
       'tutorials/offers_gui_tutorial',
-      'tutorials/offers_cli_tutorial'
+      'tutorials/offers_cli_tutorial',
     ],
     FAQ: ['faq'],
   },
