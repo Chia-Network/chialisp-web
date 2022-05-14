@@ -61,7 +61,7 @@ As you can see, just about everything in this language is based on lists, hence 
 
 The `mod` operator creates a context for converting the usage of constants into a single expression. It's how you use more complicated features such as functions and include library files.
 
-Note that definitions inside the module will not have direct access to the solution values provided during execution, so values will have to be passed in manually as function parameters. In other words, there is no concept of a module [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
+Note that definitions inside the module will not have direct access to the [solution](https://chialisp.com/docs/glossary#solution) values provided during execution, so values will have to be passed in manually as function parameters. In other words, there is no concept of a module [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
 
 This module will add two arbitrary values together:
 
