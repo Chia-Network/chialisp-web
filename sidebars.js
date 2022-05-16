@@ -8,8 +8,8 @@ module.exports = {
             ],
             Chialisp: [
                 'high_level_lang',
-                'intro_chialisp_puzzles',
                 'common_functions',
+                'coins_spends_and_wallets',
                 'coin_lifecycle',
                 'security',
                 'debugging',
@@ -51,7 +51,6 @@ module.exports = {
             ],
             CLVM: [
                 'clvm/basics',
-                'clvm/coins_spends_and_wallets',
                 'clvm/dive_into_clvm',
                 'clvm/lang_reference',
                 'clvm/serialization',
