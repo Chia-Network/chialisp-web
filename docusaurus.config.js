@@ -25,17 +25,7 @@ module.exports = {
           label: 'Docs',
           position: 'left',
         },
-<<<<<<< HEAD
-  //      {to: 'blog', label: 'Blog', position: 'left'},
        
-=======
-        //      {to: 'blog', label: 'Blog', position: 'left'},
-        {
-          href: 'https://chialisp.com/training',
-          label: 'Training',
-          position: 'left',
-        },
->>>>>>> origin/main
         {
           href: 'https://chia.net',
           label: 'Chia.net',

@@ -149,20 +149,6 @@ Write the following in a file named `spendbundle.json`:
 
 ```json
 {
-<<<<<<< HEAD
-    "coin_spends": [
-        {
-            "coin": {
-                "amount": 10000000000,
-                "parent_coin_info": "0xParentCoinInfo",
-                "puzzle_hash": "0xPuzzleHash"
-            },
-            "puzzle_reveal": "PuzzleReveal",
-            "solution": "Solution"
-        }
-    ],
-    "aggregated_signature": "0xc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-=======
   "coin_spends": [
     {
       "coin": {
@@ -175,7 +161,6 @@ Write the following in a file named `spendbundle.json`:
     }
   ],
   "aggregated_signature": "0xc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
->>>>>>> origin/main
 }
 ```
 

@@ -1,10 +1,6 @@
 ---
 id: basics
-<<<<<<< HEAD:docs/clvm/clvm_basics.md
 title: CLVM Basics
-=======
-title: 1 - CLVM Basics
->>>>>>> origin/main:docs/basics.md
 ---
 
 CLVM is the compiled, minimal version of Chialisp that is used by the Chia network.
