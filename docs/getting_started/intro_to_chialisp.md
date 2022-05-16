@@ -39,7 +39,7 @@ If you are interested in learning more about how atoms are encoded, you can read
 
 ## Lists
 
-A **list** is a nested chain of [cons pairs](https://en.wikipedia.org/wiki/Cons) used to represent a set of values, which are also either atoms or lists. While you can manually create these cons pairs, and it is a good thing to know how to do, we will focus on the higher level concept of lists for now, since they are easier to use and more practical.
+A **list** is a nested chain of [cons pairs](https://en.wikipedia.org/wiki/Cons) used to represent a set of values, which are also either atoms or lists. While you can manually create these pairs, and it is a good thing to know how to do, we will focus on the higher-level concept of lists for now, since they are easier to use and more practical.
 
 The first item in an unquoted list is the operator, and the rest are its operands. The same goes for functions or macros and their arguments. If you want to express a list of values, you either have to use the `list` operator or quote the list.
 
@@ -59,9 +59,9 @@ As you can see, just about everything in this language is based on lists, hence 
 
 ## Modules
 
-The `mod` operator creates a context for converting the usage of constants into a single expression. It's how you use more complicated features such as functions and include library files.
+The `mod` operator creates a context for converting the usage of constants into a single expression. It's used for more complicated features such as creating functions and including library files.
 
-Note that definitions inside the module will not have direct access to the [solution](https://chialisp.com/docs/glossary#solution) values provided during execution, so values will have to be passed in manually as function parameters. In other words, there is no concept of a module [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
+Note that definitions inside the module will not have direct access to the [solution](/docs/glossary#solution) values provided during execution, so values will have to be passed in manually as function parameters. In other words, there is no concept of a module [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
 
 This module will add two arbitrary values together:
 
@@ -71,7 +71,7 @@ This module will add two arbitrary values together:
 )
 ```
 
-And this is an example of a constant and function definitions and their usage:
+And this is an example of defining a constant and a function, followed by their usage:
 
 ```chialisp
 ;;; Raises the number by one order of magnitude.
@@ -155,7 +155,7 @@ Which then simplifies like this:
 120
 ```
 
-Everything that would be written using iteration in a procedural language, for example array modification, is instead written using recursion in Chialisp. It can be hard to understand at first, but eventually it will make more and more sense.
+Everything that would normally be written using iteration in an imperative language, for example array modification, is instead written using recursion in Chialisp. It can be hard to understand at first, but eventually it will make more and more sense.
 
 ## Conclusion
 
