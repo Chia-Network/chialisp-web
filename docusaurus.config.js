@@ -10,7 +10,7 @@ module.exports = {
   themeConfig: {
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
-      theme: require('./src/theme/prism-light-theme-chialisp')
+      theme: require('./src/theme/prism-light-theme-chialisp'),
     },
     navbar: {
       title: 'Chialisp',
@@ -25,20 +25,28 @@ module.exports = {
           label: 'Docs',
           position: 'left',
         },
+<<<<<<< HEAD
   //      {to: 'blog', label: 'Blog', position: 'left'},
        
+=======
+        //      {to: 'blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://chia.net', 
-          label: 'Chia.net', 
-          position: 'left'
+          href: 'https://chialisp.com/training',
+          label: 'Training',
+          position: 'left',
+        },
+>>>>>>> origin/main
+        {
+          href: 'https://chia.net',
+          label: 'Chia.net',
+          position: 'left',
         },
         {
           href: 'https://github.com/Chia-Network/chialisp-web',
           label: 'GitHub',
           position: 'left',
-        }
+        },
       ],
-      
     },
     footer: {
       style: 'dark',
@@ -47,12 +55,12 @@ module.exports = {
           title: 'Docs',
           items: [
             {
-              label: 'CLVM Basics',
-              to: 'docs/',
+              label: 'Getting Started',
+              to: 'docs',
             },
             {
-              label: 'Coins, Spends and Wallets',
-              to: 'docs/coins_spends_and_wallets/',
+              label: 'CLVM Reference',
+              to: 'docs/ref/clvm',
             },
           ],
         },
@@ -109,15 +117,14 @@ module.exports = {
           routeBasePath: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/Chia-Network/chialisp-web/edit/main/',
+          editUrl: 'https://github.com/Chia-Network/chialisp-web/edit/main/',
         },
-//        blog: {
-//          showReadingTime: true,
-//          // Please change this to your repo.
-//          editUrl:
-//            'https://github.com/Chia-Network/chialisp-web/edit/main/blog/',
-//        },
+        //        blog: {
+        //          showReadingTime: true,
+        //          // Please change this to your repo.
+        //          editUrl:
+        //            'https://github.com/Chia-Network/chialisp-web/edit/main/blog/',
+        //        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -127,7 +134,7 @@ module.exports = {
   plugins: [
     // ... Your other plugins.
     [
-      require.resolve("@easyops-cn/docusaurus-search-local"),
+      require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         // ... Your options.
         // `hashed` is recommended as long-term-cache of index file is possible.
@@ -135,7 +142,7 @@ module.exports = {
         // For Docs using Chinese, The `language` is recommended to set to:
         // will add zh in when translations are ready
         // ```
-        language: ["en"],
+        language: ['en'],
         // ```
         // When applying `zh` in language, please install `nodejieba` in your project.
       },

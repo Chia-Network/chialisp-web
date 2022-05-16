@@ -1,6 +1,10 @@
 ---
 id: basics
+<<<<<<< HEAD:docs/clvm/clvm_basics.md
 title: CLVM Basics
+=======
+title: 1 - CLVM Basics
+>>>>>>> origin/main:docs/basics.md
 ---
 
 CLVM is the compiled, minimal version of Chialisp that is used by the Chia network.
@@ -32,15 +36,19 @@ When interpreting atoms as integers, it's important to remember that they are si
 
 Cons boxes are represented as a parentheses with two elements separated by a `.`.
 For example:
+
 ```chialisp
 (200 . "hello")
 
 ("hello" . ("world" . "!!!"))
 ```
+
 Are legal cons boxes, but the following is not.
+
 ```chialisp
 (200 . 300 . 400)
 ```
+
 A cons box always has two elements.
 However, we can chain cons boxes together to construct lists.
 
@@ -52,13 +60,16 @@ Lists are much more commonly used than cons boxes as they are more versatile.
 ```chialisp
 (200 300 "hello" "world")
 ```
+
 You can also nest lists.
+
 ```chialisp
 ("hello" ("nested" "list") ("world"))
 ```
 
 Remember a list is a representation of consecutive cons boxes terminated in a null atom `()`.
 The following expressions are equal:
+
 ```chialisp
 (200 . (300 . (400 . ())))
 
@@ -69,6 +80,7 @@ The following expressions are equal:
 
 To interpret an atom as a value, rather than a program, it needs to be quoted with `q`. Quoted values form a cons box where the first item is the `q` operator.
 For example, this program is just the value `100`:
+
 ```chialisp
 (q . 100)
 ```
@@ -89,7 +101,7 @@ Programs are a subset of lists which can be evaluated using CLVM. **A program is
 - **1. The first item in the list must be a valid operator**
 - **2. Every item after the first must be a valid program**
 
-Rule 2 is why literal values and non-program lists *must* be quoted using `q . `.
+Rule 2 is why literal values and non-program lists _must_ be quoted using `q . `.
 
 ```chialisp
 $ brun '(q . (80 90 100))'
@@ -102,7 +114,8 @@ And now that we know we can have programs inside programs we can create programs
 $ brun '(i (= (q . 50) (q . 50)) (+ (q . 40) (q . 30)) (q . 20))' '()'
 70
 ```
-*(More on the operators that are used later)*
+
+_(More on the operators that are used later)_
 
 Programs in CLVM tend to get built in this fashion.
 Smaller programs are assembled together to create a larger program.
@@ -161,8 +174,8 @@ $ brun '(/ (q . 20) (q . 11))'
 1
 ```
 
-*Note that `/` returns the* ***floored*** *quotient. CLVM is also different from most languages in that it floors to negative infinity rather than zero.
-This can create some unexpected results when trying to divide negative numbers.*
+_Note that `/` returns the_ **_floored_** _quotient. CLVM is also different from most languages in that it floors to negative infinity rather than zero.
+This can create some unexpected results when trying to divide negative numbers._
 
 ```chialisp
 brun '(/ (q . 3) (q . 2))'
@@ -225,7 +238,7 @@ $ brun '(= (q . 100) (q . 100))'
 1
 ```
 
-The exception to this rule is `0` because `0` is  exactly the same as `()`.
+The exception to this rule is `0` because `0` is exactly the same as `()`.
 
 ```chialisp
 $ brun '(= (q . 0) ())'
@@ -239,6 +252,7 @@ $ brun '(+ (q . 70) ())'
 
 The `i` operator takes the form `(i A B C)` and acts as an if-statement that
 evaluates to `B` if `A` is True and `C` otherwise.
+
 ```chialisp
 $ brun '(i (q . 0) (q . 70) (q . 80))'
 80
