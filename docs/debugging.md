@@ -47,7 +47,7 @@ It means that you have tried to traverse a tree with an index that is deeper tha
 
 
 What this is usually trying to convey is that something is wrong with a variable that you are trying to reference.
-Make sure to check your arguments are being properly passed from one function to the next and that all of your code is referencing them within the correct scope.
+Make sure to check that your arguments are being properly passed from one function to the next and that all of your code is referencing them within the correct scope.
 Maybe you called a function and didn't pass it enough parameters.
 Maybe the function was expecting a program and you gave it an atom.
 You can look in the verbose output to see what evaluations didn't finish to get a clue of what part might be failing.
@@ -56,7 +56,7 @@ You can look in the verbose output to see what evaluations didn't finish to get 
 
 With this error, clvm is trying to tell you that you have attempted to use `f` or `r` on an atom instead of a cons box.
 This is, again, usually due to a misalignment of arguments.
-Make sure you know what every variable is allowed to be when it gets passed to another function: an atom, a cons box, or either.
+Make sure that you know what every variable is allowed to be when it gets passed to another function: an atom, a cons box, or either.
 If it can be either, make sure you check if it is a cons before performing list operations on it. Sometimes this can be caused by evaluating a list of an unexpected length and running into `()` before you expect it.
 Also, double check that all of the evaluation in your program is happening at the right time.
 Perhaps a program was evaluated into an atom too soon.
