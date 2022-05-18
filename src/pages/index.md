@@ -35,9 +35,4 @@ We chose it due to a few unique features that make it remarkably well suited to 
 
 ## Getting Started
 
-If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](/docs) guide. Throughout this series you will write programs in the language, create smart coins on the Chia Blockchain, and spend them on the command-line.
-
---- 
-## [>> Get Started with Chialisp >>](/docs/getting_started/intro_to_chialisp)
-
----
+If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](/docs/getting_started/intro_to_chialisp) guide. Throughout this series you will write programs in the language, create smart coins on the Chia Blockchain, and spend them on the command-line.

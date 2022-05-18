@@ -4,22 +4,22 @@ title: Language Overview
 slug: /
 ---
 
-Chialisp is a high-level, LISP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus; it can never be changed. While CLVM powers Chialip, they share many fundemantal concepts. Click through the [CLVM basic](clvm/basics) to Learn more about CLVM. 
+Chialisp is a high-level, LISP-like language for implementing smart-contract capabilities called **puzzles** on Chia. Chialisp program compiles into Chialisp Virtual Machine (CLVM). CLVM is serialized and stored directly on the blockchain and is a matter of consensus; it can never be changed. While CLVM powers Chialip, they share many fundamental concepts. Click through the [CLVM basic](clvm/basics) to learn more about CLVM.
 
 If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/intro_to_chialisp) first.
 
 ## Values
-There is no variables in Chialisp. Values are stored in two different objects: [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects, the objects in a cons box can either be an atom or another cons box.
+There are no variables in Chialisp. Values are stored in two different objects: [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects; the objects in a cons box can either be an atom or another cons box.
 
 ### Atoms
 An atom is a string of bytes. These bytes can be interpreted both as a signed big-endian integer and a byte string, depending on the operator using it. 
 
-All atoms are immutable, therefore operators that perform computations on atoms create new atoms for the result.
+All atoms are immutable; therefore, operators that perform computations on atoms create new atoms for the result.
 
-Atoms can be printed in three different ways: decimal, hexadecimal and as a string. Hexadecimal values are prefixed by `0x`, and strings are quoted in `"`.
+Atoms can be printed in three different ways: decimal, hexadecimal, and string. Hexadecimal values are prefixed by `0x`, and strings are quoted in `"`.
 
 ### Cons Boxes
-Cons boxes are represented as a parentheses with two elements separated by a `.`.
+Cons boxes are represented as parentheses with two elements separated by a `.`.
 For example,
 ```chialisp
 (200 . "hello")
@@ -35,8 +35,8 @@ A cons box always has two elements. For example, the following is not a valid co
 
 ## Chialisp program
 
-The building blocks of Chialisp program are lists and opertors. A list is any space-separated, ordered group of one or more items inside parenthesis brackets. Strict defintion of list is a representation of consecutive cons boxes terminated in a null atom `()`. 
-Chialisp simplefied the representation by allowing omitting implied inner parenthesis brakets in the list. For example, the following expressions are equal:
+The building blocks of the Chialisp program are lists and operators. A list is any space-separated, ordered group of one or more items inside parenthesis brackets. A strict definition of a list is a representation of consecutive cons boxes terminated in a null atom `()`. 
+Chialisp simplified the representation by allowing omitting implied inner parenthesis brackets in the list. For example, the following expressions are equal:
 ```chialisp
 (200 . (300 . (400 . ())))
 
@@ -47,7 +47,7 @@ A Chialisp program is a list of [prefix notation](https://en.wikipedia.org/wiki/
 1. The first item in the list must be a valid operator
 2. Every item after the first must be a valid program
 
-Take arithematic addion operator '+' for example, the list (+ 2 3) computes the sum of integeger 2 and 3. 
+Take the arithmetic addition operator '+' for example; the list (+ 2 3) computes the sum of integers 2 and 3. 
 
 ```chialisp
 $ run '(+ 2 3)'
@@ -66,9 +66,9 @@ The arithmetic operators `+, -, *, /` and divmod treat their arguments as signed
 
 `/ (/ A B)` divides two integers and returns the floored quotient. Rounding:
 ```
-(/ 1  2) => ()
-(/ 2  2) => 1
-(/ 4  2) => 2
+(/ 1 2) => ()
+(/ 2 2) => 1
+(/ 4 2) => 2
 ```
 
 ### Control Flow
@@ -76,7 +76,7 @@ The arithmetic operators `+, -, *, /` and divmod treat their arguments as signed
 
 `if (if A B C)` takes exactly three operands A, B, C. If A is (), return C
 
-`if` does lazy evaluation form so we do not need to worry about the unused code path being evaluated.
+`if` does a lazy evaluation form, so we do not need to worry about the unused code path being evaluated.
 
 ```chialisp
 $ run '(if 1 (q . "success") (x))' '(100)'
@@ -91,13 +91,13 @@ FAIL: clvm raise ()
 
 
 `=` equal.
-  `(= A B)` returns 1 if A and B are both atoms and both equal. Otherwise (). Do not use this to test if two programs are identical. That is determined by their tree hash. Nil tests equal to zero, but nil is not equal to a single zero byte.
+ `(= A B)` returns 1 if A and B are both atoms and both equal. Otherwise (). Do not use this to test if two programs are identical. That is determined by their tree hash. Nil tests equal to zero, but nil is not equal to a single zero byte.
 
 `>` *greater than.
  `(> A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise (). (> A B) means A > B in infix syntax.
 
 `>s` greater than bytes.
-  `(>s A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise (). Compare to strcmp. (>s "a" "b") => ()
+ `(>s A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise (). Compared to strcmp. (>s "a" "b") => ()
 
 `not` `(not A)` returns 1 if A evaluates to (). Otherwise, returns ().
 
@@ -119,13 +119,13 @@ $ run '(list 100 "test" 0xdeadbeef)'
 ### qq 
 
 `qq` allows us to quote something with selected portions being evaluated inside by using `unquote`.
-The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute out sections of predetermined code.
+The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute sections of predetermined code.
 
 Suppose we are writing a program that returns another coin's puzzle.
 We know that a puzzle takes the form: `(c (c (q . 50) (c (q . 0xpubkey) (c (sha256 2) (q . ())))) (a 5 11))`
-However we will want to change 0xpubkey to a value passed to us through our solution.
+However, we will want to change 0xpubkey to a value passed to us through our solution.
 
-Note: `@` allows us to access the arguments in the higher level language (`@` == 1)
+Note: `@` allows us to access the arguments in the higher-level language (`@` == 1)
 
 ```chialisp
 $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11)))' '(0xdeadbeef)'
@@ -139,34 +139,34 @@ $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11))
 ## Program Structure
 
 ### mod
-`(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the rest are the higher level script which is to be compiled.
+`(mod A B)` takes two or more parameters. The first is used to name parameters that are passed in, and the rest are the higher-level script that is to be compiled.
 
-Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program
+Below we name our arguments `arg_one` and `arg_two` and then access `arg_one` inside our main program.
 
 ```chialisp
 $ run '(mod (arg_one arg_two) (list arg_one))'
 (c 2 ())
 ```
 
-As you can see it returns our program in compiled lower level form.
+As you can see, it returns our program in compiled lower level form.
 
 ```chialisp
 $ brun '(c 2 ())' '(100 200 300)'
 (100)
 ```
 
-You may be wondering what other parameters `mod` takes, between variable names and source code.
+You may be wondering what other parameters `mod` takes between variable names and source code.
 
 
 ### include
 
-If you want to import some functionality that you use frequently without having to copy/paste it between files, you can use `include`:
+If you want to import some functionality that you frequently use without having to copy/paste it between files, you can use `include`:
 
 ```chialisp
 ;; condition_codes.clvm
 (
-  (defconstant AGG_SIG_ME 50)
-  (defconstant CREATE_COIN 51)
+ (defconstant AGG_SIG_ME 50)
+ (defconstant CREATE_COIN 51)
 )
 ```
 
@@ -174,68 +174,68 @@ If you want to import some functionality that you use frequently without having 
 ;;main.clvm
 (mod (pubkey msg puzzle_hash amount)
 
-  (include "condition_codes.clvm")
+ (include "condition_codes.clvm")
 
-  (list (list AGG_SIG_ME pubkey msg) (list CREATE_COIN puzzle_hash amount))
+ (list (list AGG_SIG_ME pubkey msg) (list CREATE_COIN puzzle_hash amount))
 
 )
 ```
 
 When running main.clvm with `run`, make sure to use the `-i` option to specify in which directories to look for includable files.
-If our condition_codes.clvm file was in the directory `./libraries/chialisp/` then you would pass that to `run` so that it knows where to find it:
+If our condition_codes.clvm file was in the directory `./libraries/chialisp/`, then you would pass that to `run` so that it knows where to find it:
 
 ```
 run -i ./libraries/chialisp/ main.clvm
 ```
 
-Also note that the include files are a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.
-You can then use any of those constants/functions when writing your program, without having to import each one individually.
+Also, note that the included files are in a special format. Everything that is defined goes into a single set of parentheses like in condition_codes.clvm above.
+You can then use any of those constants/functions when writing your program without having to import each one individually.
 The compiler will only include things that you use, so don't worry about including a large library file when attempting to optimize the size of your program.
 
 ### Functions, Macros and Constants
 
-In the higher level language we can define functions, macros, and constants before our program by using `defun`, `defun-inline`, `defmacro` and `defconstant`.
+In the higher-level language we can define functions, macros, and constants before our program by using `defun`, `defun-inline`, `defmacro`, and `defconstant`.
 
 We can define as many of these as we like before the main source code.
-Usually a program will be structured like this:
+Usually, a program will be structured like this:
 
 ```chialisp
 (mod (arg_one arg_two)
-  (defconstant const_name value)
-  (defun function_name (parameter_one parameter_two) *function_code*)
-  (defun another_function (param_one param_two param_three) *function_code*)
-  (defun-inline utility_function (param_one param_two) *function_code*)
-  (defmacro macro_name (param_one param_two) *macro_code*)
+ (defconstant const_name value)
+ (defun function_name (parameter_one parameter_two) *function_code*)
+ (defun another_function (param_one param_two param_three) *function_code*)
+ (defun-inline utility_function (param_one param_two) *function_code*)
+ (defmacro macro_name (param_one param_two) *macro_code*)
 
-  (main *program*)
+ (main *program*)
 )
 ```
 
 A few things to note:
 
-- Functions can reference themselves in their code but macros and inlines cannot as they are inserted at compile time.
-- Both functions and macros can reference other functions, macros and constants.
+- Functions can reference themselves in their code, but macros and inlines cannot as they are inserted at compile time.
+- Both functions and macros can reference other functions, macros, and constants.
 - Macros that refer to their parameters must be quasiquoted with the parameters unquoted
 - Be careful of infinite loops in macros that reference other macros.
 - Comments can be written with semicolons
-- Inline functions are generally more cost effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
+- Inline functions are generally more cost-effective than regular functions except when reusing calculated arguments: `(defun-inline foo (X) (+ X X)) (foo (* 200 300))` will perform the expensive multiplication twice
 
 
 ### Example: Factorial
 
 ```chialisp
 (mod (arg_one)
-  ; function definitions
-  (defun factorial (input)
-    (if (= input 1) 1 (* (factorial (- input 1)) input))
-  )
+ ; function definitions
+ (defun factorial (input)
+ (if (= input 1) 1 (* (factorial (- input 1)) input))
+ )
 
-  ; main
-  (factorial arg_one)
+ ; main
+ (factorial arg_one)
 )
 ```
 
-We can save these files to .clvm files which can be run from the command line.
+We can save these files to .clvm files, which can be run from the command line.
 Saving the above example as `factorial.clvm` allows us to do the following.
 
 ```chialisp
@@ -248,30 +248,30 @@ $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 (a 2 
 
 ### Example: Squaring a List
 
-Now lets do an example which uses macros as well.
-When writing a macro it must be quasiquoted with the parameters being unquoted.
+Now let's do an example that uses macros as well.
+When writing a macro, it must be quasiquoted with the parameters being unquoted.
 
 We can also take this time to show another feature of the compiler.
-You can name each parameter in a list or you can name the list itself.
-This works at any place where you name parameters, and allows you to handle lists where you aren't sure of the size.
+You can name each parameter in a list or name the list itself.
+This works at any place where you name parameters and allows you to handle lists where you aren't sure of the size.
 
 Here we define a macro to square a parameter and then a function to square a list.
 
 ```chialisp
 (mod (args)
 
-  (defmacro square (input)
-    (qq (* (unquote input) (unquote input)))
-  )
+ (defmacro square (input)
+ (qq (* (unquote input) (unquote input)))
+ )
 
-  (defun sqre_list (my_list)
-    (if my_list
-      (c (square (f my_list)) (sqre_list (r my_list)))
-      my_list
-    )
-  )
+ (defun sqre_list (my_list)
+ (if my_list
+ (c (square (f my_list)) (sqre_list (r my_list)))
+ my_list
+ )
+ )
 
-  (sqre_list args)
+ (sqre_list args)
 )
 ```
 
@@ -284,4 +284,3 @@ $ run square_list.clvm
 $ brun '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i 5 (q 4 (* 9 9) (a 2 (c 2 (c 13 ())))) (q . 5)) 1) 1))' '((10 9 8 7))'
 (100 81 64 49)
 ```
-
