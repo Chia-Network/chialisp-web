@@ -124,24 +124,23 @@ And in this example, an atom that was read in as an integer is appended to a str
 
 ### Atoms as Byte Arrays
 
-The atom is treated as an array of bytes, with a length. No specific semantics are assumed, except as specified in the instruction.
-
-### Unsigned Integer
-
-An unsigned integer of arbitrary length. If more bits are required to perform an operation with atoms of different length, the atom is virtually extended with zero bytes to the left.
+The atom is an array of bytes, with a length. No specific semantics are assumed, except as specified in the instruction.
 
 ### Signed Integer
 
-The byte array behaves as a two's complement signed integer. The most significant bit denotes a negative number. The underlying representation matters, because the individual bytes are viewable through other operations.
+Arithmetic operations will interpret its operands as two's complement, big endian, signed integers. The most significant bit denotes a negative number. In order to represent a positive integer where the most significant bit aligns with the most significant bit in the first byte need a 0-byte prefix in order to be interpreted as positive.
 
-This type has the potential for multiple representations to be treated as the same value. For example, 0xFF and 0xFFFF both encode `-1`. Integer arithmetic operations that treat returned atoms as signed integers will return the minimal representation for negative numbers, eg. `0xFF` for `-1`
+Said another way, if a positive integer's first byte is >= `0x80` then it will be prepended with a `0x00`. Without that prepended byte, a positive value would appear negative in the case that the high bit is set.
 
-These integers are byte-aligned. For example, `0xFFF` is interpreted as the two bytes `0x0F`,`0xFF`, with value `4095`.
+e.g. `0xFF` means -1 and `0x00FF` means 255.
 
-This can also cause unexpected representations of numbers when they are expected to be interpreted as strings..
-
-If a positive integer's first byte is >= `0x80` (the most significant bit is 1) then it will be prepended with a `0x00` when the operator output type is a signed integer. Without that prepended byte, a positive value would appear negative in the case that the high bit is set.
 You are likely to encounter this when using the output of an int operation as the input of a string operation.
+
+The integer representation matters because there are operands that treats atoms as byte arrays, e.g. sha256hash.
+
+Since atoms are of arbitrary length, the same value can be represented by many different atoms. For example, `0xFF` and `0xFFFF` both represent `-1`. Likewise, `0x01` and `0x0001` both represent `1`.
+
+Arithmetic operations, returning integers, always return the shortest representation for numbers. eg. `0xFF` for `-1`
 
 ### BLS Point
 
