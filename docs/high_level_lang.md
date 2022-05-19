@@ -9,10 +9,10 @@ Chialisp is a high-level, LISP-like language for implementing smart-contract cap
 If you are new to Chialisp, check out the [Chialisp Getting Started Guides](getting_started/intro_to_chialisp) first.
 
 ## Values
-There are no variables in Chialisp. Values are stored in two different objects: [atoms](https://www.gnu.org/software/emacs/manual/html_node/eintr/Lisp-Atoms.html#:~:text=Technically%20speaking%2C%20a%20list%20in,nothing%20in%20it%20at%20all.) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects; the objects in a cons box can either be an atom or another cons box.
+There are no variables in Chialisp. Values are stored in two different objects: [atoms](https://en.wikipedia.org/wiki/Lisp_(programming_language)#Atoms) and [cons boxes](https://en.wikipedia.org/wiki/Cons). A cons box is a pair of objects; the objects in a cons box can either be an atom or another cons box.
 
 ### Atoms
-An atom is a string of bytes. These bytes can be interpreted both as a signed big-endian integer and a byte string, depending on the operator using it. 
+An atom is an array of bytes. These bytes can be interpreted both as a signed big-endian integer or a byte string, depending on the operator using it. 
 
 All atoms are immutable; therefore, operators that perform computations on atoms create new atoms for the result.
 
@@ -50,32 +50,33 @@ A Chialisp program is a list of [prefix notation](https://en.wikipedia.org/wiki/
 Take the arithmetic addition operator '+' for example; the list (+ 2 3) computes the sum of integers 2 and 3. 
 
 ```chialisp
-$ run '(+ 2 3)'
+run '(+ 2 3)'
 5
 ```
 
 ## Operators 
-### Arithematic Operators
+### Arithematic 
 The arithmetic operators `+, -, *, /` and divmod treat their arguments as signed integers.
 
-`+ (+ a0 a1 ...)` takes any number of integer operands and sums them. If given no arguments, zero is returned.
+| Operator | Syntax   | Description|
+| :---: | ---------- |-------------- |
+| <pre>+</pre> |  <pre>(+ a0 a1 ...)</pre>| It takes any number of integer operands and sums them. If given no arguments, zero is returned. |
+| <pre>-</pre>| <pre>(- a0 a1 ...)</pre> | It takes one or more integer operands and adds a0 to the negative of the rest. Giving zero arguments returns 0.|
+| <pre>*</pre>|  <pre>(* a0 a1 ...)</pre> | It takes any number of integer operands and returns the product.|
+|<pre>/</pre>|<pre>(/ A B)</pre> | It divides two integers and returns the floored quotient. Rounding for `/`: <ul> <li>`(/ 1 2)` => ()</li> <li>`(/ 2 2)` => 1</li> <li>`(/ 4 2)` => 2 </li></ul> The treatment of negative dividend and divisors is as follows:<ul><li>`(/ -1 1)` => -1</li><li>`(/ 1 -1)` => -1</li><li>`(/ -1 -1)` =>  1</li></ul> A division with a remainder always rounds towards negative infinity, not toward zero:<ul><li>`(/ -3 2)` => -2</li><li>`(/ 3 2)` => 1</li></ul> This means that `-a / b` is not always equal to `-(a / b)` |
+|<pre>divmod</pre>|<pre>(divmod A B)</pre> | Ittakes two integers and returns a cons-box containing the floored quotient and the remainder. | 
 
-`- (- a0 a1 ...)` takes one or more integer operands and adds a0 to the negative of the rest. Giving zero arguments returns 0.
-
-`* (* a0 a1 ...)` takes any number of integer operands and returns the product.
-
-`/ (/ A B)` divides two integers and returns the floored quotient. Rounding:
-```
-(/ 1 2) => ()
-(/ 2 2) => 1
-(/ 4 2) => 2
-```
+:::note
+Once Chia’s blockchain reaches a height of 2,300,000 (around July 22, 2022), all nodes running version 1.3 or greater will reject all spends which attempt to use the div operator for negative division. [Learn more about the change.](https://www.chia.net/2022/03/04/divided-we-fork.en.html)
+:::
 
 ### Control Flow
-#### Condition
+| Operator | Syntax   | Description|
+| :---: | ---------- |-------------- |
+|<pre>if</pre> | <pre> (if A B C) </pre> |If A is (), return C, otherwise return B. `if` condition takes exactly three operands .|
+|<pre> x</pre> | <pre>(x X Y ...)</pre> | `x` raises exception and immediately fails execution, with the argument list passed up into the (python) exception. No other CLVM instructions are run after this instruction is evaluated It takes an arbitrary number of arguments (even zero). |
 
-`if (if A B C)` takes exactly three operands A, B, C. If A is (), return C
-
+:::note
 `if` does a lazy evaluation form, so we do not need to worry about the unused code path being evaluated.
 
 ```chialisp
@@ -85,25 +86,17 @@ $ run '(if 1 (q . "success") (x))' '(100)'
 $ run '(if 0 (q . "success") (x))' '(100)'
 FAIL: clvm raise ()
 ```
+:::
 
-
-`x` raise exception `(x X Y ...)` takes an arbitrary number of arguments (even zero). Immediately fail, with the argument list passed up into the (python) exception. No other CLVM instructions are run after this instruction is evaluated.
-
-
-`=` equal.
- `(= A B)` returns 1 if A and B are both atoms and both equal. Otherwise (). Do not use this to test if two programs are identical. That is determined by their tree hash. Nil tests equal to zero, but nil is not equal to a single zero byte.
-
-`>` *greater than.
- `(> A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise (). (> A B) means A > B in infix syntax.
-
-`>s` greater than bytes.
- `(>s A B)` returns 1 if A and B are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise (). Compared to strcmp. (>s "a" "b") => ()
-
-`not` `(not A)` returns 1 if A evaluates to (). Otherwise, returns ().
-
-`all` `(all A B ...)` takes an arbitrary number of arguments (even zero). Returns () if any of the arguments evaluate to (). Otherwise, returns 1.
-
-`any` `(any A B ...)` takes an arbitrary number of arguments (even zero). Returns 1 if any of the arguments evaluate to something other than (). Otherwise, returns ().
+### Comparison
+| Operator | Syntax   | Description|
+| :---: | ---------- |-------------- |
+|<pre>=</pre> |<pre>(= A B)</pre>| `=` equal returns 1 if A and B are both atoms and both equal. Otherwise (). Do not use this to test if two programs are identical. That is determined by their tree hash. Nil tests equal to zero, but nil is not equal to a single zero byte.|
+|<pre>></pre> | <pre>(> A B)</pre>| Returns 1 if A and B are both atoms and A is greater than B, interpreting both as two's complement signed integers. Otherwise (). (> A B) means A > B in infix syntax.|
+|<pre>>s</pre> |<pre>(>s A B)</pre> |Returns 1 if A and B are both atoms and A is greater than B, interpreting both as an array of unsigned bytes. Otherwise (). Compared to strcmp. (>s "a" "b") => ()|
+|<pre>not</pre>|<pre>(not A)</pre>| Returns 1 if A evaluates to (). Otherwise, returns ().|
+|<pre>all</pre> |<pre>(all A B ...)</pre> |Takes an arbitrary number of arguments (even zero). Returns () if any of the arguments evaluate to (). Otherwise, returns 1.|
+|<pre> any</pre> |<pre>(any A B ...)</pre> |Takes an arbitrary number of arguments (even zero). Returns 1 if any of the arguments evaluate to something other than (). Otherwise, returns ().|
 
 ### Constructing a List
 `list` takes any number of parameters and returns them put inside a list.
@@ -116,7 +109,7 @@ $ run '(list 100 "test" 0xdeadbeef)'
 
 
 
-### qq 
+### Quote 
 
 `qq` allows us to quote something with selected portions being evaluated inside by using `unquote`.
 The advantages of this may not be immediately obvious but are extremely useful in practice as it allows us to substitute sections of predetermined code.
@@ -132,9 +125,6 @@ $ run '(qq (c (c (q . 50) (c (q . (unquote (f @))) (c (sha256 2) ()))) (a 5 11))
 
 (c (c (q . 50) (c (q . 0xdeadbeef) (c (sha256 2) ()))) (a 5 11))
 ```
-
-
-
 
 ## Program Structure
 
