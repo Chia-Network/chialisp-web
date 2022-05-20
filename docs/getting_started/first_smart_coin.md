@@ -65,15 +65,9 @@ A complete list of conditions can be found [here](https://chialisp.com/docs/coin
 
 Everything on the Chia Blockchain, including the standard transactions used to move money between wallets, is a coin. Coins are identified by their id, which is just a [sha256 hashed](https://en.wikipedia.org/wiki/Cryptographic_hash_function) representation of the following three components:
 
-<<<<<<< HEAD
--   `parent_coin_id`, which is the id of the coin that created this one.
--   `puzzle_hash`, which is the hash of the puzzle used to spend the coin.
--   `amount`, which is the amount of money locked with the coin, in mojos (a trillionth of an XCH).
-=======
 - `parent_coin_id`, which is the id of the coin that created this one.
 - `puzzle_hash`, which is the hash of the puzzle used to spend the coin.
 - `amount`, which is the amount of money locked with the coin, in mojos (a trillionth of an XCH).
->>>>>>> origin/main
 
 Multiple coins can have the same puzzle hash, and a coin can create multiple children. The only limitation is that no two coins can have the same parent, puzzle hash, and amount, as their ids would be the same.
 
