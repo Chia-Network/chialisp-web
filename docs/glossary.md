@@ -1,6 +1,6 @@
 ---
 id: glossary
-title: The Great Chia Glossary
+title: Glossary
 ---
 
 This guide will act as a glossary for many of the concepts utilized in Chia.
@@ -47,7 +47,7 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 
 <a id="chialisp" className="glossary-anchor" aria-hidden="true"></a>
 
-* **Chialisp** - Chialisp is the Turing-complete functional language which the puzzles for spending coin are programmed in. For more information see our [CLVM Guide](/docs/)
+* **Chialisp** - Chialisp is the Turing-complete functional language which the puzzles for spending coin are programmed in. For more information see our [Chialisp Guide](/docs)
 
 <a id="puzzle" className="glossary-anchor" aria-hidden="true"></a>
 
@@ -59,7 +59,7 @@ Unspents (UTXO set/unspent transaction output set) - This is the set of all unsp
 
 <a id="clvm" className="glossary-anchor" aria-hidden="true"></a>
 
-* **CLVM** - The CLVM is the Chialisp Virtual Machine which is the sandboxed environment that puzzles and solutions are run in. The CLVM only runs the compiled minimal version of Chialisp, though a compiler can convert the higher level Chialisp to the compiled minimal version. See more about that [here](/docs/high_level_lang)
+* **CLVM** - The CLVM is the Chialisp Virtual Machine which is the sandboxed environment that puzzles and solutions are run in. The CLVM only runs the compiled minimal version of Chialisp, though a compiler can convert the higher level Chialisp to the compiled minimal version. See more about that [here](/docs/clvm/basics)
 
 <a id="aggregated-signature" className="glossary-anchor" aria-hidden="true"></a>
 

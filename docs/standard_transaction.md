@@ -1,6 +1,6 @@
 ---
 id: standard_transaction
-title: 6 - The Standard Transaction
+title: The Standard Transaction
 ---
 
 You should now be well versed in a number of ways to lock up a coin using a Chialisp puzzle.

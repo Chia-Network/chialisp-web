@@ -1,7 +1,6 @@
 ---
 id: faq
-title: Chialisp and CLVM FAQ
-sidebar_label: Chialisp and CLVM FAQ
+title:  FAQ
 ---
 * [Why is my number being evaluated to `()`, a.k.a. `nil`?](#q-why-is-my-number-being-evaluated-to--aka-nil)
 * [Is it possible to store data or maintain state in smart coins?](#q-is-it-possible-to-store-data-or-maintain-state-in-smart-coins)

@@ -35,38 +35,4 @@ We chose it due to a few unique features that make it remarkably well suited to 
 
 ## Getting Started
 
-If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](/docs) guide. Throughout this series you will write programs in the language, create smart coins on the Chia Blockchain, and spend them on the command-line.
-
-## Chia Asset Tokens (CATs)
-
-[CATs](https://chialisp.com/docs/puzzles/cats) are tokens that you can create and/or trade on Chia's blockchain. The issuers of these tokens create the rules for their minting and retirement, using a "Token and Asset Issuance Limiter" (TAIL). The owners of these tokens have control over how they may be spent. CATs can be implemented as stable coins, stock issuance tokens, voting shares, or anything else you can think of. For more info, you can read about the nomenclature of [CATs](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
-
-## Singletons
-
-Another fascinating application of Chialisp is the creation of **singletons**.
-Singletons are a type of coin that there is verifiably only one of.
-When you can verify that there is only one of a coin, you can enable some interesting functionality.
-The Chia Network pooling protocol uses this to verify that you have committed your plots to a pool and have not promised them to any other pool.
-You can also make NFTs, decentralized identities, and anything else that could make use of a unique coin.
-
-## DeFi
-
-Chialisp is also capable of any of the popularly available decentralized finance tools you find on other blockchains today.
-One feature that enables this is the fact that coins can communicate with each other when they are spent.
-You can have market makers announce prices and have other coins utilize those prices in their own logic when they are spent.
-The natural interoperability that Chialisp provides is also relevant because it will allow participants to layer and leverage many different DeFi tools all at once!
-
-## Introductory Material
-
-- The introductory post on [Chialisp](https://www.chia.net/2019/11/27/chialisp.en.html)
-- Introduction to our [MVP of Coloured coins](https://www.chia.net/2020/04/29/coloured-coins-launch.en.html)
-- A Vision for [DeFi in Chia](https://www.chia.net/2021/07/13/a-vision-for-defi-in-chia.en.html)
-
-## Developer Documentation
-
-- [Chialisp Compiler Repository](https://github.com/Chia-Network/clvm)
-- [A video introduction to developing in Chialisp](https://chialisp.com/docs/tutorials/developing_applications)
-- [clvm_tools for developing in Chialisp](https://github.com/Chia-Network/clvm_tools)
-- [CLVM Basics](/docs/)
-- [Glossary of Chialisp terms](/docs/glossary/)
-- [Lower Level Language Reference Document](/docs/ref/clvm/)
+If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](/docs/getting_started/intro_to_chialisp) guide. Throughout this series you will write programs in the language, create smart coins on the Chia Blockchain, and spend them on the command-line.

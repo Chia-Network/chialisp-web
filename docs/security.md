@@ -1,6 +1,6 @@
 ---
 id: security
-title: 8 - Security
+title: Security
 ---
 
 When writing Chialisp, security concerns should be at the front of your mind.

@@ -1,11 +1,11 @@
 ---
 id: basics
-title: 1 - CLVM Basics
+title: CLVM Basics
 ---
 
 CLVM is the compiled, minimal version of Chialisp that is used by the Chia network.
 Chialisp compiles into CLVM so it's important to understand how it works.
-The full set of operators is documented [here](/docs/ref/clvm).
+The full set of operators is documented [here](/docs/clvm/lang_reference).
 
 This guide will cover the basics of the language and act as an introduction to the structure of programs.
 You should be able to follow along by running a version of [clvm_tools](https://github.com/Chia-Network/clvm_tools).
