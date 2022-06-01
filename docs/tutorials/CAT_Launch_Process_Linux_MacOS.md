@@ -138,7 +138,7 @@ To get started, you will create a single-mint CAT. This is the default way to is
 
 A CAT with a single-mint TAIL will be useful for anyone who wants to create a token with a guaranteed fixed supply.
 
-You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Single-mint TAIL").
+You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis_by_coin_id.clvm "Single-mint TAIL").
 
 1. Find a coin to mint, and create and push a new spendbundle:
 
