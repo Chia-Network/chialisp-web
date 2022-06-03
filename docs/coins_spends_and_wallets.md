@@ -86,6 +86,7 @@ Conditions are split into two categories: *"this spend is only valid if X"* and 
 
 Here is the complete list of conditions along with their format and behaviour.
 
+* **REMARK - [1] - (1 (remark remark ...))**: This condition will always be true. It takes an argument list, which is ignored. This could be useful for magic conditions, or for optionally prepending something. It could also be used for other forms of communication between puzzles.
 * **AGG_SIG_UNSAFE - [49] - (49 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the given public key of the given message. This is labeled unsafe because if you sign a message once, any other coins you have that require that signature may potentially also be unlocked. It's probably better just to use AGG_SIG_ME because of the natural entropy introduced by the coin ID.
 * **AGG_SIG_ME - [50] - (50 pubkey message)**: This spend is only valid if the attached aggregated signature contains a signature from the specified public key of that message concatenated with the coin's ID and the network's genesis challenge.
 * **CREATE_COIN - [51] - (51 puzzlehash amount (memo memo ...))**: If this spend is valid, then create a new coin with the given puzzlehash and amount. The final argument list is used for hinting. See our [FAQ](/docs/faq#q-what-is-hinting "Hinting, explained") for more info.
