@@ -54,7 +54,7 @@ And here is an operator:
 (+ 2 3)
 ```
 
-As you can see, just about everything in this language is based on lists, hence the name Lisp (an abbreviation for List Processor). You can see a full list of built-in operators [here](https://chialisp.com/docs/ref/clvm#the-built-in-opcodes).
+As you can see, just about everything in this language is based on lists, hence the name Lisp (an abbreviation for List Processor). You can see a full list of built-in operators [here](https://chialisp.com/docs/clvm/lang_reference/#operator-summary).
 
 ## Modules
 
