@@ -50,7 +50,7 @@ The semantics of the language implemented by the CLVM is similar to Lisp. A prog
 
 Whenever a program is called it always has a context, or environment, which is a CLVM object. This object holds all the arguments passed into the program. This is the second command line argument to `run` and `brun`. The default environment is nil.
 
-If the program is an atom then an argument lookup is performed, and the argument is returned. Please see [treeargs](#treeargs), below.
+If the program is an atom then an argument lookup is performed, and the argument is returned. Please see [treeargs](#treeargs--program-arguments-and-argument-lookup), below.
 
 If the the root of the program is a cons pair then all of the parameters (contained in the right slot of the cons box) are evaluated, then a function call is made and the result of that function call is returned. The object on the left determines the function to call and the object on the right determines what arguments it is passed.
 
