@@ -92,7 +92,11 @@ The resulting hash for this example puzzle is again `0x4843c869bba5f65aa1e806cd3
 ## Convert puzzle hash to a receive address
 You can convert a puzzle hash to a receive address and vice-versa. An address is just an encoded puzzle hash. And since a puzzle hash matches specific puzzle, it also means that a receive address matches a specific puzzle.
 
-You can use [Chia explorer's online tool](https://www.chiaexplorer.com/tools/address-puzzlehash-converter) for converting between puzzle hash to receive address. The puzzle hash is encoded to bech32m format with xch prefix to form a receive address. The receive address for the puzzle hash `0x4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71` is `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`.
+You can use `cdv encode` and `cdv decode` for converting between puzzle hash and receive address. The puzzle hash is encoded to bech32m format with xch prefix to form a receive address. The receive address for the puzzle hash `0x4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71` is `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`.
+
+To get the receive address from the puzzle hash use `cdv encode 4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71 --prefix xch` (notice no `0x` at the beginning). Use `--prefix txch` for a testnet address. 
+
+To get the puzzlehash from the receive address use `cdv decode xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`. 
 
 ## Send Chia to the receive address
 Use the Chia GUI or CLI to send a transaction as you would typically do with the amount you want. As a receive address, set the address from the previous step (password-locked coin example: `xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e`). That will lock your coin with a new puzzle.
