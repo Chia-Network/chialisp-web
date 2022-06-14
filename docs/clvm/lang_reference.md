@@ -190,7 +190,7 @@ See the implementation [here](https://github.com/Chia-Network/clvm_tools/blob/ma
 ## Quoting
 
 In most programming languages, evaluating a literal returns the value itself.
-In CLVM, the meaning of an atom at evaluation time (at any position of the list except the first), is a reference to a value in the argument tree. xxx
+In CLVM, the meaning of an atom at evaluation time (at any position of the list except the first), is a reference to a value in the argument tree.
 
 Therefore, when you intend to write:
 
