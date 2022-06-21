@@ -42,7 +42,7 @@ Write the following Chialisp code in a file named `password.clsp`:
 )
 ```
 
-1. The puzzle takes in a **curried in** value `PUZZLE_HASH`.
+1. The puzzle takes in a **curried in** value `PASSWORD_HASH`.
 2. The solution takes in the `password` and desired `conditions`.
 3. If the hash of the password matches the curried in value, output the `conditions`.
 4. Otherwise, throw an error to prevent the spend from occurring.
