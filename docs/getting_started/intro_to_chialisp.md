@@ -34,7 +34,7 @@ For example, these atoms all have the same value:
 | Integer        | `65`    | Whole numbers, positive or negative |
 | Hexadecimal    | `0x41`  | Raw byte representation             |
 
-If you are interested in learning more about how atoms are represented, see the [Types](https://chialisp.com/docs/ref/clvm#types) section.
+If you are interested in learning more about how atoms are represented, see the [Types](https://chialisp.com/docs/clvm/lang_reference#types) section.
 
 ## Lists
 
