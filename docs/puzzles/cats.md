@@ -19,7 +19,11 @@ Contents:
 ## Introduction to CATs
 
 **Chia Asset Tokens (CATs)** are fungible tokens that are issued from XCH.
-The CAT1 Standard is the first (and so far only) CAT Standard. It was finalized in January 2022. More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT1 naming conventions").
+
+* The first CAT Standard was CAT1. It was finalized in January 2022 and reached its end of life (EOL) with block 2,311,760 in July 2022.
+* The second (and current) CAT Standard is CAT2. It was finalized immediately after the CAT1 EOL in July 2022. The changeover from CAT1 to CAT2 occurred due to a [vulnerability discovered during a security audit](https://www.chia.net/2022/07/25/upgrading-the-cat-standard.en.html).
+
+More information on the naming conventions used in this document can be found [here](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html "Blog entry explaining CAT naming conventions").
 
 >**Reminder:**
 >
@@ -183,7 +187,7 @@ It also means that if the set of rules is compromised, people may be able to min
 
 ## TAIL Examples
 
-The CAT1 standard currently includes three example TAILs, though many more are possible.
+The CAT standard currently includes three example TAILs, though many more are possible.
 
 * [One-Time Minting](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis_by_coin_id.clvm "Chialisp code for the One-Time Minting TAIL")
 
@@ -268,4 +272,4 @@ In each of these examples, the rules of retirement for a specific CAT are clearl
 
 ## Conclusion
 
-The CAT1 standard is an exciting addition to Chia's ecosystem. It allows near-limitless functionality for issuing fungible tokens. We're excited to see what kind of creative ideas the Chia community comes up with!
+The CAT standard is an exciting addition to Chia's ecosystem. It allows near-limitless functionality for issuing fungible tokens. We're excited to see what kind of creative ideas the Chia community comes up with!
