@@ -37,7 +37,7 @@ More information on the naming conventions used in this document can be found [h
 
 CATs have the property of being "marked" in a way that makes them unusable as regular XCH. However, it is usually possible to "melt" CATs back into XCH later. CATs are often used as credits, or tokens - kind of like casino chips.
 
-The chialisp code that **all CATs** share is [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/cat.clvm "cat.clvm - the source code that all CATs share"). Without following this puzzle format, wallets will not be able to recognize a token as a CAT.
+The chialisp code that **all CATs** share is [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/cat_v2.clvm "cat_v2.clvm - the source code that all CATs share"). Without following this puzzle format, wallets will not be able to recognize a token as a CAT.
 
 The entire purpose of the code linked above is to ensure that the supply of a specific CAT never changes unless a specific set of “rules of issuance” is followed. Each CAT has its own unique rules of issuance, **which is the only distinction between different types of CATs**. These issuance rules take the form of an arbitrary Chialisp program that follows a specific structure.  We call that program the **Token and Asset Issuance Limitations (TAIL)**.
 
@@ -169,7 +169,7 @@ Although the TAIL is powerful, it is **not necessarily** run every time the coin
 `(51 <doesn't matter> -113 <TAIL puzzle> <TAIL solution>)`, where:
   * `51` is the condition code for CREATE_COIN.
   * `<doesn't matter>` can be anything, for example 0. (This would normally be a puzzlehash. It is ignored in this case.)
-  * `-113` is the "magic" amount, which signals to cat.clvm that the TAIL must be run. We chose to make this number negative because negative coins are invalid, so this would never be confused for a valid coin spend. Otherwise, there was no special reason for using -113.
+  * `-113` is the "magic" amount, which signals to cat_v2.clvm that the TAIL must be run. We chose to make this number negative because negative coins are invalid, so this would never be confused for a valid coin spend. Otherwise, there was no special reason for using -113.
 
 The TAIL should check diligently for the following things:
   * Is the Extra Delta minting or retiring any coins, and if so, do I approve?
