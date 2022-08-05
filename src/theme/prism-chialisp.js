@@ -68,14 +68,13 @@
 			pattern: primitive('\\(\\)'),
 			lookbehind: true
 		},
+    hexadecimal: {
+      pattern: /0x[0-9a-fA-F]+/
+    },
 		number: {
 			pattern: RegExp('([\\s([])' + '[-+]?\\d+(?:\\.\\d*)?'),
 			lookbehind: true
 		},
-    hexadecimal: {
-      pattern: /x[0-9a-zA-Z]+/,
-      lookbehind: true
-    },
     brun: /(\$ )*(brun|run|opd|opc)/,
 		defun: {
 			pattern: RegExp(
