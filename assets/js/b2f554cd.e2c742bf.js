@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkchialisp_web=self.webpackChunkchialisp_web||[]).push([[1477],{10:function(s){s.exports={blogPosts:[]}}}]);
