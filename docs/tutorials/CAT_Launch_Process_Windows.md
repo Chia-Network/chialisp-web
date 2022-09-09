@@ -56,11 +56,11 @@ We'll start with installing Chia's testnet.
 
 >NOTE: If you already have Chia version 1.3 or later installed, you can skip step 1. If you are running on the mainnet, be sure to run `chia configure -t true` to switch to testnet10.
 
-1. Clone the `main` branch from GitHub and install Chia:
+1. Clone the `latest` branch from GitHub and install Chia:
 
-    a. Open a new PowerShell window as Administrator, create a new folder called `chia_main` (or something similar) and cd to it.
+    a. Open a new PowerShell window as Administrator, create a new folder called `chia_latest` (or something similar) and cd to it.
  
-    b. Run `git clone https://github.com/Chia-Network/chia-blockchain.git -b main --recurse-submodules` to clone Chia's main branch.
+    b. Run `git clone https://github.com/Chia-Network/chia-blockchain.git -b latest --recurse-submodules` to clone Chia's `latest` branch.
  
     c. Run `cd chia-blockchain`.
     
@@ -82,7 +82,7 @@ We'll start with installing Chia's testnet.
 
     a. Before doing anything else, it’s a good idea to set your log_level to INFO. To do this, run `chia configure -log-level INFO`.
     
-    b. Run `cd chia_main/chia-blockchain/chia-blockchain-gui`.
+    b. Run `cd chia_latest/chia-blockchain/chia-blockchain-gui`.
 
     c. If "(venv)" doesn’t appear on the left side of your command line, run `..\venv\Scripts\Activate.ps1` to activate your virtual environment.
     
@@ -137,7 +137,7 @@ To get started, you will create a single-mint CAT. This is the default way to is
 
 A CAT with a single-mint TAIL will be useful for anyone who wants to create a token with a guaranteed fixed supply.
 
-You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/genesis-by-coin-id-with-0.clvm "Single-mint TAIL").
+You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/latest/chia/wallet/puzzles/genesis_by_coin_id.clvm "Single-mint TAIL").
 
 1. Find a coin to mint, and create and push a new spendbundle:
 
@@ -187,7 +187,7 @@ If you're a visual learner, please see our [video tutorial for creating a multip
 
 Next we’ll create a CAT capable of minting tokens multiple times. This CAT uses a delegated TAIL, which is much more flexible than the previous one. As long as you sign a puzzlehash that you specify, you can mint new tokens using whatever TAIL you want. This allows for features such as rebate offers and distributed minting and retiring of tokens.
 
-You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/main/chia/wallet/puzzles/delegated_genesis_checker.clvm "Delegated TAIL").
+You can find the TAIL we'll use for this example [here](https://github.com/Chia-Network/chia-blockchain/blob/latest/chia/wallet/puzzles/delegated_tail.clvm "Delegated TAIL").
 
 We’ll set up this CAT to delegate the same TAIL we set up previously. What this means is that nobody else can mint new tokens until you allow it. Keep in mind that this is only one of many possible implementations of a delegated TAIL.
 
@@ -254,7 +254,7 @@ We’ll set up this CAT to delegate the same TAIL we set up previously. What thi
 
 After you are comfortable with issuing your CAT on testnet, you may wish to move to mainnet. Please keep in mind that there are extra risks inherent to publishing code on a public blockchain. If your CAT and/or TAIL have not been created securely, your funds could potentially be bricked or stolen. **Proceed with caution.**
 
-That said, issuing a CAT to mainnet isn't very different from issuing one to testnet. You can continue to run off of the `main` code branch, using the light wallet.
+That said, issuing a CAT to mainnet isn't very different from issuing one to testnet. You can continue to run off of the `latest` code branch, using the light wallet.
 
 When you are ready to issue your CAT to mainnet, the first step is to run `chia configure -t false`, which will instruct Chia to switch your configuration to mainnet.
 
