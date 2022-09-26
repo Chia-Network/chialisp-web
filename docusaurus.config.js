@@ -1,12 +1,12 @@
 module.exports = {
   title: 'Chialisp',
   tagline: 'Developing with Chialisp',
-  url: 'https://chialisp.com',
+  url: 'https://staging.chialisp.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
   organizationName: 'Chia-Network', // Usually your GitHub org/user name.
-  projectName: 'chialisp-web', // Usually your repo name.
+  projectName: 'staging-chialisp-web', // Usually your repo name.
   themeConfig: {
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
@@ -25,14 +25,14 @@ module.exports = {
           label: 'Docs',
           position: 'left',
         },
-       
+
         {
           href: 'https://chia.net',
           label: 'Chia.net',
           position: 'left',
         },
         {
-          href: 'https://github.com/Chia-Network/chialisp-web',
+          href: 'https://github.com/Chia-Network/staging-chialisp-web',
           label: 'GitHub',
           position: 'left',
         },
@@ -97,17 +97,14 @@ module.exports = {
     [
       '@docusaurus/preset-classic',
       {
-        gtag: {
-          trackingID: 'G-H6XZNYRS4V',
-          anonymizeIP: true,
-        },
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
           path: 'docs',
           routeBasePath: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/Chia-Network/chialisp-web/edit/main/',
+          editUrl:
+            'https://github.com/Chia-Network/staging-chialisp-web/edit/main/',
         },
         //        blog: {
         //          showReadingTime: true,
@@ -121,7 +118,8 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/Chia-Network/{{ REPOSITORY_NAME }}/blob/main/',
+          editUrl:
+            'https://github.com/Chia-Network/{{ REPOSITORY_NAME }}/blob/main/',
         },
       },
     ],
