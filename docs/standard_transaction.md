@@ -28,7 +28,7 @@ We need the puzzle to be hidden, but also have some entropy that keeps it unique
 
 The solution that the standard transaction uses is to derive a new private key from a) the hidden puzzle and b) the public key that can sign for the delegated spend case:
 
-`synthetic_offset == sha256(hidden_puzzle_hash + original_public_key)`
+`synthetic_offset == sha256(original_public_key + hidden_puzzle_hash)`
 
 We then calculate the public key of this new private key, and add it to our existing original public key:
 

@@ -21,7 +21,7 @@ Welcome to the world of CATs! We're excited to have you here, and we can't wait 
 
 This tutorial will help you jump right in and get started with issuing your own CATs. There are a few things you should know before we begin.
 
-The [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation") is finalized as of January 2022. However, to minimize your risk of running into unexpected results, we recommend that you do following:
+The [CAT standard](https://chialisp.com/docs/puzzles/cats "CAT standard documentation") is finalized as of January 2022. However, to minimize your risk of running into unexpected results, we recommend that you do following:
 
 * Generate a new public/private key pair for each CAT you issue. This key pair should be used for issuing one specific CAT **and nothing else**. It should also be the only key pair on your computer while issuing the CAT.
 * Test thoroughly on testnet before issuing your CAT to mainnet.
@@ -42,7 +42,7 @@ CAT denominations, as well as the rules behind minting and melting, can take som
 
 With one XCH, you can mint 1 billion CATs. The face value of these tokens could be zero, or multiple XCH, or anywhere in between. This value is decided by the market -- it's worth whatever someone is willing to pay for it. The value of the tokens has nothing to do with the underlying XCH, other than their 1000-mojo melt value.
 
-These concepts are discussed in greater detail in our [CAT1 standard](https://chialisp.com/docs/puzzles/cats#cat-denominations-value-and-retirement-rules "CAT1 standard documentation").
+These concepts are discussed in greater detail in our [CAT standard](https://chialisp.com/docs/puzzles/cats#cat-denominations-value-and-retirement-rules "CAT standard documentation").
 
 -----
 
@@ -132,7 +132,7 @@ Your environment is now set up and you are ready to start issuing CATs.
 
 If you're a visual learner, please see our [video tutorial for creating a single-mint CAT](https://chialisp.com/docs/tutorials/single_issuance_CAT "Single-mint CAT video tutorial").
 
-> NOTE: This section will discuss Token Asset Issuance Limiters (TAILs), as well some technical details of CATs. For a refresher on CATs and TAILs, check out our [CAT1 standard](https://chialisp.com/docs/puzzles/cats "CAT1 standard documentation").
+> NOTE: This section will discuss Token Asset Issuance Limiters (TAILs), as well some technical details of CATs. For a refresher on CATs and TAILs, check out our [CAT standard](https://chialisp.com/docs/puzzles/cats "CAT standard documentation").
 
 To get started, you will create a single-mint CAT. This is the default way to issue a CAT. It's also the simplest. It contains a TAIL that only can be used on a specific XCH coin. In Chia the coins can only be spent once, so in this case, the CAT can only mint tokens once.
 
@@ -290,7 +290,3 @@ Here's how to generate a secure public/private key pair for issuing your new CAT
 6. Run `chia keys show --show-mnemonic-seed`. This will show your public and private keys, as well as your Mnemonic seed.
 
 7. Copy your new key pair's `Mnemonic seed (24 secret words)` to a secure offline location. These 24 words are all you'll need to restore your wallet in the future.
-
-## Potential future additions
-
-Now that the CAT1 standard has been finalized, we do not expect to see any major updates for quite some time. However, there is a chance that a CAT2 standard will be needed in the future. For now, good luck and happy minting!

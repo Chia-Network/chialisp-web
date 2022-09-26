@@ -11,18 +11,15 @@ Throughout this guide you will learn the basics of Chialisp, and by the end you 
 
 You can follow [this guide](https://github.com/Chia-Network/chia-dev-tools/#install) to install and use Chia Dev Tools. You will be using these tools and a simple text editor of your choice to write and run snippets of code.
 
-
 Once you have it set up, run the following command:
 
 ```bash
-run "test_chialisp"
+run "test"
 ```
 
-:::note
-The `run` command compiles the Chialisp code. In this case, the code is a simple string.
-:::
+The `run` command compiles Chialisp code. In this case, we are compiling a simple string to make sure it is installed properly.
 
-If it is working correctly, it should output `"test_chialisp"`. You can now follow along with any of the code in the coming sections.
+If it is working correctly, it should output `"test"`. You can now follow along with any of the code in the coming sections.
 
 ## Atoms
 
@@ -37,11 +34,11 @@ For example, these atoms all have the same value:
 | Integer        | `65`    | Whole numbers, positive or negative |
 | Hexadecimal    | `0x41`  | Raw byte representation             |
 
-If you are interested in learning more about how atoms are encoded, you can read up on [UTF-8](https://en.wikipedia.org/wiki/UTF-8) and [Big Endian](https://en.wikipedia.org/wiki/Endianness), but it will not be necessary for this guide.
+If you are interested in learning more about how atoms are represented, see the [Types](https://chialisp.com/docs/clvm/lang_reference#types) section.
 
 ## Lists
 
-A **list** is a nested chain of [cons pairs](https://en.wikipedia.org/wiki/Cons) used to represent a set of values, which are also either atoms or lists. While you can manually create these pairs and it is a good thing to know how to do, we will focus on lists for now since they are easier to use and more practical.
+A **list** is a nested chain of [cons pairs](https://en.wikipedia.org/wiki/Cons) used to represent a set of values, which are also either atoms or lists. While you can manually create these pairs, and it is a good thing to know how to do, we will focus on the higher-level concept of lists for now, since they are easier to use and more practical.
 
 The first item in an unquoted list is the operator, and the rest are its operands. The same goes for functions or macros and their arguments. If you want to express a list of values, you either have to use the `list` operator or quote the list.
 
@@ -57,13 +54,13 @@ And here is an operator:
 (+ 2 3)
 ```
 
-As you can see, just about everything in this language is based on lists, hence the name Lisp (an abbreviation for List Processor). You can see a full list of built-in operators [here](https://chialisp.com/docs/ref/clvm#the-built-in-opcodes).
+As you can see, just about everything in this language is based on lists, hence the name Lisp (an abbreviation for List Processor). You can see a full list of built-in operators [here](https://chialisp.com/docs/clvm/lang_reference/#operator-summary).
 
 ## Modules
 
-The `mod` operator creates a context for converting the usage of constants into a single expression. It's how you use more complicated features such as functions and including library files.
+The `mod` operator creates a context for converting the usage of constants into a single expression. It's used for more complicated features such as creating functions and including library files.
 
-Note that any definitions inside of the module will not have access to the its solution, so values will have to be passed in manually. In other words, there is no concept of [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
+Note that definitions inside the module will not have direct access to the [solution](/docs/glossary#solution) values provided during execution, so values will have to be passed in manually as function parameters. In other words, there is no concept of a module [scope](<https://en.wikipedia.org/wiki/Scope_(computer_science)>), although constants can be used anywhere.
 
 This module will add two arbitrary values together:
 
@@ -73,25 +70,30 @@ This module will add two arbitrary values together:
 )
 ```
 
-And this is an example of a constant and function:
+And this is an example of defining a constant and a function, followed by their usage:
 
 ```chialisp
+;;; Raises the number by one order of magnitude.
+
 (mod (value)
+    ; Defines a constant value with a name.
     (defconstant ORDER_OF_MAGNITUDE 10)
 
+    ; Defines a function that can be called with a value.
     (defun raise_magnitude (value)
         (* value ORDER_OF_MAGNITUDE)
     )
 
+    ; Calls the previously defined function.
     (raise_magnitude value)
 )
 ```
 
 1. The module takes in a `value` parameter.
 2. `ORDER_OF_MAGNITUDE` is defined as 10.
-3. The `raise_magnitude` function takes in a `value parameter`.
-4. Returns the value times the `ORDER_OF_MAGNITUDE`.
-5. Calls the function with the `value`.
+3. The `raise_magnitude` function takes in a `value` parameter (even though they have the same name, this is a different variable from the `value` defined as a module parameter).
+4. Returns the `value` function parameter multiplied by the `ORDER_OF_MAGNITUDE`.
+5. Calls the function with the module parameter `value`.
 
 ## Putting it Together
 
@@ -100,28 +102,37 @@ By now you have seen how some aspects of the language work, and we can use these
 Put this in a file named `factorial.clsp`:
 
 ```chialisp
-;;; Calculates a factorial.
+;;; Calculates a factorial recursively.
 ;;; f(n) = n * f(n - 1)
 ;;; f(n) = n if n <= 2
 
 (mod (number)
+    ; Defines the factorial function.
     (defun factorial (number)
         (if (> number 1)
             (* number (factorial (- number 1)))
             1
         )
     )
+
+    ; Calls the function with the number provided.
     (factorial number)
 )
 ```
 
-If you run this example with `brun $(run factorial.clsp) "(5)"`, it will compile it and run the result with a solution where `number` is 5. The result of this should be the factorial of that number, which is 120. There were a few new operators used in these examples. For more information, you should refer to the [operator reference](https://chialisp.com/docs/ref/clvm#the-built-in-opcodes). Below is a detailed explanation of how this works.
+Run this example with the following command:
+
+```bash
+brun "$(run factorial.clsp)" "(5)"
+```
+
+It will compile it and run the result with a solution where `number` is 5. The result of this should be the factorial of that number, which is 120. There were a few new operators used in these examples. For more information, you should refer to the [operator reference](https://chialisp.com/docs/ref/clvm#the-built-in-opcodes). Below is a detailed explanation of how this works.
 
 1. The module takes in a `number` parameter.
 2. The `factorial` function also takes in a `number` parameter.
 3. If the number is greater than 2, returns the number times the previous factorial.
 4. Otherwise, returns the number itself.
-5. Call the recursive function with the `number`.
+5. Call the recursive function with the `number` module parameter.
 
 We can visualize this function with the input 5 as follows:
 
@@ -143,9 +154,9 @@ Which then simplifies like this:
 120
 ```
 
-Everything that would normally be written using iteration, for example array modification, is instead written using recursion in Chialisp. It can be hard to understand at first, but eventually it will make more and more sense.
+Everything that would normally be written using iteration in an imperative language, for example array modification, is instead written using recursion in Chialisp. It can be hard to understand at first, but eventually it will make more and more sense.
 
-## Keep Going!
+## Conclusion
 
 Hopefully this guide has been a good introduction into the world of Chialisp. We know it's a lot to take in, so feel free to take a break before continuing on with more guides or the documentation.
 
