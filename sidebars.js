@@ -3,12 +3,13 @@ module.exports = {
         {
             'Getting Started': [
                 'getting_started/intro_to_chialisp',
+                'getting_started/setting_up_testnet',
                 'getting_started/first_smart_coin',
             ],
             Chialisp: [
                 'high_level_lang',
-                'intro_chialisp_puzzles',
                 'common_functions',
+                'coins_spends_and_wallets',
                 'coin_lifecycle',
                 'security',
                 'debugging',
@@ -23,7 +24,6 @@ module.exports = {
                     ],
                 },
             ],
-
             Tutorials: [
                 {
                     'Chialisp Tutorial Video Series': [
@@ -48,11 +48,9 @@ module.exports = {
                 'tutorials/multiple_issuance_CAT',
                 'tutorials/offers_gui_tutorial',
                 'tutorials/offers_cli_tutorial',
-                'tutorials/NFT0_user_guide',
             ],
             CLVM: [
                 'clvm/basics',
-                'clvm/coins_spends_and_wallets',
                 'clvm/dive_into_clvm',
                 'clvm/lang_reference',
                 'clvm/serialization',

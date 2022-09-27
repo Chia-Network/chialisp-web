@@ -326,6 +326,7 @@ This section will detail a non-comprehensive list of issues you might encounter 
 * [Taker attempts to accept an invalid offer](#taker-attempts-to-accept-an-invalid-offer)
 * [Maker cancels an offer locally, Taker accepts the offer](#maker-cancels-an-offer-locally-taker-accepts-the-offer)
 * [Whole coins must be reserved](#whole-coins-must-be-reserved)
+* [Offer involving a CAT1 is invalid](#offer-involving-a-cat1-is-invalid)
 
 -----
 
@@ -567,6 +568,13 @@ The Maker can now send 0.1 XCH to another wallet, even while the offer is still 
 <br/>
 
 One of the Maker's coins has been reserved for the offer, and the other has been sent to another wallet. The Maker can further break apart the large coin as needed.
+
+-----
+
+### Offer involving a CAT1 is invalid
+
+The CAT1 Standard reached its end of life (EOL) with block 2,311,760 in July 2022. Any offers that include a CAT1 on either side of the trade will result in an invalid offer error.
+
 
 -----
 

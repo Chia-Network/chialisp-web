@@ -3,8 +3,6 @@ id: coins_spends_and_wallets
 title: Coins, Spends and Wallets
 ---
 
-This guide assumes knowledge of [the basics of CLVM](/docs/clvm/basics) so if you haven't read that page, please do so before reading this.
-
 This section of the guide will cover evaluating a program inside a program, how Chialisp relates to transactions and coins on the Chia network, and cover some techniques to create smart transactions using Chialisp.
 If there are any terms that you aren't sure of, be sure to check the [glossary](/docs/glossary).
 
