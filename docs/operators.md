@@ -12,7 +12,7 @@ The operators in the [Modules section](#modules), as well as `if`, `qq`, and `un
 Additionally, they do not have an intrinsic cost, since they are compiled to CLVM and not actually executed on their own.
 :::
 
-## Modules
+## Chialisp Modules
 
 | Statement    | Format                 | Description                                      |
 | ------------ | ---------------------- | ------------------------------------------------ |
@@ -63,11 +63,11 @@ For example:
 
 ## Control Flow
 
-| Operator   | Format       | Description                                        |
-| ---------- | ------------ | -------------------------------------------------- |
-| if         | `(if A B C)` | If A is true, then B, otherwise C. Lazy evaluated. |
-| i - _if_   | `(i A B C)`  | If A is true, then B, otherwise C.                 |
-| x - _exit_ | `(x ...)`    | Terminate the program with zero or more values.    |
+| Operator   | Format       | Description                                                            |
+| ---------- | ------------ | ---------------------------------------------------------------------- |
+| if         | `(if A B C)` | **Chialisp only** - If A is true, then B, otherwise C. Lazy evaluated. |
+| i - _if_   | `(i A B C)`  | If A is true, then B, otherwise C.                                     |
+| x - _exit_ | `(x ...)`    | Terminate the program with zero or more values.                        |
 
 ### If Operator
 
@@ -81,12 +81,19 @@ Usually this is the intended behavior, but if it isn't, you can use the `i` oper
 
 ## Evaluation
 
-| Operator           | Format        | Description                                      |
-| ------------------ | ------------- | ------------------------------------------------ |
-| qq - _quasi-quote_ | `(qq A)`      | Quote an expression except for certain sections. |
-| unquote            | `(unquote A)` | Unquote a section of an expression inside `qq`.  |
-| q - _quote_        | `(q . A)`     | Treats A as a value rather than a program.       |
-| a - _apply_        | `(a A B)`     | Evaluate program A with input B.                 |
+| Operator           | Format        | Description                                                          |
+| ------------------ | ------------- | -------------------------------------------------------------------- |
+| qq - _quasi-quote_ | `(qq A)`      | **Chialisp only** - Quote an expression except for certain sections. |
+| unquote            | `(unquote A)` | **Chialisp only** - Unquote a section of an expression inside `qq`.  |
+| q - _quote_        | `(q . A)`     | Treats A as a value rather than a program.                           |
+| a - _apply_        | `(a A B)`     | Evaluate program A with input B.                                     |
+| @ - _environment_  | `(@ A)`       | **Chialisp only** - Access value A from the environment.             |
+
+### Environment Operator
+
+:::note
+The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is used plainly as a value, its value is the whole environment.
+:::
 
 ## Lists
 
