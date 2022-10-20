@@ -18,6 +18,18 @@ module.exports = {
     'costs',
     'optimization',
     'debugging',
+    {
+      type: 'category',
+      label: 'Primitives',
+      items: [
+        'primitives/standard-transactions',
+        'primitives/singletons',
+        'primitives/cats',
+        'primitives/nfts',
+        'primitives/dids',
+        'primitives/offers',
+      ],
+    },
     'clvm',
   ],
 };
