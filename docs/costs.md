@@ -9,9 +9,16 @@ Every operator has a cost associated with it. Additionally, there can be a separ
 At some point, the program will terminate if it surpasses the cost limit. Additionally, if you deploy your program as a puzzle on the Chia blockchain, it can have higher fees associated with it based on the cost.
 
 :::info
+The maximum cost per block is 11,000,000,000 (11 billion), which is equivalent to around 400 KB of space. Keep this in mind as you write your Chialisp programs.
 
-The maximum cost per block is 11,000,000,000. Keep this in mind as you write your Chialisp programs.
+You can use the following commands to check the cost while compiling and running programs:
 
+```bash
+run --cost "<Chialisp>"
+brun --cost "<Compiled CLVM>" "<Environment>"
+```
+
+Additionally, each byte of data added to a block has a cost of 12,000.
 :::
 
 ## Cost Table {#table}
@@ -47,6 +54,12 @@ The maximum cost per block is 11,000,000,000. Keep this in mind as you write you
 | all                      | 200     | 300      | 0                                                                                           |
 | point_add                | 101094  | 1343980  | 0                                                                                           |
 | pubkey_for_exp           | 1325730 | 0        | 38                                                                                          |
+
+## Additional Costs
+
+There is a base cost of 1 for every call to an operator. This is due to the processing time of steps taken internally to call the operator.
+
+Additionally, there is a cost of 10 per byte of memory allocated in the return value of an operator. This excludes the boolean values 0 and 1, which are free.
 
 ## Conditions
 
