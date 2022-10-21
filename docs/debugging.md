@@ -4,14 +4,14 @@ title: Debugging
 slug: /debugging
 ---
 
-Due to the nature of Chialisp programs, it can often be difficult to determine where exactly something is going wrong. Since it is compiled to CLVM before execution, errors will often make no sense in context.
+Debugging Chialisp at times can be frustrating. Due to the nature of how it handles data structures, programs will often continue on with incorrect values only to error out at a later spot that gives no clue to the initial breakage. For example, a variable typo will often result in the variable being evaluated as a string, and if that gets hashed into something it's impossible to tell.
 
 However, there are some tricks you can use to more easily catch bugs in your code.
 
 :::note
+It is recommended that you have a strong grasp of CLVM since it underlies all of the processes that happen in Chialisp. It will make it easier to build the picture in your head of the evaluations that are happening and why they may be happening unexpectedly.
 
-Some of the topics mentioned in this page (such as environment trees) may not make sense until you read the [CLVM page](/clvm).
-
+For example, topics as environment trees may not make sense until you read about it on the [CLVM page](/clvm).
 :::
 
 ## Raise Operator
@@ -60,7 +60,7 @@ Here is an example:
   <summary>Verbose Output</summary>
 
 ```chialisp
-brun '(c (sha256 0xdeadbeef) ())' '()' -verbose
+brun '(c (sha256 0xdeadbeef) ())' '()' --verbose
 
 FAIL: path into atom ()
 
@@ -79,9 +79,13 @@ FAIL: path into atom ()
 0xdeadbeef [()] => (didn't finish)
 ```
 
+In this example, we see that it is trying to run `0xdeadbeef` as a program to access a value in the environment. However, the environment is just `()` which is obviously not deep enough, so it throws an error.
+
+We should have quoted the atom before we passed it to `sha256`. In Chialisp, you don't need to quote atoms, but we are executing CLVM.
+
 </details>
 
-Every verbose output begins with `(a 2 3)` which represents the whole puzzle being run with its environment.
+Every verbose output begins with `(a 2 3)` which represents the whole program being run with its environment.
 
 Follow each occurrence of `(didn't finish)` down until you find the deepest failure, then work up from there. Hopefully this will help you figure out what is wrong.
 
@@ -140,3 +144,23 @@ cdv clsp retrieve sha256tree
 ```
 
 Keep in mind that `sha256tree` has a higher cost associated with it and will have a different result (due to prepending a `1` or `2` based on type). If all you are hashing is one atom or multiple atoms of fixed length, you can use the simpler built-in `sha256` operator.
+
+## Deserialization
+
+If you have CLVM bytecode in hex format and need to be able to read it, you can convert it back into normal CLVM form. Even though it may not be super readable either way, it can help to find patterns and check things such as curried in arguments.
+
+Run this command to deserialize CLVM bytecode:
+
+```bash
+opd "<CLVM Bytecode>"
+```
+
+As well as this, if you want to check the length of the serialized output of your CLVM, you can convert it in the other direction as well.
+
+Run this command to serialize CLVM:
+
+```bash
+opc "<CLVM>"
+```
+
+You can find more commands in the [Commands page](/commands).

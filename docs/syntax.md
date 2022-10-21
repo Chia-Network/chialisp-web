@@ -4,7 +4,7 @@ title: Syntax
 slug: /syntax
 ---
 
-Chialisp's syntax is based on [LISP](<https://en.wikipedia.org/wiki/Lisp_(programming_language)>), but there are some differences. This is a primer on the structure of expressions. Everything in the language shares the same [S-expression](https://en.wikipedia.org/wiki/S-expression) syntax, including operators and functions.
+Chialisp's syntax is based on [Lisp](<https://en.wikipedia.org/wiki/Lisp_(programming_language)>), but there are some differences. This is a primer on the structure of expressions. Everything in the language shares the same [S-expression](https://en.wikipedia.org/wiki/S-expression) syntax, including operators and functions.
 
 ## Comments
 
@@ -35,6 +35,10 @@ Although an atom is represented in the same way regardless of the data stored in
 - String (e.g. `"xyz"` or `'xyz'`)
 - Symbol (e.g. `hello`)
 
+:::note
+When interpreting atoms as integers, it's important to remember that they are signed. In order to represent a positive integer, the most significant bit may not be set. Because of this, positive integers have a 0 byte prepended to them, in case the most significant bit in the next byte is set.
+:::
+
 ### Nil
 
 The value `0` or `()` is referred to as nil.
@@ -47,7 +51,19 @@ It can mean a few different things depending on the context:
 - Empty bytes
 - List terminator
 
+### Boolean Values
+
+Some operators treat atoms as booleans.
+
+While every atom is considered to be `true` other than nil, the value is internally represented as `1`.
+
 ## Cons Pairs
+
+:::note
+Keep in mind that this is the syntax of the language itself. If you try to write a value as shown below, the language will interpret the first argument as an operator and throw an error.
+
+Chances are, you want to use the `list` operator or quote the value with `q` instead, to prevent it from being interpreted as an operator.
+:::
 
 A cons pair is a set of two values. A cons pair value looks like this:
 
@@ -84,6 +100,26 @@ Which is equivalent to the following:
 ```chialisp
 (1 . (2 . 3))
 ```
+
+### Quoting
+
+As previously mentioned, if you want to write a value using the syntax shown above, rather than a call to an operator, you need to use the quote operator. This treats an expression as a value rather than a program, preventing execution.
+
+Here is an example quotation of a list:
+
+```chialisp
+(q . (1 2 3))
+```
+
+Which is equivalent to the following Chialisp code:
+
+```chialisp
+(list 1 2 3)
+```
+
+:::note
+Because quotation prevents execution, any operators or constants used within will be left in the form they are written in rather than being replaced.
+:::
 
 ## Destructuring
 
