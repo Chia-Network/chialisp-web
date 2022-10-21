@@ -72,11 +72,17 @@ For example:
 ### If Operator
 
 :::note
-
 The `if` operator is lazy evaluated. This means that code paths are not evaluated unless they need to be.
 
 Usually this is the intended behavior, but if it isn't, you can use the `i` operator instead.
 
+If you would like to replicate the lazy evaluation of the `if` operator in CLVM, you can wrap the `i` operator like this:
+
+```chialisp
+(a (i A (q . B) (q . C)) 1)
+```
+
+Essentially, this runs the branch the condition matches as a program (with the current environment). Depending on how much code is executed in each branch, this may be more cost effective than executing both branches.
 :::
 
 ## Evaluation
@@ -86,7 +92,7 @@ Usually this is the intended behavior, but if it isn't, you can use the `i` oper
 | qq - _quasi-quote_ | `(qq A)`      | **Chialisp only** - Quote an expression except for certain sections. |
 | unquote            | `(unquote A)` | **Chialisp only** - Unquote a section of an expression inside `qq`.  |
 | q - _quote_        | `(q . A)`     | Treats A as a value rather than a program.                           |
-| a - _apply_        | `(a A B)`     | Evaluate program A with input B.                                     |
+| a - _apply_        | `(a A B)`     | Evaluate value A as a program with value B as its environment.       |
 | @ - _environment_  | `(@ A)`       | **Chialisp only** - Access value A from the environment.             |
 
 ### Environment Operator
@@ -125,3 +131,33 @@ The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is 
 | -------------- | --------------------- | --------------------------------------------------- |
 | point_add      | `(point_add A B ...)` | Adds G1 points (public keys) together.              |
 | pubkey_for_exp | `(pubkey_for_exp A)`  | Turns A (private key) into a G1 point (public key). |
+
+## Softfork
+
+The softfork operator is defined as `(softfork cost A B ..)`.
+
+At the moment, `softfork` always returns `0` (nil), and requires `cost` amount of cost.
+
+At first glance, it seems pretty useless since it doesn't do anything and just wastes cost doing it.
+
+The idea is, after a soft fork, the meaning of the arguments may change. In fact, we can hide completely new dialects of CLVM inside here, that have new operators that calculate new things.
+
+For example, suppose we want to add secp256k1 operators like `+s` for adding two points on this ECDSA curve for bitcoin compatibility. We can't just do this in vanilla CLVM, because that would make the program `(+s A B)` return different values before and after the soft fork. So instead, we can hide it under `softfork`.
+
+Here is an example:
+
+```chialisp
+(mod (cost p1 p2 p3 p4)
+    (softfork cost 1 (assert (= (+s p1 p2) (+s p3 p4))))
+)
+```
+
+Pre-softfork, this always passes and returns `()` at a cost of `cost` (plus a bit of overhead).
+
+Post-softfork, this also returns `()` at a cost of `cost`, but may also fail if `p1 + p2 != p3 + p4`. We can't export the sum outside the `softfork` boundary, but we can calculate the sum and compare it to another thing inside.
+
+We take the cost of running the program inside the `softfork` boundary and ensure it exactly matches `COST`, and raise an exception if it's wrong. That way, the program really does have the same cost pre and post-softfork (or it fails post-softfork).
+
+:::info
+The `softfork` operator is currently unused, as there has not been a soft fork that has required new CLVM operators since mainnet. It exists solely as a way to implement new functionality later on if needed.
+:::

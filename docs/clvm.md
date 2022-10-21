@@ -10,7 +10,91 @@ This is all implemented by the Chialisp compiler. Although many of the operators
 
 ## Syntax
 
-The core language syntax of CLVM is the same as Chialisp. However, it's a much more barebones language with less of the [syntactical sugar](https://en.wikipedia.org/wiki/Syntactic_sugar) you may be used to regarding the operators available. Additionally, there are differences in the interpretation of certain things such as numbers. This is explained in more detail below.
+The core language syntax of CLVM is the same as Chialisp. However, it's a much more barebones language with less of the [syntactic sugar](https://en.wikipedia.org/wiki/Syntactic_sugar) you may be used to regarding the operators available. Additionally, there are differences in the interpretation of certain things such as numbers. This is explained in more detail below.
+
+### Quoting Atoms
+
+In Chialisp, you can write an atom directly like this:
+
+```chialisp
+"hello"
+```
+
+However, CLVM will treat that as a call to access the program's environment (explained below).
+
+As a result, all atoms that are intended to be treated as a value must be quoted like this:
+
+```chialisp
+(q . "hello")
+```
+
+If you forget to do this, you will end up with either an unexpected value, or a path into atom error.
+
+## Program Evaluation
+
+The syntax of CLVM is similar to Lisp. It is a parenthesized [Polish notation](https://en.wikipedia.org/wiki/Polish_notation) that puts the operator before the arguments when reading left to right.
+
+A program is represented as a binary tree. The root of the tree is the least nested object in the program tree, with inner operator calls and values embedded recursively inside of it.
+
+In the following example, the outer parentheses represent the cons pair that is the root of the tree:
+
+```chialisp
+(+ (q . 1) (q . 2))
+```
+
+Whenever a program is called, it always has an environment (which will be described in more detail later), which is a CLVM value. This value, which is usually a list, holds all of the arguments passed into the program. This is the second command-line argument to `brun`, with the default environment being nil.
+
+If the program being evaluated is a cons pair, then all of the parameters (contained in the right slot of the cons pair) are evaluated. Next, an operator call is made and the result of that function call is returned. The value on the left is the operator that is being called, and the values on the right are its operands.
+
+If CLVM is running in strict mode, an unknown opcode will cause the program to terminate. During developer testing, CLVM may be run in non-strict mode, which allows for unknown opcodes to be used and treated as no-ops.
+
+The quote operator, `q`, is special. When it is recognized by the interpreter, it causes whatever is on the right to be returned as a value rather than being evaluated as a program. In every other case, the right hand side is evaluated, then passed as operands to the operator on the left.
+
+A CLVM program can be thought of as a binary tree.
+
+Here is an example of an operator call:
+
+```chialisp
+(+ (q . 1) (q . 2))
+```
+
+The operator is the opcode `+`, which is built-in to the CLVM runtime.
+
+Here is a graph of the program, as stored in memory:
+
+```
+      [ ]
+     /   \
+    +     [ ]
+         /   \
+      [q, 1]  [ ]
+             /   \
+         [q, 2]  nil
+```
+
+After the first reduction, the program looks like this:
+
+```chialisp
+(+ 1 2)
+```
+
+Here is a graph of the new program, as stored in memory:
+
+```
+      [ ]
+     /   \
+    +     [ ]
+         /   \
+        1     [ ]
+             /   \
+            2    nil
+```
+
+After the second reduction, and the `+` operator call, it results in the following value:
+
+```chialisp
+3
+```
 
 ## Environment
 
@@ -19,9 +103,6 @@ CLVM programs have an environment, which is the value that is used as input. Thi
 Because the environment is just a tree of cons pairs like any other value, it's easy to access individual nodes on that tree using numbers. In fact, this is done so often in CLVM that the default meaning of a number is to access the node at that index. If you want the actual value of the number, you need to quote it.
 
 This is what the first few layers of the environment's binary tree numbering looks like:
-
-<details>
-  <summary>Environment Tree Graphic</summary>
 
 ```
               1
@@ -38,8 +119,6 @@ This is what the first few layers of the environment's binary tree numbering loo
    / \    / \    / \   / \
   8   12 10  14 9  13 11  15
 ```
-
-</details>
 
 The entire environment can be accessed using `1`.
 
@@ -58,6 +137,20 @@ brun '2' '(200 500)' # 200 - first
 brun '3' '(200 500)' # (500) - rest
 brun '5' '(200 500)' # 500 - first of rest
 ```
+
+## Integer Representation
+
+Arithmetic operations will interpret its operands as two's complement, big endian, signed integers. The most significant bit denotes whether a number is negative.
+
+In order to represent a positive integer where the first byte begins with the bit 1, it is necessary to prepend a `0x00` byte. Otherwise, it would be interpreted as a negative integer. Said another way, if a positive integer's first byte is at least `0x80`, then it will be prepended with `0x00`.
+
+Because of this, `0xFF` means -1, whereas `0x00FF` means 255.
+
+You are likely to encounter this when using the output of an integer operation as the input of a byte operation such as `sha256`.
+
+Since atoms are of arbitrary length, the same integer can be represented by many different atoms. For example, `0x01` and `0x0001` both represent `1`.
+
+Arithmetic operations which return integers always return the shortest representation for numbers (e.g. `0xFF` for `-1`).
 
 ## Serialization
 
@@ -138,3 +231,35 @@ A cons pair begins with the special value `0xFF`. The first and rest values can 
 For example, `(1 . 2)` would be represented as `0xFF0102`. Once you read `0xFF`, you know that the next value is the first of the cons pair, which is `0x01`. Then, the rest of the cons pair is the final value, which in this case is `0x02`.
 
 Lists are typically chains of cons pairs that end in a nil terminator.
+
+## Programs as Parameters
+
+CLVM does not have operators for defining and calling functions. However, it does allow programs to be passed into the environment, as well as executing a value as a program with a new environment.
+
+This behavior is how functions are implemented in the Chialisp compiler.
+
+Here is a CLVM program that executes the program contained in the first environment value with its own environment, `(12)`:
+
+```bash
+brun '(a 2 (q . (12)))' '((* 2 (q . 2)))'
+```
+
+This should output the following result:
+
+```chialisp
+24
+```
+
+Taking this further, we can make the program run a new program that only uses values from the original environment:
+
+```bash
+brun '(a 2 1)' '((* 5 (q . 2)) 10)'
+```
+
+This should output the following result:
+
+```chialisp
+20
+```
+
+We can use this technique to implement recursive functions.

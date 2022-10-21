@@ -39,7 +39,7 @@ Code written in Chialisp has no effects or hidden information. This makes it eas
 
 #### Composable
 
-A program in LISP is just a list. This enables powerful techniques that allow you to modify source code during program evaluation. You can even have multiple layers of a program that get executed at different stages.
+A program in Lisp is just a list. This enables powerful techniques that allow you to modify source code during program evaluation. You can even have multiple layers of a program that get executed at different stages.
 
 ## Getting Started
 
