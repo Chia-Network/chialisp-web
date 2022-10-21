@@ -574,7 +574,7 @@ Many TAILs require information that has already been calculated in the CAT layer
 
 #### CATs have the option to use hinting {#hinting}
 
-Hinting is a way to signal the CAT's type to a Chia wallet. The hint is typically an inner puzzle hash. For more info, see our [explanation of hinting in the FAQ](/faq#q-what-is-hinting).
+Hinting is a way to signal the CAT's type to a Chia wallet. The hint is typically an inner puzzle hash. For more info, see our [explanation of hinting in the FAQ](https://docs.chia.net/faq#q-what-is-hinting).
 
 ## Spend Accounting {#accounting}
 
