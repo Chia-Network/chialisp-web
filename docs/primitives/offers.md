@@ -16,7 +16,7 @@ You can use a wallet to generate an offer file for a given trade, then distribut
 - [OfferBin](https://offerbin.io)
 - [HashGreen](https://hash.green)
 
-## Settlement Payments Puzzle
+## Settlement Payments Code {#code}
 
 This is the source code of the settlement payments puzzle, which can also be found in the chia-blockchain repository in the puzzle [`settlement_payments.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/164fd158c8626893bc45ba00b87ae69d2ab5f8b7/chia/wallet/puzzles/settlement_payments.clvm).
 

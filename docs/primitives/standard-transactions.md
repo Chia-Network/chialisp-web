@@ -24,9 +24,9 @@ A puzzle that is initially hidden and can be revealed and used as an alternate w
 
 **Solution** - The solution to the delegated or hidden puzzle.
 
-## Chialisp Code
+## Standard Transaction Code {#code}
 
-This is the source code of the standard transaction, which can also be found in the `chia-blockchain` repository in the puzzle [`p2_delegated_puzzle_or_hidden_puzzle.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/fad414132e6950e79e805629427af76bf9ddcbc5/chia/wallet/puzzles/p2_delegated_puzzle_or_hidden_puzzle.clvm):
+This is the source code of the standard transaction, which can also be found in the `chia-blockchain` repository in the puzzle [`p2_delegated_puzzle_or_hidden_puzzle.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/fad414132e6950e79e805629427af76bf9ddcbc5/chia/wallet/puzzles/p2_delegated_puzzle_or_hidden_puzzle.clvm).
 
 ```chialisp title="p2_delegated_puzzle_or_hidden_puzzle.clvm"
 (mod

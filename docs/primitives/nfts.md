@@ -7,7 +7,7 @@ NFTs are non-fungible tokens that are minted on the Chia blockchain. The NFT puz
 
 They can be used to prove digital ownership of files such as images or videos, as well as the metadata and license pertaining to the file.
 
-## Chialisp Code
+## NFT Code {#code}
 
 This is the source code of the NFT state layer, which can also be found in the chia-blockchain repository in the puzzle [`nft_state_layer.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/164fd158c8626893bc45ba00b87ae69d2ab5f8b7/chia/wallet/puzzles/nft_state_layer.clvm).
 

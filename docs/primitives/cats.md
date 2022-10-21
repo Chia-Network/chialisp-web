@@ -19,7 +19,7 @@ To learn more about the terminology used on this page, check out the [blog entry
 
 Additionally, fungible tokens can be split apart and merged together, whereas non-fungible tokens are indivisible.
 
-## Chialisp Code {#code}
+## CAT Code {#code}
 
 This is the source code of the CAT, which can also be found in the chia-blockchain repository in the puzzle [`cat_v2.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/fad414132e6950e79e805629427af76bf9ddcbc5/chia/wallet/puzzles/cat_v2.clvm):
 

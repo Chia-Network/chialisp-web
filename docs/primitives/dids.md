@@ -7,7 +7,7 @@ DIDs are a decentralized way to represent an identity, be that an organization o
 
 More functionality will be added to the DID standard in the future, allowing for easier identification and recovery methods.
 
-## Chialisp Code
+## DID Code {#code}
 
 This is the source code of the DID inner puzzle, which can also be found in the chia-blockchain repository in the puzzle [`did_innerpuz.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/164fd158c8626893bc45ba00b87ae69d2ab5f8b7/chia/wallet/puzzles/did_innerpuz.clvm).
 

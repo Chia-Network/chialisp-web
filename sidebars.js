@@ -28,6 +28,7 @@ module.exports = {
         'primitives/nfts',
         'primitives/dids',
         'primitives/offers',
+        'primitives/pooling',
       ],
     },
     'clvm',
