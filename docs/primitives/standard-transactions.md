@@ -223,4 +223,4 @@ This program will always terminate, which effectively means the delegated spend 
 
 ## Conclusion
 
-Almost every coin on the Chia blockchain uses this primitive (or as an inner puzzle). The official wallet looks for coins locked with the standard transaction that you can spend. The `(=)` hidden puzzle fails immediately, since most users won't need the extra functionality for typical transactions. We have it built in simply to enable more possibilities in the future.
+Almost every coin on the Chia blockchain uses this primitive (or as an inner puzzle). When you use the official Chia wallet software, it is crawling the blockchain looking for coins locked up with this specific format. The `SYNTHETIC_PUBLIC_KEY` it is looking for is actually using a hidden puzzle of `(=)` which is obviously invalid and fails immediately. This is because most users of Chia don't need the hidden puzzle functionality for vanilla transactions. But by having the capabilities built in, it enables much cooler functionality later on. This puzzle also makes for a fantastic inner puzzle of any smart coins you may write.
