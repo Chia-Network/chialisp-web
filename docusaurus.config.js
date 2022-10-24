@@ -7,7 +7,7 @@ module.exports = {
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
   organizationName: 'Chia-Network',
-  projectName: 'staging-chialisp-web',
+  projectName: 'chialisp-web',
   themeConfig: {
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
