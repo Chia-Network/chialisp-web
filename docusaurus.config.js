@@ -1,7 +1,7 @@
 module.exports = {
   title: 'Chialisp',
   tagline: 'Developing with Chialisp',
-  url: 'https://staging.chialisp.com',
+  url: 'https://chialisp.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
