@@ -4,9 +4,10 @@ module.exports = {
   url: 'https://chialisp.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
-  organizationName: 'Chia-Network', // Usually your GitHub org/user name.
-  projectName: 'chialisp-web', // Usually your repo name.
+  organizationName: 'Chia-Network',
+  projectName: 'chialisp-web',
   themeConfig: {
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
@@ -19,13 +20,6 @@ module.exports = {
         src: 'img/logo.svg',
       },
       items: [
-        {
-          to: 'docs/',
-          activeBasePath: 'docs',
-          label: 'Docs',
-          position: 'left',
-        },
-       
         {
           href: 'https://chia.net',
           label: 'Chia.net',
@@ -45,12 +39,12 @@ module.exports = {
           title: 'Docs',
           items: [
             {
-              label: 'Getting Started',
-              to: 'docs',
+              label: 'Operators',
+              to: '/operators',
             },
             {
-              label: 'CLVM Reference',
-              to: 'docs/ref/clvm',
+              label: 'CLVM',
+              to: '/clvm',
             },
           ],
         },
@@ -101,40 +95,24 @@ module.exports = {
           trackingID: 'G-H6XZNYRS4V',
           anonymizeIP: true,
         },
-        docs: {
-          // It is recommended to set document id as docs home page (`docs/` path).
-          path: 'docs',
-          routeBasePath: 'docs',
-          sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
-          editUrl: 'https://github.com/Chia-Network/chialisp-web/edit/main/',
-        },
-        //        blog: {
-        //          showReadingTime: true,
-        //          // Please change this to your repo.
-        //          editUrl:
-        //            'https://github.com/Chia-Network/chialisp-web/edit/main/blog/',
-        //        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
+        },
+        docs: {
+          routeBasePath: '/',
+          sidebarPath: require.resolve('./sidebars.js'),
+          editUrl:
+            'https://github.com/Chia-Network/{{ REPOSITORY_NAME }}/blob/main/',
         },
       },
     ],
   ],
   plugins: [
-    // ... Your other plugins.
     [
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
-        // ... Your options.
-        // `hashed` is recommended as long-term-cache of index file is possible.
         hashed: true,
-        // For Docs using Chinese, The `language` is recommended to set to:
-        // will add zh in when translations are ready
-        // ```
         language: ['en'],
-        // ```
-        // When applying `zh` in language, please install `nodejieba` in your project.
       },
     ],
   ],

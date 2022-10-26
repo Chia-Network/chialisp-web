@@ -53,3 +53,7 @@ figure {
 .glossary-anchor {
   scroll-margin-top: var(--ifm-navbar-height);
 }
+
+h4 {
+  font-size: 20px;
+}

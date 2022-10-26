@@ -1,6 +1,6 @@
 ---
-id: pooling
 title: Pooling
+slug: /pooling
 ---
 
 The way that Chia Network does pooling is unlike many blockchains that have come before it. Pool operators actually rely on an on-chain smart coin to verify that they will be able to directly claim any potential pool rewards that farmers create.
@@ -8,30 +8,31 @@ This allows pools to trust farmers enough to pay them out, while still keeping t
 This means that the decentralization of the network remains the same, even as the rewards get concentrated to the pool!
 
 In this section, we're going to break down how all of this works in Chialisp.
-This section assumes you have already read the section about [singletons](https://chialisp.com/docs/puzzles/singletons) (or at least understand how they work) as that is the outer puzzle that wraps the pooling puzzles.
+This section assumes you have already read the section about [singletons](/singletons) (or at least understand how they work) as that is the outer puzzle that wraps the pooling puzzles.
 
 ## Design Requirements
 
 There are a few requirements that were set for how the pooling protocol would work on the Chia Network. Let's go over them now:
 
-* **The farmer farms the blocks, not the pool.** This is incredibly important for network decentralization. If this is not true, then the bigger a pool gets, the closer it is to gaining 51% of the network resources.
-We still want the farmers to create the blocks, but we need some way to assure the pool that the farmer will give them the reward when they do.
-We do this by creating plots that farm directly to a specific puzzle hash, and ensuring that puzzle hash is something that the pool can claim.
-* **The farmer must be able to change pools.** Initially, this seems to conflict with the first requirement.
-Plots can be made to send rewards directly to a puzzle hash, but you cannot change that puzzle hash once they are plotted.
-If you want to switch pools, you'll have to remake all of your plots! We solve this by having our plots create payments that a specific singleton (also called a "plot nft") can claim.
-Then, we can lend partial control of that singleton to a pool, but still retain the ability to reclaim our singleton and lend it instead to a different pool.
-Our plots will remain effective as long as we retain control of the singleton.
-* **The farmer cannot leave the pool immediately.** This requirement prevents attacks common to other blockchains where a miner will send partials to a pool until they win a block, then leave the pool immediately and claim that block for themselves.
-To prevent this, we have implemented something called a **waiting room** puzzle which is nearly the same as the puzzle for farming to a pool, except that the farmer can reclaim their singleton after a specified amount of time (in blocks).
+- **The farmer farms the blocks, not the pool.** This is incredibly important for network decentralization. If this is not true, then the bigger a pool gets, the closer it is to gaining 51% of the network resources.
+  We still want the farmers to create the blocks, but we need some way to assure the pool that the farmer will give them the reward when they do.
+  We do this by creating plots that farm directly to a specific puzzle hash, and ensuring that puzzle hash is something that the pool can claim.
+- **The farmer must be able to change pools.** Initially, this seems to conflict with the first requirement.
+  Plots can be made to send rewards directly to a puzzle hash, but you cannot change that puzzle hash once they are plotted.
+  If you want to switch pools, you'll have to remake all of your plots! We solve this by having our plots create payments that a specific singleton (also called a "plot nft") can claim.
+  Then, we can lend partial control of that singleton to a pool, but still retain the ability to reclaim our singleton and lend it instead to a different pool.
+  Our plots will remain effective as long as we retain control of the singleton.
+- **The farmer cannot leave the pool immediately.** This requirement prevents attacks common to other blockchains where a miner will send partials to a pool until they win a block, then leave the pool immediately and claim that block for themselves.
+  To prevent this, we have implemented something called a **waiting room** puzzle which is nearly the same as the puzzle for farming to a pool, except that the farmer can reclaim their singleton after a specified amount of time (in blocks).
 
 ## The Pool Member
 
 We call the standard puzzle that we use to lend away partial control of our singleton the **pool member** inner puzzle.
 Our goal here is threefold:
-* Allow the pool to claim [pay-to-singleton coins](https://chialisp.com/docs/puzzles/singletons#pay-to-singleton)
-* Disallow the farmer from claiming any coins
-* Allow the farmer to begin the process of reclaiming full control of the singleton
+
+- Allow the pool to claim [pay-to-singleton coins](/singletons#pay-to-singleton)
+- Disallow the farmer from claiming any coins
+- Allow the farmer to begin the process of reclaiming full control of the singleton
 
 Let's take a look at the full source now:
 
@@ -139,8 +140,9 @@ The following two arguments change depending on the case we are executing:
 
 `p1` is named the way it is because it is going to be different depending on the spend type we are using.
 It is either:
- * The amount of the pool reward that is being claimed (1750000000000 during the first three years)
- * A list of key value pairs that is used to reveal important information to the blockchain for wallets to use (similar to the [singleton launcher](https://chialisp.com/docs/puzzles/singletons#the-launcher))
+
+- The amount of the pool reward that is being claimed (1750000000000 during the first three years)
+- A list of key value pairs that is used to reveal important information to the blockchain for wallets to use (similar to the [singleton launcher](/singletons#launcher))
 
 `pool_reward_height` is also different depending on the spend case, but in the escape case it is just `()` so we leave it named the way it is.
 In the absorb case, it is the height of the pool reward that is being absorbed.
@@ -176,7 +178,7 @@ It is calculating the coin ID of the reward coin it is claiming by manually calc
 
 Why do we have to do this? The manual calculation is due to the fact that this singleton may have other payments made to it.
 Right now, since we are lending our singleton to the pool, we don't want the singleton to be able to claim those rewards. We specifically only want the pool to be able to claim pool rewards that are generated from farming.
-Since we know these rewards have a `parent_coin_id` that is a [special format](https://chialisp.com/docs/coin_lifecycle#farming-rewards), we can manually calculate it to ensure that the pool can't lie to us and pass in the ID of a non-reward coin.
+Since we know these rewards have a `parent_coin_id` that is a special format, we can manually calculate it to ensure that the pool can't lie to us and pass in the ID of a non-reward coin.
 
 Let's take a look at this section here:
 
@@ -189,10 +191,10 @@ Finally, we use `logior` to combine the two values into one string.
 Let's say we have a height of `abcdef`.
 Our final product will be `ccd5bb71183532bff220ba46c268991a00000000000000000000000000abcdef`.
 
-Why do we need this extra `logand` with the string of `f`s?  It's to prevent a relatively obscure, but possible attack.
+Why do we need this extra `logand` with the string of `f`s? It's to prevent a relatively obscure, but possible attack.
 Remember that an attacker can pass whatever they want in through the solution.
 For example, a 32 byte hex string.
-If they passed through the right hex string, they could completely control the output of our calculation *except* for the bits that happen to be set to 1 in the genesis challenge half of the `POOL_REWARD_PREFIX` (62/128 of them).
+If they passed through the right hex string, they could completely control the output of our calculation _except_ for the bits that happen to be set to 1 in the genesis challenge half of the `POOL_REWARD_PREFIX` (62/128 of them).
 The idea is that a pool could grind out a coin whose parent ID has all of those bits set, create the coin, and then use the singleton to claim it.
 Why claim a coin that you already had control of? This will become more apparent in the waiting room puzzle, but they could hypothetically "freeze" the singleton in their pool if they were able to reset the puzzle.
 It's not as important in the pool member puzzle, but it is still probably best to prevent the pool from spending the singleton in an unintended way.
@@ -218,7 +220,7 @@ Keep in mind that this puzzle hash is curried into the puzzle and cannot change.
 This is because there is no signature required from the pool to spend the coin.
 If we didn't pre-commit to the puzzle hash, anyone could solve with their own puzzle hash and spend the rewards to themselves.
 
-The announcement conditions are the other side of the [pay-to-singleton announcements](https://chialisp.com/docs/puzzles/singletons#pay-to-singleton). The announcement creation allows the pay-to-singleton to assert that it has received the instruction to pay out.
+The announcement conditions are the other side of the [pay-to-singleton announcements](/singletons#pay-to-singleton). The announcement creation allows the pay-to-singleton to assert that it has received the instruction to pay out.
 The announcement assertion ensures that the pay-to-singleton is actually spent (otherwise we run into the singleton "freezing" problem from above again).
 
 Finally, let's look at the escape conditions:
@@ -342,12 +344,14 @@ However, the final three arguments are almost completely different.
 `spend_type` is now necessary because we can no longer choose which spend case we are executing based on the last argument.
 
 `p1` is different based on the spend type:
-* If we're doing the absorb spend, it's the amount of the pool reward coin.
-* If we're traveling to a new puzzle, it's the key/value list that we use to record data in the blockchain.
+
+- If we're doing the absorb spend, it's the amount of the pool reward coin.
+- If we're traveling to a new puzzle, it's the key/value list that we use to record data in the blockchain.
 
 `p2` is also different based on the spend type:
-* If we're doing the absorb spend, it's the height at which the pool reward coin was created.
-* If we're traveling to a new puzzle, it's the puzzle hash of that puzzle
+
+- If we're doing the absorb spend, it's the height at which the pool reward coin was created.
+- If we're traveling to a new puzzle, it's the puzzle hash of that puzzle
 
 After the argument differences, the only other major change is in the travel function:
 
