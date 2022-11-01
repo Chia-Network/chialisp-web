@@ -107,13 +107,17 @@ module.exports = {
       },
     ],
   ],
-  plugins: [
+  themes: [
     [
-      require.resolve('@easyops-cn/docusaurus-search-local'),
-      {
+      "@easyops-cn/docusaurus-search-local",
+      /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+      ({
         hashed: true,
-        language: ['en'],
-      },
+        language: ["en", "zh"],
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        docsRouteBasePath: "/"
+      }),
     ],
   ],
 };
