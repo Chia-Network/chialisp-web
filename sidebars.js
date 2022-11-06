@@ -2,12 +2,7 @@ module.exports = {
   someSidebar: [
     {
       type: 'link',
-      label: 'Getting Started',
-      href: 'https://devs.chia.net/guides',
-    },
-    {
-      type: 'link',
-      label: 'Chialisp Concepts',
+      label: 'Learn Chialisp',
       href: 'https://devs.chia.net/guides',
     },
     'intro',
