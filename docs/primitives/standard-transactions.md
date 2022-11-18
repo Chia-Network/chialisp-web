@@ -195,7 +195,7 @@ We then calculate the public key of this new private key, and add it to our exis
 This is known as the `synthetic_public_key`:
 
 ```
-synthentic_public_key = original_public_key + synthetic_offset_pubkey
+synthetic_public_key = original_public_key + synthetic_offset_pubkey
 ```
 
 If the solver can correctly reveal both the hidden puzzle and the original public key, then our puzzle can derive the synthetic public key and make sure that it matches the one that is curried in.
