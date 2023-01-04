@@ -35,7 +35,7 @@ Programs are evaluated, and therefore cannot spawn any new processes or interact
 
 #### Auditable
 
-Code written in Chialisp has no effects or hidden information. This makes it easier to find security flaws and bugs. This is essential for smart coins made for the Chia blockchain.
+Code written in Chialisp has no side effects or hidden information. This makes it easier to find security flaws and bugs. This is essential for smart coins made for the Chia blockchain.
 
 #### Composable
 
