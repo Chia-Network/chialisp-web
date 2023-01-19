@@ -11,7 +11,7 @@ jobs:
     container: node:17-alpine
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: "Install deps"
       run: |
