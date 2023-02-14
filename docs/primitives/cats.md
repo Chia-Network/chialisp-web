@@ -5,7 +5,7 @@ slug: /cats
 
 Chia Asset Tokens are fungible tokens that are issued on the Chia blockchain. The CAT puzzle ensures that the supply of a specific CAT never changes unless the rules of issuance specific to that CAT are followed. These are enforced using a separate Chialisp program called the [Token and Asset Issuance Limitations (TAIL)](#tail).
 
-Aside from the TAIL, there is also an [inner puzzle](https://devs.chia.net/guides/chialisp-inner-puzzles) that the CAT wraps around. The inner puzzle controls the ownership of the specific coin, and when the coin is spent, the new puzzle is wrapped in the CAT again. Typically, you wrap the [standard transaction](/standard-transactions) so that you can send CATs to Chia wallet addresses.
+Aside from the TAIL, there is also an [inner puzzle](https://docs.chia.net/guides/chialisp-inner-puzzles) that the CAT wraps around. The inner puzzle controls the ownership of the specific coin, and when the coin is spent, the new puzzle is wrapped in the CAT again. Typically, you wrap the [standard transaction](/standard-transactions) so that you can send CATs to Chia wallet addresses.
 
 :::note
 
