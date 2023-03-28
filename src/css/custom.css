@@ -57,3 +57,7 @@ figure {
 h4 {
   font-size: 20px;
 }
+
+.footer__logo {
+  width:10rem;
+}
