@@ -269,3 +269,5 @@ The taker still must perform several steps before the offer can be confirmed:
 ## Conclusion
 
 Offers are a refreshing new way to swap tokens in a decentralized way without a third party exchange or placing trust in others. They can be shared in any method you choose and accepted by anyone without worrying about the offer being tampered with.
+
+For additional details on how Offers work, see [this article](https://aggsig.me/offers.html).
