@@ -87,13 +87,13 @@ Essentially, this runs the branch the condition matches as a program (with the c
 
 ## Evaluation
 
-| Operator           | Format        | Description                                                          |
-| ------------------ | ------------- | -------------------------------------------------------------------- |
-| qq - _quasi-quote_ | `(qq A)`      | **Chialisp only** - Quote an expression except for certain sections. |
-| unquote            | `(unquote A)` | **Chialisp only** - Unquote a section of an expression inside `qq`.  |
-| q - _quote_        | `(q . A)`     | Treats A as a value rather than a program.                           |
-| a - _apply_        | `(a A B)`     | Evaluate value A as a program with value B as its environment.       |
-| @ - _environment_  | `(@ A)`       | **Chialisp only** - Access value A from the environment.             |
+| Operator           | Format        | Description                                                                   |
+| ------------------ | ------------- | ----------------------------------------------------------------------------- |
+| qq - _quasi-quote_ | `(qq A)`      | **Chialisp only** - Quote an expression except for anything inside `unquote`. |
+| unquote            | `(unquote A)` | **Chialisp only** - Unquote an expression nested within `qq`.                 |
+| q - _quote_        | `(q . A)`     | Treats A as a value rather than a program.                                    |
+| a - _apply_        | `(a A B)`     | Evaluate value A as a program with value B as its environment.                |
+| @ - _environment_  | `(@ A)`       | **Chialisp only** - Access value A from the environment.                      |
 
 ### Environment Operator
 
