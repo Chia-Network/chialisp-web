@@ -56,8 +56,8 @@ module.exports = {
               href: 'https://developers.chia.net/',
             },
             {
-              label: 'Keybase',
-              href: 'https://keybase.io/team/chia_network.public',
+              label: 'Discord',
+              href: 'https://discord.gg/chia',
             },
             {
               label: 'Twitter',
