@@ -91,10 +91,6 @@ module.exports = {
     [
       '@docusaurus/preset-classic',
       {
-        gtag: {
-          trackingID: 'G-H6XZNYRS4V',
-          anonymizeIP: true,
-        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -119,5 +115,12 @@ module.exports = {
         docsRouteBasePath: "/"
       }),
     ],
+  ],
+  scripts: [
+    {
+      src: '/js/matomo.js',
+      async: true,
+      defer: true,
+    },
   ],
 };
