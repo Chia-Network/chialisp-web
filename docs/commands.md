@@ -55,7 +55,7 @@ You can also use `-i` instead of `--include` if you prefer.
 
 ### Curry
 
-You can [curry](https://devs.chia.net/guides/chialisp-currying) values into your program like this:
+You can [curry](https://docs.chia.net/guides/chialisp-currying) values into your program like this:
 
 ```bash
 cdv clsp curry program.clsp --args '0xCAFEF00D' --args '(hello there)'

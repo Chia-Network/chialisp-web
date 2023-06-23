@@ -3,7 +3,7 @@ module.exports = {
     {
       type: 'link',
       label: 'Learn Chialisp',
-      href: 'https://devs.chia.net/guides',
+      href: 'https://docs.chia.net/guides',
     },
     'intro',
     'commands',

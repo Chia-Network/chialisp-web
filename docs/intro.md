@@ -43,4 +43,4 @@ A program in Lisp is just a list. This enables powerful techniques that allow yo
 
 ## Getting Started
 
-If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](https://devs.chia.net/guides) guide. Throughout this series, you will write programs in the language, create smart coins on the Chia blockchain, and spend them on the command-line.
+If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](https://docs.chia.net/guides) guide. Throughout this series, you will write programs in the language, create smart coins on the Chia blockchain, and spend them on the command-line.
