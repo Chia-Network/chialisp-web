@@ -74,7 +74,7 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/Chia-Network/clvm',
+              href: 'https://github.com/Chia-Network/clvm_tools_rs',
             },
           ],
         },

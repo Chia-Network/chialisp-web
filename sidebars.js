@@ -8,6 +8,7 @@ module.exports = {
     'intro',
     'commands',
     'syntax',
+    'modern_chialisp',
     'operators',
     'examples',
     'costs',
