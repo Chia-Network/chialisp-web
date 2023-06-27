@@ -43,7 +43,7 @@ A program in Lisp is just a list. This enables powerful techniques that allow yo
 
 #### New language features
 
-Chialisp has been receiving new features which mirror other languages in the scheme and lisp family.  Install the chialisp nightly tools to enable these features.
+Chialisp has been receiving new features which mirror other languages in the scheme and lisp family. Install the chialisp nightly tools to enable these features.
 New features are listed in detail [here](/modern_chialisp)
 
 ## Getting Started
