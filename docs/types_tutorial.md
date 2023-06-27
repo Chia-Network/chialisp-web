@@ -1,10 +1,5 @@
 # Tutorial for typed chialisp
 
-## Where is it
-
-Currently in branch 20220629-typed-language in https://github.com/Chia-Network/clvm_tools_rs
-Build with cargo
-
 ## How to use
 
 Type annotations are optional.  Here's a simple chialisp program:
