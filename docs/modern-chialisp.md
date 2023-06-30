@@ -339,6 +339,43 @@ $ ./target/debug/brun '(sha256 (q . 0x68656c6c6f0a) (q . world))'
 
 ### trace output via cldb
 
+The cldb debugger now recognizes a specific clvm expression as indicating a
+desire for diagnostic output.  One way to generate it is with a function like
+
+```chialisp
+  (defun print (l x) (i (all "$print$" l x) x x))
+```
+
+You can use this in your programs to determine what values have been computed
+without stopping execution while the program runs:
+
+```chialisp
+(mod (X)
+  (include *standard-cl-23*)
+  
+  (defun print (l x) (i (all "$print$" l x) x x))
+
+  (defun C (N X) (if (> 2 (print (list "collatz" N) X)) N (let ((NP1 (+ N 1))) (if (logand 1 X) (C NP1 (+ 1 (* 3 X))) (C NP1 (/ X 2))))))
+  
+  (C 0 X)
+  )
+```
+```shell
+$ ./target/debug/cldb -p c.clsp '(3)'
+---
+- Print: ((collatz ()) 3)
+- Print: ((collatz 1) 10)
+- Print: ((collatz 2) 5)
+- Print: ((collatz 3) 16)
+- Print: ((collatz 4) 8)
+- Print: ((collatz 5) 4)
+- Print: ((collatz 6) 2)
+- Print: ((collatz 7) 1)
+- Final: "7"
+  Final-Location: "c.clsp(6):50"
+```
+
+
 ## Complete example: ABC problem
 
 ```chialisp
