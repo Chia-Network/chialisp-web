@@ -108,6 +108,260 @@ and preprocessing is now a separate pass that can be inspected on its own.
 
 ## Complete list of new features
 
+### defconst constants
+
+The new defconst form has access to the program surrounding it at compile time.
+The value that results is computed at compile time (and causes an error if that
+isn't possible for some reason, such as it depends on its own constant, causes
+a clvm exception or some other problem) and the compiler chooses the smaller
+representation of inlining it or placing it in the environment.
+
+```chialisp
+(mod (Z)
+
+  (include *standard-cl-23*)
+
+  ; takes a lisp tree and returns the hash of it
+  (defun sha256tree1 (TREE)
+    (if (l TREE)
+      (sha256 2 (sha256tree1 (f TREE)) (sha256tree1 (r TREE)))
+      (sha256 1 TREE)
+      )
+    )
+
+  (defconst HELLO_HASH (sha256tree1 (c "hello" "world")))
+    
+  (sha256 HELLO_HASH Z)
+  )
+```
+```shell
+$ brun defconsthash.clvm '(3)'
+0xf60efb25b9e6e3587acd9cf01c332707bb771801bdb5e4f50ea957a29c8dde89
+$ opc -H '(hello . world)'
+9d1890eef772e63013f481b4313eeaae7de4b0601268f380124ad1d74d694d15
+$ brun '(sha256 (q . 0x9d1890eef772e63013f481b4313eeaae7de4b0601268f380124ad1d74d694d15) (q . 3))'
+0xf60efb25b9e6e3587acd9cf01c332707bb771801bdb5e4f50ea957a29c8dde89
+```
+
+### ```let```, ```let*``` and ```assign``` forms
+
+Chialisp now has local bindings that allow code to be more organized, to use the
+same computation more than once without having to explicitly write and call a
+separate function to capture the value into a CLVM environment that can be
+extracted via variable reference. The bound variables can be referenced in the
+body. let and let* forms are classic lisp and scheme, and allow just a name to
+be bound from an expression. ```let``` performs all bindings at the same time
+(they don't have access to each other) and the other form of let allows each
+one to access the values bound before it.  ```assign``` can handle any arrangement
+of bindings as long as they don't form a cycle.
+
+```chialisp
+(mod (Z)
+  
+  (include *standard-cl-23*)
+  
+  (let ((X (+ Z 1))
+        (Y (- Z 1)))
+    (* X Y)
+    )
+  )
+```
+```shell
+$ brun simple-let.clvm '(5)'
+24
+```
+
+### at capture
+
+Chialisp supports overlapping variable bindings in which one gives a name to a
+collection of further destructuring.
+
+In haskell, it's possible to bind both a container and its contents:
+
+```haskell
+data Pt = Pt Int Int deriving Show
+f p@(Pt x y) = if x == 0 then p else Pt (x - 1) y
+```
+
+Scheme and lisp argument destructuring can stand in for destructuring objects.
+In the above case, we can refer to the object's fields separately and the object
+itself if we just want to pass it on whole or return it.
+
+You can also use this to simulate Maybe or Options type in a convenient way.
+
+```haskell
+> f p = fromMaybe 0 $ (\(Pt x y) -> x + y) <$> p
+> f (Just (Pt 3 5))
+8
+> f Nothing
+0
+```
+
+In chialisp:
+
+
+```chialisp
+(mod (p) 
+  (include *standard-cl-23*) 
+      
+  (defun F ((@ p (x y))) (if p (+ x y) 0)) 
+      
+  (F p)
+  )
+```
+```shell
+$ brun maybe.clvm '((3 5))'
+8
+$ brun maybe.clvm '(())'
+0
+```
+
+You can also do this with a higher order functions similarly.  In this
+implementation, maybe is always a list so that (Just 0) is distinct from
+Nothing.  This is longer but more general.  If used to construct fully
+generic algorithms, it might be needed.
+
+```chialisp
+(mod (p)
+    
+  (include *standard-cl-23*)
+    
+  (defun fromMaybe (v (@ m (content))) (if m content v))
+  (defun mapMaybe (f (@ m (content))) (if m (list (a f (list content))) ()))
+    
+  (fromMaybe 0 (mapMaybe (lambda ((@ pt (x y))) (+ x y)) p))
+  )
+```
+```shell
+$ brun maybe.clvm '(((3 5)))' # Note: ((3 5)) is like (Some (Pt 3 5))
+8
+$ brun maybe.clvm '(())'
+()
+```
+
+### optional types
+
+There is an optional type system described [here](/docs/types-tutorial.md)
+
+### Function closures
+
+Chialisp allows function names to be treated as closures when used as values.
+The resulting function is callable with the 'a' operator in the way other
+foreign code would be when passed into your program or as a result of a lambda
+expression.
+
+```chialisp
+(mod (Z)
+   
+  (include *standard-cl-23*)
+    
+  (defun add-one (X) (+ X 1))
+    
+  (defun map (F L)
+    (if L
+      (c (a F (list (f L))) (map F (r L)))
+      ()
+      )
+    )
+    
+  (map add-one Z)
+  )
+```
+```shell
+$ brun map.clvm '((1 2 3))'
+(a 3 4)
+```
+
+### lambda forms
+
+Chialisp supports 'lambda' in a similar way to scheme.  The resulting value is
+callable with the 'a' operator, has access to the program's functions and constants
+and is in general safe to use for higher-order functions.
+
+The above program could be re-stated as:
+
+    (mod (Z)
+   
+      (include *standard-cl-23*)
+    
+      (defun map (F L)
+        (if L
+          (c (a F (list (f L))) (map F (r L)))
+          ()
+          )
+        )
+    
+      (map (lambda (Y) (+ Y 1)) Z)
+      )
+
+### embed and compile include forms
+
+Chialisp programs often need to know the hashes or contents of other programs
+and other data and it can be inconvenient to translate it into chialisp source
+code (especially if, during development it changes).
+
+Chialisp now gives the ability to embed foreign data, including compiling
+programs and embedding their compiled representation.  Since chialisp programs
+contain identification about how they should be compiled, it's possible to
+include programs from different versions of the language accurately.
+
+```chialisp
+(mod (Z)
+    
+  (include *standard-cl-23*)
+    
+  (embed-file hello-data bin "hello.txt")
+    
+  (sha256 hello-data Z)
+  )
+```
+```shell
+$ xxd hello.txt
+00000000: 6865 6c6c 6f0a                           hello.
+$ ./target/debug/brun embedhello.clvm '(world)'
+0x26c60a61d01db5836ca70fefd44a6a016620413c8ef5f259a6c5612d4f79d3b8
+$ ./target/debug/brun '(sha256 (q . 0x68656c6c6f0a) (q . world))'
+0x26c60a61d01db5836ca70fefd44a6a016620413c8ef5f259a6c5612d4f79d3b8
+```
+
+### trace output via cldb
+
+The cldb debugger now recognizes a specific clvm expression as indicating a
+desire for diagnostic output.  One way to generate it is with a function like
+
+```chialisp
+  (defun print (l x) (i (all "$print$" l x) x x))
+```
+
+You can use this in your programs to determine what values have been computed
+without stopping execution while the program runs:
+
+```chialisp
+(mod (X)
+  (include *standard-cl-23*)
+  
+  (defun print (l x) (i (all "$print$" l x) x x))
+
+  (defun C (N X) (if (> 2 (print (list "collatz" N) X)) N (let ((NP1 (+ N 1))) (if (logand 1 X) (C NP1 (+ 1 (* 3 X))) (C NP1 (/ X 2))))))
+  
+  (C 0 X)
+  )
+```
+```shell
+$ ./target/debug/cldb -p c.clsp '(3)'
+---
+- Print: ((collatz ()) 3)
+- Print: ((collatz 1) 10)
+- Print: ((collatz 2) 5)
+- Print: ((collatz 3) 16)
+- Print: ((collatz 4) 8)
+- Print: ((collatz 5) 4)
+- Print: ((collatz 6) 2)
+- Print: ((collatz 7) 1)
+- Final: "7"
+  Final-Location: "c.clsp(6):50"
+```
+
 ### defmac and full preprocessing
 
 Preprocessing takes place separately from compilation in modern chialisp.  This
@@ -397,261 +651,6 @@ Which expands ```(list X Y Z)``` to
 Turning the list again into chialisp that uses CLVM operators in a more
 primitive way.  This allows chialisp developers to turn high level ideas into
 code that's frugal at the CLVM level.
-
-### defconst constants
-
-The new defconst form has access to the program surrounding it at compile time.
-The value that results is computed at compile time (and causes an error if that
-isn't possible for some reason, such as it depends on its own constant, causes
-a clvm exception or some other problem) and the compiler chooses the smaller
-representation of inlining it or placing it in the environment.
-
-```chialisp
-(mod (Z)
-
-  (include *standard-cl-23*)
-
-  ; takes a lisp tree and returns the hash of it
-  (defun sha256tree1 (TREE)
-    (if (l TREE)
-      (sha256 2 (sha256tree1 (f TREE)) (sha256tree1 (r TREE)))
-      (sha256 1 TREE)
-      )
-    )
-
-  (defconst HELLO_HASH (sha256tree1 (c "hello" "world")))
-    
-  (sha256 HELLO_HASH Z)
-  )
-```
-```shell
-$ brun defconsthash.clvm '(3)'
-0xf60efb25b9e6e3587acd9cf01c332707bb771801bdb5e4f50ea957a29c8dde89
-$ opc -H '(hello . world)'
-9d1890eef772e63013f481b4313eeaae7de4b0601268f380124ad1d74d694d15
-$ brun '(sha256 (q . 0x9d1890eef772e63013f481b4313eeaae7de4b0601268f380124ad1d74d694d15) (q . 3))'
-0xf60efb25b9e6e3587acd9cf01c332707bb771801bdb5e4f50ea957a29c8dde89
-```
-
-### ```let```, ```let*``` and ```assign``` forms
-
-Chialisp now has local bindings that allow code to be more organized, to use the
-same computation more than once without having to explicitly write and call a
-separate function to capture the value into a CLVM environment that can be
-extracted via variable reference. The bound variables can be referenced in the
-body. let and let* forms are classic lisp and scheme, and allow just a name to
-be bound from an expression. ```let``` performs all bindings at the same time
-(they don't have access to each other) and the other form of let allows each
-one to access the values bound before it.  ```assign``` can handle any arrangement
-of bindings as long as they don't form a cycle.
-
-```chialisp
-(mod (Z)
-  
-  (include *standard-cl-23*)
-  
-  (let ((X (+ Z 1))
-        (Y (- Z 1)))
-    (* X Y)
-    )
-  )
-```
-```shell
-$ brun simple-let.clvm '(5)'
-24
-```
-
-### at capture
-
-Chialisp supports overlapping variable bindings in which one gives a name to a
-collection of further destructuring.
-
-In haskell, it's possible to bind both a container and its contents:
-
-```haskell
-data Pt = Pt Int Int deriving Show
-f p@(Pt x y) = if x == 0 then p else Pt (x - 1) y
-```
-
-Scheme and lisp argument destructuring can stand in for destructuring objects.
-In the above case, we can refer to the object's fields separately and the object
-itself if we just want to pass it on whole or return it.
-
-You can also use this to simulate Maybe or Options type in a convenient way.
-
-```haskell
-> f p = fromMaybe 0 $ (\(Pt x y) -> x + y) <$> p
-> f (Just (Pt 3 5))
-8
-> f Nothing
-0
-```
-
-In chialisp:
-
-
-```chialisp
-(mod (p) 
-  (include *standard-cl-23*) 
-      
-  (defun F ((@ p (x y))) (if p (+ x y) 0)) 
-      
-  (F p)
-  )
-```
-```shell
-$ brun maybe.clvm '((3 5))'
-8
-$ brun maybe.clvm '(())'
-0
-```
-
-You can also do this with a higher order functions similarly.  In this
-implementation, maybe is always a list so that (Just 0) is distinct from
-Nothing.  This is longer but more general.  If used to construct fully
-generic algorithms, it might be needed.
-
-```chialisp
-(mod (p)
-    
-  (include *standard-cl-23*)
-    
-  (defun fromMaybe (v (@ m (content))) (if m content v))
-  (defun mapMaybe (f (@ m (content))) (if m (list (a f (list content))) ()))
-    
-  (fromMaybe 0 (mapMaybe (lambda ((@ pt (x y))) (+ x y)) p))
-  )
-```
-```shell
-$ brun maybe.clvm '(((3 5)))' # Note: ((3 5)) is like (Some (Pt 3 5))
-8
-$ brun maybe.clvm '(())'
-()
-```
-
-### optional types
-
-There is an optional type system described [here](/docs/types-tutorial.md)
-
-### Function closures
-
-Chialisp allows function names to be treated as closures when used as values.
-The resulting function is callable with the 'a' operator in the way other
-foreign code would be when passed into your program or as a result of a lambda
-expression.
-
-```chialisp
-(mod (Z)
-   
-  (include *standard-cl-23*)
-    
-  (defun add-one (X) (+ X 1))
-    
-  (defun map (F L)
-    (if L
-      (c (a F (list (f L))) (map F (r L)))
-      ()
-      )
-    )
-    
-  (map add-one Z)
-  )
-```
-```shell
-$ brun map.clvm '((1 2 3))'
-(a 3 4)
-```
-
-### lambda forms
-
-Chialisp supports 'lambda' in a similar way to scheme.  The resulting value is
-callable with the 'a' operator, has access to the program's functions and constants
-and is in general safe to use for higher-order functions.
-
-The above program could be re-stated as:
-
-    (mod (Z)
-   
-      (include *standard-cl-23*)
-    
-      (defun map (F L)
-        (if L
-          (c (a F (list (f L))) (map F (r L)))
-          ()
-          )
-        )
-    
-      (map (lambda (Y) (+ Y 1)) Z)
-      )
-
-### embed and compile include forms
-
-Chialisp programs often need to know the hashes or contents of other programs
-and other data and it can be inconvenient to translate it into chialisp source
-code (especially if, during development it changes).
-
-Chialisp now gives the ability to embed foreign data, including compiling
-programs and embedding their compiled representation.  Since chialisp programs
-contain identification about how they should be compiled, it's possible to
-include programs from different versions of the language accurately.
-
-```chialisp
-(mod (Z)
-    
-  (include *standard-cl-23*)
-    
-  (embed-file hello-data bin "hello.txt")
-    
-  (sha256 hello-data Z)
-  )
-```
-```shell
-$ xxd hello.txt
-00000000: 6865 6c6c 6f0a                           hello.
-$ ./target/debug/brun embedhello.clvm '(world)'
-0x26c60a61d01db5836ca70fefd44a6a016620413c8ef5f259a6c5612d4f79d3b8
-$ ./target/debug/brun '(sha256 (q . 0x68656c6c6f0a) (q . world))'
-0x26c60a61d01db5836ca70fefd44a6a016620413c8ef5f259a6c5612d4f79d3b8
-```
-
-### trace output via cldb
-
-The cldb debugger now recognizes a specific clvm expression as indicating a
-desire for diagnostic output.  One way to generate it is with a function like
-
-```chialisp
-  (defun print (l x) (i (all "$print$" l x) x x))
-```
-
-You can use this in your programs to determine what values have been computed
-without stopping execution while the program runs:
-
-```chialisp
-(mod (X)
-  (include *standard-cl-23*)
-  
-  (defun print (l x) (i (all "$print$" l x) x x))
-
-  (defun C (N X) (if (> 2 (print (list "collatz" N) X)) N (let ((NP1 (+ N 1))) (if (logand 1 X) (C NP1 (+ 1 (* 3 X))) (C NP1 (/ X 2))))))
-  
-  (C 0 X)
-  )
-```
-```shell
-$ ./target/debug/cldb -p c.clsp '(3)'
----
-- Print: ((collatz ()) 3)
-- Print: ((collatz 1) 10)
-- Print: ((collatz 2) 5)
-- Print: ((collatz 3) 16)
-- Print: ((collatz 4) 8)
-- Print: ((collatz 5) 4)
-- Print: ((collatz 6) 2)
-- Print: ((collatz 7) 1)
-- Final: "7"
-  Final-Location: "c.clsp(6):50"
-```
-
 
 ## Complete example: ABC problem
 
