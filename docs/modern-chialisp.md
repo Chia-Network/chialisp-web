@@ -121,6 +121,283 @@ syntactic inputs its presented with and it can also preserve and pass on those
 distinctions.  It's necessary to move the preprocessor out of a pure CLVM to be
 able to surface errors about misspelled and unbound identifiers.
 
+Chialisp can do a lot with macros.  Just two are builtin because they're useful
+for building other macros, 'if' and 'list'.  I'll discuss these later in context
+because they require knowing a bit about CLVM.
+
+#### Example: 'and' macro
+
+We can start with an example of a short-circuiting 'and' operator.  In other
+versions of lisp and scheme, this operator lets you line up conditions that
+depend on each other to keep from having runtime errors.
+
+```chialisp
+(mod (X)
+
+  (include *standard-cl-23*)
+
+  (defun and_ (CLAUSES)
+    (if (r CLAUSES)
+      (qq (if (unquote (f CLAUSES)) (unquote (and_ (r CLAUSES))) ()))
+      (f CLAUSES)
+      )
+    )
+
+  (defmac and CLAUSES (if CLAUSES (and_ CLAUSES) 1))
+
+  (and X (r X) (f (r X)))
+  )
+```
+
+This works nicely:
+
+```shell
+$ run strict-and.clsp > strict-and.clvm
+$ brun strict-and.clvm '((1))'
+()
+$ brun strict-and.clvm '((1 2 3))'
+2
+```
+
+We can check what this macro unrolls to:
+
+```shell
+$ run -E strict-and.clsp
+(mod (X) (include *standard-cl-23*) (a (i X (com (a (i (r X) (com (f (r X))) (com ())) @)) (com ())) @))
+```
+
+We can format it nicely:
+
+```chialisp
+(mod (X)
+  (include *standard-cl-23*)
+
+  (a (i X
+    (com
+      (a (i (r X)
+        (com (f (r X)))
+        (com ())
+        ) @)
+      )
+    (com ())
+    ) @)
+  )
+```
+
+Below I'll discuss what happened to 'if' (it's a macro itself in this language).
+For now, you can think of (a (i X (com Y) (com Z)) @) as a weird way of saying
+'(if X Y Z)'.
+
+But what we can see here is:
+
+- First the check of X
+  - Then in the true case, a check of (r X)
+    - Then in the true case, return (f (r X))
+    - Else ()
+  - Else ()
+
+Which is just what we want for short-circuiting 'and' in a lisp like language.
+Looking again at the central function of the 'and' macro:
+
+```chialisp
+  (defun and_ (CLAUSES)
+    (if (r CLAUSES)
+      (qq (if (unquote (f CLAUSES)) (unquote (and_ (r CLAUSES))) ()))
+      (f CLAUSES)
+      )
+    )
+```
+
+One can see that the 'if' it expands to is:
+
+  ```(if (unquote (f CLAUSES)) (unquote (and_ (r CLAUSES))) ())```
+
+Which will cause code for the remaining and_ clauses to run if the first one
+was truthy.  and_ is recursive so it'll make a left-heavy tree for any number
+of checks we want to proceed the final result.  Each 'if' form emitted by and_
+returns nil if its check was false, protecting the remaining ones from running.
+
+We can break down how to develop chialisp macros.  Let's say we want to make 'or'
+which returns the first truthy item from a set of input arguments.
+
+We can start with a simple check:
+
+```chialisp
+(mod (X Y Z)
+  (include *standard-cl-23*)
+
+  (defmac or CLAUSES "hi from or")
+
+  (or X Y Z)
+  )
+```
+
+```shell
+$ run -E or-test.clsp
+(mod (X Y Z) (include *standard-cl-23*) "hi from or")
+```
+
+And expand on it:
+
+```chialisp
+(mod (X Y Z)
+  (include *standard-cl-23*)
+
+  (defun or_ (CLAUSES) "hi from or")
+
+  (defmac or CLAUSES (if CLAUSES (or_ CLAUSES) ()))
+
+  (c (or) (or X Y Z))
+  )
+```
+
+```shell
+$ run -E or-test.clsp
+(mod (X Y Z) (include *standard-cl-23*) (c () "hi from or"))
+```
+
+Then decide how 'or' should work:
+
+  - if there's one item left, then just return it.
+  - if the first item is truthy, return it.
+  - otherwise return (or ...) of the rest.
+
+Note that CLAUSES is chialisp code the user put in the actual 'or' form, not
+the results themselves.
+
+The ```(qq ...)``` form is useful for writing what you'd write in chialisp and
+having your macro produce that.  It quotes the code you write so that identifiers
+pass through and are interpreted by the compiler after the macro is expanded.
+The special 'unquote' form, causes whatever's inside it to be pasted into the
+quoted code.  It makes for fairly understandable macros.
+
+```chialisp
+(mod (X Y Z)
+  (include *standard-cl-23*)
+
+  (defun or_ (CLAUSES)
+    (if (r CLAUSES) ;; There are more.
+      ;; Mistake: qq is missing.
+      (if (unquote (f CLAUSES)) (unquote (f CLAUSES)) (unquote (or_ (r CLAUSES))))
+      (f CLAUSES)
+      )
+    )
+
+  (defmac or CLAUSES (if CLAUSES (or_ CLAUSES) ()))
+
+  (or X Y Z)
+  )
+```
+
+```shell
+or-test1.clsp(7):12-or-test1.clsp(7):19: no such callable 'unquote'
+```
+
+So we fix that :-)
+
+```chialisp
+(mod (X Y Z)
+  (include *standard-cl-23*)
+
+  (defun or_ (CLAUSES)
+    (if (r CLAUSES) ;; There are more.
+      (qq (if (unquote (f CLAUSES)) (unquote (f CLAUSES)) (unquote (or_ (r CLAUSES)))))
+      (f CLAUSES)
+      )
+    )
+
+  (defmac or CLAUSES (if CLAUSES (or_ CLAUSES) ()))
+
+  (or X Y Z)
+  )
+```
+
+```shell
+$ run -E or-test.clsp
+(mod (X Y Z) (include *standard-cl-23*) (a (i X (com X) (com (a (i Y (com Y) (com Z)) @))) @))
+```
+
+So this output:
+
+```chialisp
+(mod (X Y Z)
+  (include *standard-cl-23*)
+  (a (i X
+    (com X)
+    (com (a (i Y
+      (com Y)
+      (com Z)
+      ) @))
+    ) @)
+  )
+```
+
+If X is true then return X, otherwise if Y is true then return Y, else Z.
+
+We can try it:
+
+```shell
+$ run or-test.clsp > or-test.clvm
+$ $ brun or-test.clvm '(1 0 0)'
+1
+$ brun or-test.clvm '(0 3 7)'
+3
+$ brun or-test.clvm '(0 0 7)'
+7
+$ brun or-test.clvm '(0 0 0)'
+()
+```
+
+These macros are used together in the ported rosetta code 'ABC' example later.
+
+#### 'if' and 'list' macros
+
+```chialisp
+            (defmac if (A B C)
+              (qq (a (i (unquote A) (com (unquote B)) (com (unquote C))) @))
+              )
+```
+
+Which expands ```(if X Y Z)``` to 
+
+```chialisp
+(a (i X (com Y) (com Z)) @))
+```
+
+'com' is a special form in the chialisp compiler that outputs the code that
+does what its argument does, in the context where it's expanded.  Because
+chialisp's 'a' operator can run a CLVM value as code, this allows execution
+to be passed down to one of two alternatives, based on whether X is truthy.
+The 'i' operator returns one of its second or third argument based on the
+truthiness of its first.
+
+So the 'if' macro has turned a high level concept 'if' into something that,
+with some language support, outputs chialisp that's completely made up of
+primitive operators from CLVM.
+
+The 'list' macro is similar:
+
+```chialisp
+            (defun __chia__compile-list (args)
+              (if args
+                (c 4 (c (f args) (c (__chia__compile-list (r args)) ())))
+                ()
+                )
+              )
+
+            (defmac list ARGS (__chia__compile-list ARGS))
+```
+
+Which expands ```(list X Y Z)``` to
+
+```chialisp
+(4 X (4 Y (4 Z ())))
+```
+
+Turning the list again into chialisp that uses CLVM operators in a more
+primitive way.  This allows chialisp developers to turn high level ideas into
+code that's frugal at the CLVM level.
+
 ### defconst constants
 
 The new defconst form has access to the program surrounding it at compile time.
