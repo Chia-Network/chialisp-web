@@ -16,6 +16,12 @@ variables are no longer treated as values, and return diagnostics instead. Let
 bindings and related assign forms allow programs to be structured more logically
 and preprocessing is now a separate pass that can be inspected on its own.
 
+It is installable currently from the clvm_tools_rs dev branch:
+
+```shell
+$ pip install git+https://github.com/Chia-Network/clvm_tools_rs.git@dev
+```
+
 ## Description of the new language
 
 ### An example of modern chialisp exercising many of the new features:
@@ -826,5 +832,257 @@ code that's frugal at the CLVM level.
         )
       )
     )
+  )
+```
+
+## Complete Example: AVL Tree
+
+```chialisp
+;; Port of a verified AVL tree in haskell and agda from:
+;; https://doisinkidney.com/posts/2018-07-30-verified-avl.html
+;;
+;; Given an AVL tree representation and a key and value to add, return
+;; the new tree.
+(mod (tree k v)
+  (include *standard-cl-23*)
+
+  (defconstant LB 0)
+  (defconstant IB 1)
+  (defconstant UB 2)
+
+  (defconstant LT -1)
+  (defconstant EQ 0)
+  (defconstant GT 1)
+
+  (deftype Key a ((k : A)))
+
+  (deftype Bound (bound key))
+  (defconst lb (new_Bound LB ()))
+  (defun ib (k) (new_Bound IB k))
+  (defconst ub (new_Bound UB ()))
+
+  (defconstant BalanceL -1)
+  (defconstant BalanceO 0)
+  (defconstant BalanceR 1)
+
+  (defun-inline max (a b) (if (> a b) a b))
+
+  (deftype Balance (bt))
+
+  (defun-inline balr ((b : Balance)) -> Balance
+    (new_Balance
+      (if
+        (= (get_Balance_bt b) BalanceR)
+          BalanceL
+          BalanceO
+        )
+      )
+    )
+
+  (defun-inline ball ((b : Balance)) -> Balance
+    (new_Balance
+      (if
+        (= (get_Balance_bt b) BalanceL)
+        BalanceL
+        BalanceO
+        )
+      )
+    )
+
+  (defconstant Stay 0)
+  (defconstant Incr 1)
+
+  (deftype Rebalance t (rt (tree : t)))
+
+  (deftype Node
+    (key
+     value
+     balance
+     left
+     right
+    ))
+
+  (defun-inline rotr-l (x xv left cnode)
+    (assign
+      y (get_Node_key left)
+      yv (get_Node_value left)
+      anode (get_Node_left left)
+      bnode (get_Node_right left)
+
+      (new_Rebalance Stay (new_Node y yv (new_Balance BalanceO) anode (new_Node x xv (new_Balance BalanceO) bnode cnode)))
+      )
+    )
+
+  (defun-inline rotr-o (x xv left c)
+    (assign
+      y (get_Node_key left)
+      yv (get_Node_value left)
+      a (get_Node_left left)
+      b (get_Node_right left)
+
+      (new_Rebalance Incr (new_Node y yv (new_Balance BalanceR) a (new_Node x xv (new_Balance BalanceL) b c)))
+      )
+    )
+
+  (defun-inline rotr-r (x xv left d)
+    (assign
+      y (get_Node_key left)
+      yv (get_Node_value left)
+      a (get_Node_left left)
+      left_right (get_Node_right left)
+      z (get_Node_key left_right)
+      zv (get_Node_value left_right)
+      bl (get_Node_balance left_right)
+      b (get_Node_left left_right)
+      c (get_Node_right left_right)
+
+      (new_Rebalance Stay
+        (new_Node z zv
+          (new_Balance BalanceO)
+          (new_Node z zv (balr bl) a b)
+          (new_Node x xv (ball bl) c d)))
+      )
+    )
+
+  (defun rotr (x xv left right)
+    (assign
+      balance (get_Node_balance left)
+      bt (get_Balance_bt balance)
+
+      (if (= bt BalanceO)
+        (rotr-o x xv left right)
+        (if (= bt BalanceL)
+          (rotr-l x xv left right)
+          (rotr-r x xv left right)
+          )
+        )
+      )
+    )
+
+  (defun-inline rotl-o (x xv left right)
+    (assign
+      y (get_Node_key right)
+      yv (get_Node_value right)
+      b (get_Node_left right)
+      a (get_Node_right right)
+
+      (new_Rebalance Incr (new_Node y yv (new_Balance BalanceL) (new_Node x xv (new_Balance BalanceR) left b) a))
+      )
+    )
+
+  (defun-inline rotl-r (x xv left right)
+    (assign
+      y (get_Node_key right)
+      yv (get_Node_value right)
+      b (get_Node_left right)
+      a (get_Node_right right)
+
+      (new_Rebalance Stay (new_Node y yv (new_Balance BalanceO) (new_Node x xv (new_Balance BalanceO) left b) a))
+      )
+    )
+
+  (defun-inline rotl-l (x xv left right)
+    (assign
+      y (get_Node_key right)
+      yv (get_Node_value right)
+      left_right (get_Node_left right)
+      a (get_Node_right right)
+
+      z (get_Node_key left_right)
+      zv (get_Node_value left_right)
+      bl (get_Node_balance left_right)
+      c (get_Node_left left_right)
+      b (get_Node_right left_right)
+
+      (new_Rebalance Stay (new_Node z zv (new_Balance BalanceO) (new_Node x xv (balr bl) left c) (new_Node y yv (ball bl) b a)))
+      )
+    )
+
+  (defun rotl (x xv left right)
+    (assign
+      balance (get_Node_balance right)
+      bt (get_Balance_bt balance)
+
+      (if (= bt BalanceO)
+        (rotl-o x xv left right)
+        (if (= bt BalanceR)
+          (rotl-r x xv left right)
+          (rotl-l x xv left right)
+          )
+        )
+      )
+    )
+
+  (defun insert-with-leaf (k v)
+    (new_Rebalance Incr (new_Node k v (new_Balance BalanceO) () ()))
+    )
+
+  (defun insert-with-node-lt (k kc bl bt tr iw)
+    (assign-lambda
+      rt (get_Rebalance_rt iw)
+      tl_prime (get_Rebalance_tree iw)
+
+      (if (= rt Stay)
+        (new_Rebalance Stay (new_Node k kc bl tl_prime tr))
+        (if (= bt BalanceL)
+          (rotr k kc tl_prime tr)
+          (if (= bt BalanceO)
+            (new_Rebalance Incr (new_Node k kc (new_Balance BalanceL) tl_prime tr))
+            (new_Rebalance Stay (new_Node k kc (new_Balance BalanceO) tl_prime tr))
+            )
+          )
+        )
+      )
+    )
+
+  (defun insert-with-node-gt (k kc bl bt tl iw)
+    (assign
+      rt (get_Rebalance_rt iw)
+      tr_prime (get_Rebalance_tree iw)
+
+      (if (= rt Stay)
+        (new_Rebalance Stay (new_Node k kc bl tl tr_prime))
+        (if (= bt BalanceR)
+          (rotl k kc tl tr_prime)
+          (if (= bt BalanceO)
+            (new_Rebalance Incr (new_Node k kc (new_Balance BalanceR) tl tr_prime))
+            (new_Rebalance Stay (new_Node k kc (new_Balance BalanceO) tl tr_prime))
+            )
+          )
+        )
+      )
+    )
+
+  (defun insert-with-node (cmp f v vc node)
+    (assign
+      tl (get_Node_left node)
+      tr (get_Node_right node)
+      k (get_Node_key node)
+      kc (get_Node_value node)
+      bl (get_Node_balance node)
+      bt (get_Balance_bt bl)
+      compare_result (a cmp (list v k))
+
+      (if (= LT compare_result)
+        (insert-with-node-lt k kc bl bt tr (insert-with cmp f v vc tl))
+        (if (= EQ compare_result)
+          (new_Rebalance Stay (new_Node v (a f (list vc kc)) bl tl tr))
+          (insert-with-node-gt k kc bl bt tl (insert-with cmp f v vc tr))
+          )
+        )
+      )
+    )
+
+  (defun insert-with (cmp f v vc tree)
+    (if tree
+      (insert-with-node cmp f v vc tree)
+      (insert-with-leaf v vc)
+      )
+    )
+
+  (defun key-less (A B) (if (> A B) GT (if (> B A) LT EQ)))
+  (defun replace-value (A B) B)
+
+  (get_Rebalance_tree (insert-with key-less replace-value k v tree))
   )
 ```
