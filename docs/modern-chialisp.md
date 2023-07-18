@@ -1343,7 +1343,7 @@ code that's frugal at the CLVM level.
                        )
 
                       (new_SubhashBuilder
-                       (get_SubhashBuilder_colliding-segs acc)
+                       new-shb
                        1
                        new-subhash-node
                        )
