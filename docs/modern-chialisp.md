@@ -1086,3 +1086,353 @@ code that's frugal at the CLVM level.
   (get_Rebalance_tree (insert-with key-less replace-value k v tree))
   )
 ```
+
+## Complete Example: Hash Array Mapped Trie (HAMT)
+
+```chialisp
+;; HAMT ported from https://github.com/tomjkidd/simple-hamt/blob/master/src/simple_hamt/impl/core.clj
+(mod (h idx . rest)
+  (include *standard-cl-23*)
+
+  (defconstant number-of-segments 4)
+  (defconstant number-of-children 4)
+  (defconstant bits-per-segment 2)
+
+  (defun hash* (key)
+    (r (divmod key (lsh 1 (+ number-of-children number-of-segments))))
+    )
+
+  (deftype HAMT (type bitmap hash-table))
+  (deftype HNode (type key value))
+
+  (defun-inline htype (obj) (f obj))
+
+  (defun-inline empty-hash-map* () (new_HAMT "root" 0x00 ()))
+
+  (defun-inline get-hash-segment (hash-value segment)
+    (let ((mask 3)
+          (shifted (lsh hash-value (* segment -2))))
+      (logand mask shifted)
+      )
+    )
+
+  (defun list-nth (lst n)
+    (if n
+        (list-nth (r lst) (- n 1))
+        (f lst)
+        )
+    )
+
+  (defun list-replace-nth (lst idx new-item)
+    (if idx
+        (c (f lst) (list-replace-nth (r lst) (- idx 1) new-item))
+        (c new-item (r lst))
+        )
+    )
+
+  (defun range (n e)
+    (if (> e n)
+        (c (- (- e n) 1) (range (+ 1 n) e))
+        ()
+        )
+    )
+
+  (defun map (fun l)
+    (if l
+        (c (a fun (list (f l))) (map fun (r l)))
+        ()
+        )
+    )
+
+  (defun reduce (fun acc lst)
+    (if lst
+        (reduce fun (a fun (list acc (f lst))) (r lst))
+        acc
+        )
+    )
+
+  (defun drop (idx lst)
+    (if idx
+        (c (f lst) (drop (- idx 1) (r lst)))
+        (r lst)
+        )
+    )
+
+  (defun segment-seq (hash-value)
+    (map
+     (lambda ((& hash-value) v) (get-hash-segment hash-value v))
+     (range 0 number-of-segments)
+     )
+    )
+
+  (defun-inline in-bitmap? (bitmap position)
+    (logand bitmap (lsh 1 position))
+    )
+
+  (defun get-hash-table-index (bitmap position)
+    (reduce
+     (lambda ((& bitmap) acc cur)
+       (if (logand bitmap (lsh 1 cur))
+           (+ 1 acc)
+           acc
+           )
+       )
+     0
+     (range 0 position)
+     )
+    )
+
+  (defun update-bitmap (bitmap child-index)
+    (logior bitmap (lsh 1 child-index))
+    )
+
+  (defun update-hash-table (hash-table bitmap child-index k v)
+    (assign
+
+     in-bitmap-seq
+     (map
+      (lambda ((& hash-table bitmap child-index k v) idx)
+        (let
+            ((node
+              (if (= idx child-index)
+                  (new_HNode "node" k v)
+                  (if (in-bitmap? bitmap idx)
+                      (let ((htidx (get-hash-table-index bitmap idx)))
+                        (list-nth hash-table htidx)
+                        )
+                      ()
+                      )
+                  )
+               ))
+          (list idx node)
+          )
+        )
+      (range 0 number-of-children)
+      )
+
+     (reduce
+      (lambda (acc (index node))
+        (if node
+            (c node acc)
+            acc
+            )
+        )
+      ()
+      in-bitmap-seq
+      )
+     )
+    )
+
+  (defun get* (hm hash-val seg-index)
+    (assign
+     bitmap (get_HAMT_bitmap hm)
+     hash-table (get_HAMT_hash-table hm)
+     index (get-hash-segment hash-val seg-index)
+     empty? (not (in-bitmap? bitmap index))
+
+     (if empty?
+         ()
+         (assign
+          hash-table-index (get-hash-table-index bitmap index)
+          node (list-nth hash-table hash-table-index)
+          type (htype node)
+          key (get_HNode_key node)
+          value (get_HNode_value node)
+
+          (if (= type "node")
+              (if (= key hash-val)
+                  value
+                  ()
+                  )
+
+              (get* node hash-val (+ 1 seg-index))
+              )
+          )
+         )
+     )
+    )
+
+  (deftype SubhashBuilder (colliding-segs finished subhash-node))
+
+  (defun insert (hm child-index k v)
+    (assign
+     bitmap (get_HAMT_bitmap hm)
+     hash-table (get_HAMT_hash-table hm)
+     new-bitmap (update-bitmap bitmap child-index)
+     new-hash-table (update-hash-table hash-table bitmap child-index k v)
+     (new_HAMT (get_HAMT_type hm) new-bitmap new-hash-table)
+     )
+    )
+
+  (defun recur-subhash-node (acc rem sh)
+    (if (not (f rem))
+        sh
+        (recur-subhash-node
+         acc
+         (r rem)
+         (new_HAMT
+          "subh"
+          (update-bitmap 0 (f rem))
+          (list sh)
+          )
+         )
+        )
+    )
+
+  (defun enumerate-inner (n lst)
+    (if lst
+        (c (c n (f lst)) (enumerate-inner (+ n 1) (r lst)))
+        ()
+        )
+    )
+
+  (defun enumerate (lst) (enumerate-inner 0 lst))
+
+  (defun has-nonempty-sublist (items)
+    (if items
+        (l (f items))
+        ()
+        )
+    )
+
+  (defun slices (items)
+    (if (has-nonempty-sublist items)
+        (c (map (lambda (L) (f L)) items) (slices (map (lambda (L) (r L)) items)))
+        ()
+        )
+    )
+
+  (defun build-subhash (old-node new-node seg-index)
+    (assign
+     old-segs (drop seg-index (segment-seq (hash* (get_HNode_key old-node))))
+
+     new-segs (drop seg-index (segment-seq (hash* (get_HNode_key new-node))))
+
+     segs (enumerate (slices (list old-segs new-segs)))
+
+     sh (reduce
+         (lambda ((& old-node new-node) acc (i o n))
+           (let ((finished (get_SubhashBuilder_finished acc))
+                 (new-shb (get_SubhashBuilder_colliding-segs acc)))
+
+             (if finished
+                 acc
+                 (if (= o n)
+                     (new_SubhashBuilder
+                      (c o new-shb)
+                      ()
+                      (get_SubhashBuilder_subhash-node acc)
+                      )
+                     (assign
+
+                      subhash (new_HAMT "subh" 0x00 ())
+                      old-hnode (get_HNode_value old-node)
+
+                      subhash-with-old
+                      (insert subhash o (get_HNode_key old-node) old-hnode)
+
+                      new-hnode (get_HNode_value new-node)
+                      subhash-with-old-and-new
+                      (insert subhash-with-old n (get_HNode_key new-node) new-hnode)
+
+                      new-subhash-node
+                      (recur-subhash-node
+                       acc
+                       new-shb
+                       subhash-with-old-and-new
+                       )
+
+                      (new_SubhashBuilder
+                       (get_SubhashBuilder_colliding-segs acc)
+                       1
+                       new-subhash-node
+                       )
+                      )
+                     )
+                 )
+             )
+           )
+
+         (new_SubhashBuilder () () ())
+         segs
+         )
+
+     (get_SubhashBuilder_subhash-node sh)
+     )
+    )
+
+  (defun assoc-collision (hm k v hash-val seg-index)
+    (assign
+     bitmap (get_HAMT_bitmap hm)
+     hash-table (get_HAMT_hash-table hm)
+     child-index (get-hash-segment hash-val seg-index)
+     hash-table-index (get-hash-table-index bitmap child-index)
+     collision-node (list-nth hash-table hash-table-index)
+     type (get_HNode_type collision-node)
+     key (get_HNode_key collision-node)
+     value (get_HNode_value collision-node)
+     hm-type (get_HAMT_type hm)
+     hm-bitmap (get_HAMT_bitmap hm)
+     old-node collision-node
+
+     (if (= type "node")
+         (assign
+          hm-table (get_HAMT_hash-table hm)
+          (if (= k key)
+              (assign
+               new-node (new_HNode type key v)
+               new-hash-table (list-replace-nth hash-table hash-table-index new-node)
+
+               (new_HAMT hm-type hm-bitmap new-hash-table)
+               )
+              (assign
+               new-node (new_HNode type k v)
+               new-subhash-node (build-subhash old-node new-node (+ 1 seg-index))
+               new-hash-table (list-replace-nth hash-table hash-table-index new-subhash-node)
+               (new_HAMT hm-type hm-bitmap new-hash-table)
+               )
+              )
+          )
+         (assign
+          new-subhash-node (assoc* collision-node k v hash-val (+ 1 seg-index))
+          new-hash-table (list-replace-nth hash-table hash-table-index new-subhash-node)
+          (new_HAMT hm-type hm-bitmap new-hash-table)
+          )
+         )
+     )
+    )
+
+  (defun assoc* (hm k v hash-val seg-index)
+    (assign
+     bitmap (get_HAMT_bitmap hm)
+     hash-table (get_HAMT_hash-table hm)
+     child-index (get-hash-segment hash-val seg-index)
+     collision-detected? (in-bitmap? bitmap child-index)
+
+     (if (not collision-detected?)
+         (insert hm child-index k v)
+         (assoc-collision hm k v hash-val seg-index)
+         )
+     )
+    )
+
+  ;; External interface
+  (defun empty-hash-map () empty-hash-map*)
+
+  (defun get (hm k)
+    (get* hm (hash* k) 0)
+    )
+
+  (defun assoc (hm k v)
+    (assoc* hm k v (hash* k) 0)
+    )
+
+  (if (not h)
+      (new_HAMT () () ())
+      (if rest
+          (assoc h idx (f rest))
+          (get h idx)
+          )
+      )
+  )
+```
