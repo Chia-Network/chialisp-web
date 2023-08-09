@@ -14,7 +14,6 @@ You can use a wallet to generate an offer file for a given trade, then distribut
 - [Dexie](https://dexie.space)
 - [OfferPool](https://offerpool.io)
 - [OfferBin](https://offerbin.io)
-- [HashGreen](https://hash.green)
 
 ## Settlement Payments Code {#code}
 
