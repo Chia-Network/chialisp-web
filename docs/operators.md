@@ -127,37 +127,79 @@ The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is 
 
 ## BLS12-381
 
-| Operator       | Format                | Description                                         |
-| -------------- | --------------------- | --------------------------------------------------- |
-| point_add      | `(point_add A B ...)` | Adds G1 points (public keys) together.              |
-| pubkey_for_exp | `(pubkey_for_exp A)`  | Turns A (private key) into a G1 point (public key). |
+| Operator       | Format                  | Description                                                                                                |
+| -------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------- |
+| point_add      | `(point_add p1 p2 ...)` | Adds two or more G1 points (public keys) together. Renamed to g1_add in [CHIP-0111](#chip-0011-operators). |
+| pubkey_for_exp | `(pubkey_for_exp A)`    | Maps an exponent (secret key) to a G1 point (public key).                                                  |
 
 ## Softfork
 
-The softfork operator is defined as `(softfork cost A B ..)`.
+The purpose of the `softfork` operator is to enable the ability to define new CLVM operators without creating a hard fork. For example, suppose we want to add secp256k1 operators like `+s` for adding two points on this ECDSA curve for bitcoin compatibility. We can't just do this in vanilla CLVM, because that would make the program `(+s A B)` return different values before and after the soft fork. So instead, we can hide it under `softfork`.
 
-At the moment, `softfork` always returns `0` (nil), and requires `cost` amount of cost.
-
-At first glance, it seems pretty useless since it doesn't do anything and just wastes cost doing it.
-
-The idea is, after a soft fork, the meaning of the arguments may change. In fact, we can hide completely new dialects of CLVM inside here, that have new operators that calculate new things.
-
-For example, suppose we want to add secp256k1 operators like `+s` for adding two points on this ECDSA curve for bitcoin compatibility. We can't just do this in vanilla CLVM, because that would make the program `(+s A B)` return different values before and after the soft fork. So instead, we can hide it under `softfork`.
-
-Here is an example:
+The syntax is defined as follows:
 
 ```chialisp
-(mod (cost p1 p2 p3 p4)
-    (softfork cost 1 (assert (= (+s p1 p2) (+s p3 p4))))
+(softfork cost extension program arguments)
+```
+
+- The `cost` must equal the cost of executing the program with the specified arguments, otherwise an exception is raised. The minimum cost of the operator is 140.
+- The `extension` is an unsigned (up to 32-bit in size) integer indicating the set of extensions available in the softfork guard.
+- The `program` is executed with the specified `arguments`. The output is always either null or termination of the program if it failed.
+
+Here is a CLVM example using the `coinid` operator described in the [CHIP-0011 Operators](#chip-0011-operators) section:
+
+```chialisp
+(softfork
+  (q . 1265)  ; expected cost (including cost of softfork itself)
+  (q . 0)     ; extension 0
+  (q a        ; defer execution of if-branches
+    (i
+      (=
+        (coinid
+          (q . 0x1234500000000000000000000000000000000000000000000000000000000000)
+          (q . 0x6789abcdef000000000000000000000000000000000000000000000000000000)
+          (q . 123456789)
+        )
+        (q . 0x69bfe81b052bfc6bd7f3fb9167fec61793175b897c16a35827f947d5cc98e4bc)
+      )
+      (q . 0) ; if coin ID matches, return 0
+      (q x)   ; if coin ID mismatches, raise
+    )
+    (q . ())) ; environment to apply
+  (q . ())    ; environment to softfork
 )
 ```
 
-Pre-softfork, this always passes and returns `()` at a cost of `cost` (plus a bit of overhead).
+Pre-softfork, this always passes and returns `()` at a cost of `cost` (or 140, whichever is higher).
 
-Post-softfork, this also returns `()` at a cost of `cost`, but may also fail if `p1 + p2 != p3 + p4`. We can't export the sum outside the `softfork` boundary, but we can calculate the sum and compare it to another thing inside.
+Post-softfork, this also returns `()` at a cost of `cost`, but may also fail if the coin id doesn't match. We can't export the result outside the `softfork` boundary, but we can compare it to something inside and raise if it doesn't match.
 
-We take the cost of running the program inside the `softfork` boundary and ensure it exactly matches `COST`, and raise an exception if it's wrong. That way, the program really does have the same cost pre and post-softfork (or it fails post-softfork).
+We take the cost of running the program inside the `softfork` boundary and ensure it exactly matches `cost`, and raise an exception if it's wrong. That way, the program really does have the same cost pre-softfork and post-softfork (or it fails post-softfork).
+
+## [CHIP-0011](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0011.md) Operators
 
 :::info
-The `softfork` operator is currently unused, as there has not been a soft fork that has required new CLVM operators since mainnet. It exists solely as a way to implement new functionality later on if needed.
+These operators will be usable within the `softfork` operator starting at block height 4,510,000.
+
+At block height 5,496,000, the operators can be used directly as well.
 :::
+
+| Operator             | Format                                         | Description                                                                                                |
+| -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| g1_add               | `(g1_add p1 p2 ...)`                           | Adds two or more G1 points (public keys) together.                                                         |
+| g1_subtract          | `(g1_subtract p1 p2 ...)`                      | Subtracts one or more G1 points (public keys) from a base G1 point.                                        |
+| g1_multiply          | `(g1_multiply p1 p2)`                          | Multiplies a G1 point (public key) by a scalar value.                                                      |
+| g1_negate            | `(g1_negate point)`                            | Negates a G1 point (public key).                                                                           |
+| g2_add               | `(g2_add p1 p2 ...)`                           | Adds two or more G2 points (signatures) together.                                                          |
+| g2_subtract          | `(g2_subtract p1 p2 ...)`                      | Subtracts one or more G2 points (signatures) from a base G2 point.                                         |
+| g2_multiply          | `(g2_multiply p1 p2)`                          | Multiplies a G2 point (signature) by a scalar value.                                                       |
+| g2_negate            | `(g2_negate point)`                            | Negates a G2 point (signature).                                                                            |
+| g1_map               | `(g1_map data dst)`                            | Hashes the data to a G1 point with sha256 and ExpandMsgXmd. DST is optional.                               |
+| g2_map               | `(g2_map data dst)`                            | Hashes the data to a G2 point with sha256 and ExpandMsgXmd. DST is optional.                               |
+| bls_pairing_identity | `(bls_pairing_identity g1 g2 ...)`             | Returns nil if the pairing of all pairs is the identity, otherwise raises an exception.                    |
+| bls_verify           | `(bls_verify g2 g1 msg ...)`                   | Nil if signature g2 is valid with public key g1 and message, otherwise raises an exception.                |
+| coinid               | `(coinid parent_id puzzle_hash amount)`        | Validates inputs and calculates the coin id with a parent coin id, puzzle hash, and amount.                |
+| modpow               | `(modpow base exponent modulus)`               | Computes `(base ^ exponent) % modulus`. Base may be negative, exponent must not be, modulus must not be 0. |
+| %                    | `(% numerator denominator)`                    | Computes the remainder of the numerator divided by the denominator.                                        |
+| secp256k1_verify     | `(secp256k1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256k1 curve.                                                        |
+| secp256r1_verify     | `(secp256r1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256r1 curve.                                                        |
