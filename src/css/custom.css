@@ -61,3 +61,11 @@ h4 {
 .footer__logo {
   width:10rem;
 }
+
+.play-button {
+  transition: 0.5s;
+}
+
+.play-button:hover {
+  color: #888;
+}

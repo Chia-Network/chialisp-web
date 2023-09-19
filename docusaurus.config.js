@@ -105,14 +105,14 @@ module.exports = {
   ],
   themes: [
     [
-      "@easyops-cn/docusaurus-search-local",
+      '@easyops-cn/docusaurus-search-local',
       /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
       ({
         hashed: true,
-        language: ["en", "zh"],
+        language: ['en', 'zh'],
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
-        docsRouteBasePath: "/"
+        docsRouteBasePath: '/',
       }),
     ],
   ],
