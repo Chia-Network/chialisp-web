@@ -61,10 +61,6 @@
         alias: 'listop',
       },
     ],
-    boolean: {
-      pattern: primitive('\\(\\)'),
-      lookbehind: true,
-    },
     hexadecimal: {
       pattern: /0x[0-9a-fA-F]+/,
     },

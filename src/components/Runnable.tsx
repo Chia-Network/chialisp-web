@@ -18,7 +18,8 @@ import lightTheme from '../theme/prism-light-theme-chialisp';
 export default function Runnable({
   children,
   flavor,
-}: PropsWithChildren<{ flavor: 'clvm' | 'chialisp' }>) {
+  input,
+}: PropsWithChildren<{ flavor?: 'clvm' | 'chialisp'; input?: Program }>) {
   const { colorMode } = useColorMode();
 
   const initialValue = useMemo(() => onlyText(children), []);
@@ -71,7 +72,7 @@ export default function Runnable({
 
               let compiled: Program;
 
-              if (flavor === 'chialisp') {
+              if (!flavor || flavor === 'chialisp') {
                 try {
                   compiled = program.compile().value;
                 } catch (error) {
@@ -91,7 +92,7 @@ export default function Runnable({
 
               let output: Program;
               try {
-                output = compiled.run(Program.nil).value;
+                output = compiled.run(input ?? Program.nil).value;
               } catch (error) {
                 setOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
                 return;
