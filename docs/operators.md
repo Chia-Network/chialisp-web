@@ -4,6 +4,8 @@ title: Operators
 slug: /operators
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+
 This is a basic description of each operator. If you want tangible examples for how to use them, check out the [Examples page](/examples).
 
 :::note
@@ -44,9 +46,13 @@ You should use `divmod` instead in situations where you need to divide negative 
 
 For example:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
-(f (divmod -6 3)) ; -2
+(f (divmod -6 3))
 ```
+
+</Runnable>
 
 :::
 
@@ -78,9 +84,13 @@ Usually this is the intended behavior, but if it isn't, you can use the `i` oper
 
 If you would like to replicate the lazy evaluation of the `if` operator in CLVM, you can wrap the `i` operator like this:
 
+<Runnable flavor='clvm'>
+
 ```chialisp
-(a (i A (q . B) (q . C)) 1)
+(a (i (q . 1) (q q . 'abc') (q q . 'xyz')) 1)
 ```
+
+</Runnable>
 
 Essentially, this runs the branch the condition matches as a program (with the current environment). Depending on how much code is executed in each branch, this may be more cost effective than executing both branches.
 :::

@@ -10,7 +10,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { FaPlay } from 'react-icons/fa';
+import { FaKeyboard, FaPlay } from 'react-icons/fa';
 import Editor from 'react-simple-code-editor';
 import darkTheme from '../theme/prism-dark-theme-chialisp';
 import lightTheme from '../theme/prism-light-theme-chialisp';
@@ -19,12 +19,13 @@ export default function Runnable({
   children,
   flavor,
   input,
-}: PropsWithChildren<{ flavor?: 'clvm' | 'chialisp'; input?: Program }>) {
+}: PropsWithChildren<{ flavor?: 'clvm' | 'chialisp'; input?: string }>) {
   const { colorMode } = useColorMode();
 
   const initialValue = useMemo(() => onlyText(children), []);
-  const [code, setCode] = useState(initialValue.trim());
 
+  const [currentInput, setCurrentInput] = useState(input?.trim() ?? '');
+  const [code, setCode] = useState(initialValue.trim());
   const [output, setOutput] = useState<string | null>(null);
 
   return (
@@ -36,6 +37,38 @@ export default function Runnable({
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre className={className} style={{ ...style, position: 'relative' }}>
+          {!currentInput ? (
+            ''
+          ) : (
+            <>
+              <Highlight
+                Prism={Prism}
+                theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+                code={currentInput}
+                language={'chialisp' as any}
+              >
+                {({ tokens, getLineProps, getTokenProps }) => (
+                  <Editor
+                    value={currentInput}
+                    onValueChange={(currentInput) =>
+                      setCurrentInput(currentInput)
+                    }
+                    highlight={() =>
+                      tokens.map((line, i) => (
+                        <div key={i} {...getLineProps({ line })}>
+                          {line.map((token, key) => (
+                            <span key={key} {...getTokenProps({ token })} />
+                          ))}
+                        </div>
+                      ))
+                    }
+                    padding={0}
+                  />
+                )}
+              </Highlight>
+              <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
+            </>
+          )}
           <Editor
             value={code}
             onValueChange={(code) => setCode(code)}
@@ -50,9 +83,22 @@ export default function Runnable({
             }
             padding={0}
           />
+          {!currentInput && (
+            <FaKeyboard
+              size={24}
+              className="icon-button"
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '60px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setCurrentInput('()')}
+            />
+          )}
           <FaPlay
             size={24}
-            className="play-button"
+            className="icon-button"
             style={{
               position: 'absolute',
               top: '16px',
@@ -92,7 +138,9 @@ export default function Runnable({
 
               let output: Program;
               try {
-                output = compiled.run(input ?? Program.nil).value;
+                output = compiled.run(
+                  currentInput ? Program.fromSource(currentInput) : Program.nil
+                ).value;
               } catch (error) {
                 setOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
                 return;
@@ -105,7 +153,7 @@ export default function Runnable({
             ''
           ) : (
             <>
-              <hr />
+              <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
               <Highlight
                 Prism={Prism}
                 theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
