@@ -4,17 +4,23 @@ title: Syntax
 slug: /syntax
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+
 Chialisp's syntax is based on [Lisp](<https://en.wikipedia.org/wiki/Lisp_(programming_language)>), but there are some differences. This is a primer on the structure of expressions. Everything in the language shares the same [S-expression](https://en.wikipedia.org/wiki/S-expression) syntax, including operators and functions.
 
 ## Comments
 
 You can use one or more semicolons to denote that the rest of the line is a comment, and should be ignored when running the program.
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
 ;;; This is a comment.
 
 (+ 3 2) ; This is also a comment.
 ```
+
+</Runnable>
 
 Here are a few conventions for the number of semicolons to use:
 
@@ -107,15 +113,23 @@ As previously mentioned, if you want to write a value using the syntax shown abo
 
 Here is an example quotation of a list:
 
+<Runnable flavor='clvm'>
+
 ```chialisp
 (q . (1 2 3))
 ```
 
+</Runnable>
+
 Which is equivalent to the following Chialisp code:
+
+<Runnable flavor='chialisp'>
 
 ```chialisp
 (list 1 2 3)
 ```
+
+</Runnable>
 
 :::note
 Because quotation prevents execution, any operators or constants used within will be left in the form they are written in rather than being replaced.

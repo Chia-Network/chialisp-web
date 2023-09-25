@@ -4,6 +4,9 @@ title: CLVM
 slug: /clvm
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+import Program from 'clvm-lib';
+
 Chialisp is compiled to bytecode, which is executed on the Chialisp Virtual Machine. CLVM is as minimal as possible, and doesn't have direct support for language constructs such as functions, constants, and modules.
 
 This is all implemented by the Chialisp compiler. Although many of the operators are derived from CLVM, many things about Chialisp deviate from the bytecode it compiles to.
@@ -16,17 +19,25 @@ The core language syntax of CLVM is the same as Chialisp. However, it's a much m
 
 In Chialisp, you can write an atom directly like this:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
 "hello"
 ```
+
+</Runnable>
 
 However, CLVM will treat that as a call to access the program's environment (explained below).
 
 As a result, all atoms that are intended to be treated as a value must be quoted like this:
 
+<Runnable flavor='clvm'>
+
 ```chialisp
 (q . "hello")
 ```
+
+</Runnable>
 
 If you forget to do this, you will end up with either an unexpected value, or a path into atom error.
 
@@ -38,9 +49,13 @@ A program is represented as a binary tree. The root of the tree is the least nes
 
 In the following example, the outer parentheses represent the cons pair that is the root of the tree:
 
+<Runnable flavor='clvm'>
+
 ```chialisp
 (+ (q . 1) (q . 2))
 ```
+
+</Runnable>
 
 Whenever a program is called, it always has an environment (which will be described in more detail later), which is a CLVM value. This value, which is usually a list, holds all of the arguments passed into the program. This is the second command-line argument to `brun`, with the default environment being nil.
 
@@ -54,9 +69,13 @@ A CLVM program can be thought of as a binary tree.
 
 Here is an example of an operator call:
 
+<Runnable flavor='clvm'>
+
 ```chialisp
 (+ (q . 1) (q . 2))
 ```
+
+</Runnable>
 
 The operator is the opcode `+`, which is built-in to the CLVM runtime.
 
@@ -74,9 +93,13 @@ Here is a graph of the program, as stored in memory:
 
 After the first reduction, the program looks like this:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
 (+ 1 2)
 ```
+
+</Runnable>
 
 Here is a graph of the new program, as stored in memory:
 
@@ -92,9 +115,13 @@ Here is a graph of the new program, as stored in memory:
 
 After the second reduction, and the `+` operator call, it results in the following value:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
 3
 ```
+
+</Runnable>
 
 ## Environment
 
@@ -240,26 +267,22 @@ This behavior is how functions are implemented in the Chialisp compiler.
 
 Here is a CLVM program that executes the program contained in the first environment value with its own environment, `(12)`:
 
-```bash
-brun '(a 2 (q . (12)))' '((* 2 (q . 2)))'
-```
-
-This should output the following result:
+<Runnable flavor='clvm' input='((* 2 (q . 2)))'>
 
 ```chialisp
-24
+(a 2 (q . (12)))
 ```
+
+</Runnable>
 
 Taking this further, we can make the program run a new program that only uses values from the original environment:
 
-```bash
-brun '(a 2 1)' '((* 5 (q . 2)) 10)'
-```
-
-This should output the following result:
+<Runnable flavor='clvm' input='((* 5 (q . 2)) 10)'>
 
 ```chialisp
-20
+(a 2 1)
 ```
+
+</Runnable>
 
 We can use this technique to implement recursive functions.
