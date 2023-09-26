@@ -7,6 +7,24 @@ NFTs are non-fungible tokens that are minted on the Chia blockchain. The NFT puz
 
 They can be used to prove digital ownership of files such as images or videos, as well as the metadata and license pertaining to the file.
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Mint NFT](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/nft_wallet/nft_wallet.py#L321)
+- [Bulk mint NFTs](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/nft_wallet/nft_wallet.py#L1242)
+- [Spend NFT](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/nft_wallet/nft_wallet.py#L606)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Puzzle and solution types](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-primitives/src/primitives/nft.rs)
+- [Bulk mint NFTs](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-wallet/src/wallet.rs#L665)
+- [Spend NFT](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L1053).
+
 ## NFT Code {#code}
 
 This is the source code of the NFT state layer, which can also be found in the chia-blockchain repository in the puzzle [`nft_state_layer.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/164fd158c8626893bc45ba00b87ae69d2ab5f8b7/chia/wallet/puzzles/nft_state_layer.clvm).

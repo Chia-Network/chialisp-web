@@ -5,6 +5,20 @@ slug: /offers
 
 Offers are a way to enable peer-to-peer asset exchange on the Chia blockchain. In other words, you can swap tokens without needing to go through an exchange. Only two parties are required, the maker and the taker. They don't need to trust each other, since any attempts to modify the offer will invalidate it.
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Offer multiple assets](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/trade_manager.py#L410)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Offer NFT1 for CAT2](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L101)
+
 ## Offer Files
 
 When you create an offer, you get a string of text that is usually stored in a file. This describes the details of the trade, including the assets you are requesting and the assets you are giving in return. This file can be published on various platforms and downloaded by anyone to fulfill in the wallet of their choice. This allows for the flexibility of exchanges, while keeping it fully decentralized and preventing tampering or relying on a third party or middleman.

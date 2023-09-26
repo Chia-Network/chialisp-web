@@ -7,6 +7,22 @@ DIDs are a decentralized way to represent an identity, be that an organization o
 
 More functionality will be added to the DID standard in the future, allowing for easier identification and recovery methods.
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Mint new DID](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/did_wallet/did_wallet.py#L1217)
+- [Create update DID spend](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/did_wallet/did_wallet.py#L534)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Puzzle and solution types](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-primitives/src/primitives/did.rs)
+- [Spend DID](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L1148)
+
 ## DID Code {#code}
 
 This is the source code of the DID inner puzzle, which can also be found in the chia-blockchain repository in the puzzle [`did_innerpuz.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/164fd158c8626893bc45ba00b87ae69d2ab5f8b7/chia/wallet/puzzles/did_innerpuz.clvm).
