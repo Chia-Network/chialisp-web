@@ -19,6 +19,30 @@ To learn more about the terminology used on this page, check out the [blog entry
 
 Additionally, fungible tokens can be split apart and merged together, whereas non-fungible tokens are indivisible.
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Spend CAT coins](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/cat_wallet/cat_wallet.py#L784)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Puzzle and solution types](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-primitives/src/primitives/cat.rs)
+- [Issue new CAT](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L209)
+- [Spend CAT coins](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L545)
+- [Send CATs to puzzle hash](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L399)
+
+### chia-wallet-lib
+
+The [Chia wallet library NPM package](https://github.com/Chia-Network/node-chia-wallet-lib) has the following reference implementation:
+
+- [Issue new CAT](https://github.com/Chia-Network/node-chia-wallet-lib/blob/6c8d564538be121079596e492fa0da497c9dd39c/src/types/puzzles/AssetToken.ts#L63)
+- [Spend CAT coins](https://github.com/Chia-Network/node-chia-wallet-lib/blob/6c8d564538be121079596e492fa0da497c9dd39c/src/types/puzzles/AssetToken.ts#L102)
+
 ## CAT Code {#code}
 
 This is the source code of the CAT, which can also be found in the chia-blockchain repository in the puzzle [`cat_v2.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/fad414132e6950e79e805629427af76bf9ddcbc5/chia/wallet/puzzles/cat_v2.clvm):
