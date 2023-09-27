@@ -1,8 +1,14 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { Program } from 'clvm-lib';
 import Highlight, { Prism } from 'prism-react-renderer';
-import React, { PropsWithChildren, useMemo, useState } from 'react';
-import { FaKeyboard, FaPlay } from 'react-icons/fa';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import {
+  FaCheck,
+  FaKeyboard,
+  FaPlay,
+  FaQuestion,
+  FaTimes,
+} from 'react-icons/fa';
 import Editor from 'react-simple-code-editor';
 import darkTheme from '../theme/prism-dark-theme-chialisp';
 import lightTheme from '../theme/prism-light-theme-chialisp';
@@ -17,6 +23,7 @@ export interface RunnableProps {
   flavor?: 'clvm' | 'chialisp';
   input?: string;
   output?: string;
+  reporter?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Runnable({
@@ -24,6 +31,7 @@ export default function Runnable({
   flavor,
   input,
   output,
+  reporter,
 }: PropsWithChildren<RunnableProps>) {
   const { colorMode } = useColorMode();
 
@@ -74,6 +82,12 @@ export default function Runnable({
 
     setCurrentOutput(output.toSource());
   };
+
+  useEffect(() => {
+    if (currentOutput && output) {
+      reporter?.(currentOutput === output);
+    }
+  }, [currentOutput, output, reporter]);
 
   return (
     <Highlight
@@ -134,28 +148,13 @@ export default function Runnable({
             }}
             onClick={run}
           />
-          {currentOutput === null ? (
+          {!currentOutput && !output ? (
             ''
           ) : (
             <>
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
               <div style={{ display: 'inline-block' }}>
-                <Highlight
-                  Prism={Prism}
-                  theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
-                  code={currentOutput}
-                  language={'chialisp' as any}
-                >
-                  {({ tokens, getLineProps, getTokenProps }) =>
-                    tokens.map((line, i) => (
-                      <div key={i} {...getLineProps({ line })}>
-                        {line.map((token, key) => (
-                          <span key={key} {...getTokenProps({ token })} />
-                        ))}
-                      </div>
-                    ))
-                  }
-                </Highlight>
+                <HighlightCode code={currentOutput ?? ''} language="chialisp" />
               </div>
               {output !== undefined && (
                 <>
@@ -166,26 +165,19 @@ export default function Runnable({
                       right: '60px',
                     }}
                   >
-                    <Highlight
-                      Prism={Prism}
-                      theme={
-                        (colorMode === 'dark' ? darkTheme : lightTheme) as any
-                      }
-                      code={output}
-                      language={'chialisp' as any}
-                    >
-                      {({ tokens, getLineProps, getTokenProps }) =>
-                        tokens.map((line, i) => (
-                          <div key={i} {...getLineProps({ line })}>
-                            {line.map((token, key) => (
-                              <span key={key} {...getTokenProps({ token })} />
-                            ))}
-                          </div>
-                        ))
-                      }
-                    </Highlight>
+                    <HighlightCode code={output} language="chialisp" />
                   </div>
-                  {currentOutput === output ? (
+                  {!currentOutput ? (
+                    <FaQuestion
+                      size={24}
+                      style={{
+                        color: '#999999',
+                        position: 'absolute',
+                        bottom: '16px',
+                        right: '16px',
+                      }}
+                    />
+                  ) : currentOutput === output ? (
                     <FaCheck
                       size={24}
                       style={{
