@@ -13,25 +13,32 @@ export interface RunnableProps {
   input?: string;
 }
 
+export interface RunnableProps {
+  flavor?: 'clvm' | 'chialisp';
+  input?: string;
+  output?: string;
+}
+
 export default function Runnable({
   children,
   flavor,
   input,
+  output,
 }: PropsWithChildren<RunnableProps>) {
   const { colorMode } = useColorMode();
 
   const initialValue = useMemo(() => onlyText(children), []);
 
   const [currentInput, setCurrentInput] = useState(input?.trim() ?? '');
+  const [currentOutput, setCurrentOutput] = useState<string | null>(null);
   const [code, setCode] = useState(initialValue.trim());
-  const [output, setOutput] = useState<string | null>(null);
 
   const run = () => {
     let program: Program;
     try {
       program = Program.fromSource(code);
     } catch (error) {
-      setOutput(`Parsing error: ${('' + error).replace('Error: ', '')}`);
+      setCurrentOutput(`Parsing error: ${('' + error).replace('Error: ', '')}`);
       return;
     }
 
@@ -41,12 +48,14 @@ export default function Runnable({
       try {
         compiled = program.compile().value;
       } catch (error) {
-        setOutput(`Compilation error: ${('' + error).replace('Error: ', '')}`);
+        setCurrentOutput(
+          `Compilation error: ${('' + error).replace('Error: ', '')}`
+        );
         return;
       }
 
       if (compiled.isAtom) {
-        setOutput(compiled.toSource());
+        setCurrentOutput(compiled.toSource());
         return;
       }
     } else {
@@ -59,11 +68,11 @@ export default function Runnable({
         currentInput ? Program.fromSource(currentInput) : Program.nil
       ).value;
     } catch (error) {
-      setOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
+      setCurrentOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
       return;
     }
 
-    setOutput(output.toSource());
+    setCurrentOutput(output.toSource());
   };
 
   return (
@@ -125,12 +134,80 @@ export default function Runnable({
             }}
             onClick={run}
           />
-          {output === null ? (
+          {currentOutput === null ? (
             ''
           ) : (
             <>
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
-              <HighlightCode code={output} language="chialisp" />
+              <div style={{ display: 'inline-block' }}>
+                <Highlight
+                  Prism={Prism}
+                  theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+                  code={currentOutput}
+                  language={'chialisp' as any}
+                >
+                  {({ tokens, getLineProps, getTokenProps }) =>
+                    tokens.map((line, i) => (
+                      <div key={i} {...getLineProps({ line })}>
+                        {line.map((token, key) => (
+                          <span key={key} {...getTokenProps({ token })} />
+                        ))}
+                      </div>
+                    ))
+                  }
+                </Highlight>
+              </div>
+              {output !== undefined && (
+                <>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      position: 'absolute',
+                      right: '60px',
+                    }}
+                  >
+                    <Highlight
+                      Prism={Prism}
+                      theme={
+                        (colorMode === 'dark' ? darkTheme : lightTheme) as any
+                      }
+                      code={output}
+                      language={'chialisp' as any}
+                    >
+                      {({ tokens, getLineProps, getTokenProps }) =>
+                        tokens.map((line, i) => (
+                          <div key={i} {...getLineProps({ line })}>
+                            {line.map((token, key) => (
+                              <span key={key} {...getTokenProps({ token })} />
+                            ))}
+                          </div>
+                        ))
+                      }
+                    </Highlight>
+                  </div>
+                  {currentOutput === output ? (
+                    <FaCheck
+                      size={24}
+                      style={{
+                        color: '#77FF77',
+                        position: 'absolute',
+                        bottom: '16px',
+                        right: '16px',
+                      }}
+                    />
+                  ) : (
+                    <FaTimes
+                      size={24}
+                      style={{
+                        color: '#FF7777',
+                        position: 'absolute',
+                        bottom: '16px',
+                        right: '16px',
+                      }}
+                    />
+                  )}{' '}
+                </>
+              )}
             </>
           )}
         </pre>
