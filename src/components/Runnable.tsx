@@ -1,25 +1,23 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { Program } from 'clvm-lib';
 import Highlight, { Prism } from 'prism-react-renderer';
-import React, {
-  Children,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode,
-  isValidElement,
-  useMemo,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
 import { FaKeyboard, FaPlay } from 'react-icons/fa';
 import Editor from 'react-simple-code-editor';
 import darkTheme from '../theme/prism-dark-theme-chialisp';
 import lightTheme from '../theme/prism-light-theme-chialisp';
+import { onlyText } from '../utils/stringify';
+
+export interface RunnableProps {
+  flavor?: 'clvm' | 'chialisp';
+  input?: string;
+}
 
 export default function Runnable({
   children,
   flavor,
   input,
-}: PropsWithChildren<{ flavor?: 'clvm' | 'chialisp'; input?: string }>) {
+}: PropsWithChildren<RunnableProps>) {
   const { colorMode } = useColorMode();
 
   const initialValue = useMemo(() => onlyText(children), []);
@@ -27,6 +25,46 @@ export default function Runnable({
   const [currentInput, setCurrentInput] = useState(input?.trim() ?? '');
   const [code, setCode] = useState(initialValue.trim());
   const [output, setOutput] = useState<string | null>(null);
+
+  const run = () => {
+    let program: Program;
+    try {
+      program = Program.fromSource(code);
+    } catch (error) {
+      setOutput(`Parsing error: ${('' + error).replace('Error: ', '')}`);
+      return;
+    }
+
+    let compiled: Program;
+
+    if (!flavor || flavor === 'chialisp') {
+      try {
+        compiled = program.compile().value;
+      } catch (error) {
+        setOutput(`Compilation error: ${('' + error).replace('Error: ', '')}`);
+        return;
+      }
+
+      if (compiled.isAtom) {
+        setOutput(compiled.toSource());
+        return;
+      }
+    } else {
+      compiled = program;
+    }
+
+    let output: Program;
+    try {
+      output = compiled.run(
+        currentInput ? Program.fromSource(currentInput) : Program.nil
+      ).value;
+    } catch (error) {
+      setOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
+      return;
+    }
+
+    setOutput(output.toSource());
+  };
 
   return (
     <Highlight
@@ -41,31 +79,11 @@ export default function Runnable({
             ''
           ) : (
             <>
-              <Highlight
-                Prism={Prism}
-                theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+              <HighlightCode
                 code={currentInput}
-                language={'chialisp' as any}
-              >
-                {({ tokens, getLineProps, getTokenProps }) => (
-                  <Editor
-                    value={currentInput}
-                    onValueChange={(currentInput) =>
-                      setCurrentInput(currentInput)
-                    }
-                    highlight={() =>
-                      tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line })}>
-                          {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token })} />
-                          ))}
-                        </div>
-                      ))
-                    }
-                    padding={0}
-                  />
-                )}
-              </Highlight>
+                setCode={setCurrentInput}
+                language="chialisp"
+              />
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
             </>
           )}
@@ -105,71 +123,14 @@ export default function Runnable({
               right: '16px',
               cursor: 'pointer',
             }}
-            onClick={() => {
-              let program: Program;
-              try {
-                program = Program.fromSource(code);
-              } catch (error) {
-                setOutput(
-                  `Parsing error: ${('' + error).replace('Error: ', '')}`
-                );
-                return;
-              }
-
-              let compiled: Program;
-
-              if (!flavor || flavor === 'chialisp') {
-                try {
-                  compiled = program.compile().value;
-                } catch (error) {
-                  setOutput(
-                    `Compilation error: ${('' + error).replace('Error: ', '')}`
-                  );
-                  return;
-                }
-
-                if (compiled.isAtom) {
-                  setOutput(compiled.toSource());
-                  return;
-                }
-              } else {
-                compiled = program;
-              }
-
-              let output: Program;
-              try {
-                output = compiled.run(
-                  currentInput ? Program.fromSource(currentInput) : Program.nil
-                ).value;
-              } catch (error) {
-                setOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
-                return;
-              }
-
-              setOutput(output.toSource());
-            }}
+            onClick={run}
           />
           {output === null ? (
             ''
           ) : (
             <>
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
-              <Highlight
-                Prism={Prism}
-                theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
-                code={output}
-                language={'chialisp' as any}
-              >
-                {({ tokens, getLineProps, getTokenProps }) =>
-                  tokens.map((line, i) => (
-                    <div key={i} {...getLineProps({ line })}>
-                      {line.map((token, key) => (
-                        <span key={key} {...getTokenProps({ token })} />
-                      ))}
-                    </div>
-                  ))
-                }
-              </Highlight>
+              <HighlightCode code={output} language="chialisp" />
             </>
           )}
         </pre>
@@ -178,47 +139,42 @@ export default function Runnable({
   );
 }
 
-export const childToString = (child?: ReactNode): string => {
-  if (
-    typeof child === 'undefined' ||
-    child === null ||
-    typeof child === 'boolean'
-  ) {
-    return '';
-  }
+interface HighlightCodeProps {
+  code: string;
+  setCode?: React.Dispatch<React.SetStateAction<string>>;
+  language: string;
+}
 
-  if (JSON.stringify(child) === '{}') {
-    return '';
-  }
+function HighlightCode({ code, setCode, language }: HighlightCodeProps) {
+  const { colorMode } = useColorMode();
 
-  return (child as number | string).toString();
-};
+  return (
+    <Highlight
+      Prism={Prism}
+      theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+      code={code}
+      language={language as any}
+    >
+      {({ tokens, getLineProps, getTokenProps }) => {
+        let children = tokens.map((line, i) => (
+          <div key={i} {...getLineProps({ line })}>
+            {line.map((token, key) => (
+              <span key={key} {...getTokenProps({ token })} />
+            ))}
+          </div>
+        ));
 
-const hasChildren = (
-  element: ReactNode
-): element is ReactElement<{ children: ReactNode | ReactNode[] }> =>
-  isValidElement<{ children?: ReactNode[] }>(element) &&
-  Boolean(element.props.children);
-
-const onlyText = (children: ReactNode | ReactNode[]): string => {
-  if (!(children instanceof Array) && !isValidElement(children)) {
-    return childToString(children);
-  }
-
-  return Children.toArray(children).reduce(
-    (text: string, child: ReactNode): string => {
-      let newText = '';
-
-      if (isValidElement(child) && hasChildren(child)) {
-        newText = onlyText(child.props.children);
-      } else if (isValidElement(child) && !hasChildren(child)) {
-        newText = '';
-      } else {
-        newText = childToString(child);
-      }
-
-      return text.concat(newText);
-    },
-    ''
+        return setCode ? (
+          <Editor
+            value={code}
+            onValueChange={(newCode) => setCode(newCode)}
+            highlight={() => children}
+            padding={0}
+          />
+        ) : (
+          children
+        );
+      }}
+    </Highlight>
   );
-};
+}
