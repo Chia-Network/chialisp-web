@@ -1,7 +1,7 @@
 import { useColorMode } from '@docusaurus/theme-common';
-import { Program } from 'clvm-lib';
+import { Program, ProgramOutput } from 'clvm-lib';
 import Highlight, { Prism } from 'prism-react-renderer';
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
 import {
   FaCheck,
   FaKeyboard,
@@ -17,77 +17,93 @@ import { onlyText } from '../utils/stringify';
 export interface RunnableProps {
   flavor?: 'clvm' | 'chialisp';
   input?: string;
-}
-
-export interface RunnableProps {
-  flavor?: 'clvm' | 'chialisp';
-  input?: string;
-  output?: string;
+  tests?: Record<string, string>;
   reporter?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Runnable({
   children,
   flavor,
-  input,
-  output,
+  input: initialInput,
+  tests,
   reporter,
 }: PropsWithChildren<RunnableProps>) {
   const { colorMode } = useColorMode();
 
-  const initialValue = useMemo(() => onlyText(children), []);
+  const initialCode = useMemo(() => onlyText(children).trim(), []);
+  const [code, setCode] = useState(initialCode);
 
-  const [currentInput, setCurrentInput] = useState(input?.trim() ?? '');
-  const [currentOutput, setCurrentOutput] = useState<string | null>(null);
-  const [code, setCode] = useState(initialValue.trim());
+  const [input, setInput] = useState(
+    initialInput ?? Object.keys(tests ?? {})[0]?.trim() ?? ''
+  );
+  const [output, setOutput] = useState('');
+  const [cost, setCost] = useState(0n);
+  const [correct, setCorrect] = useState<boolean | null>(null);
 
-  const run = () => {
-    let program: Program;
+  const formatError = (error: string) => error.replace('Error: ', '');
+
+  const parse = (): Program | null => {
     try {
-      program = Program.fromSource(code);
+      return Program.fromSource(code);
     } catch (error) {
-      setCurrentOutput(`Parsing error: ${('' + error).replace('Error: ', '')}`);
-      return;
+      setOutput(`While parsing: ${formatError('' + error)}`);
+      return null;
     }
-
-    let compiled: Program;
-
-    if (!flavor || flavor === 'chialisp') {
-      try {
-        compiled = program.compile().value;
-      } catch (error) {
-        setCurrentOutput(
-          `Compilation error: ${('' + error).replace('Error: ', '')}`
-        );
-        return;
-      }
-
-      if (compiled.isAtom) {
-        setCurrentOutput(compiled.toSource());
-        return;
-      }
-    } else {
-      compiled = program;
-    }
-
-    let output: Program;
-    try {
-      output = compiled.run(
-        currentInput ? Program.fromSource(currentInput) : Program.nil
-      ).value;
-    } catch (error) {
-      setCurrentOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
-      return;
-    }
-
-    setCurrentOutput(output.toSource());
   };
 
-  useEffect(() => {
-    if (currentOutput && output) {
-      reporter?.(currentOutput === output);
+  const compile = (program: Program): Program | null => {
+    if (!flavor || flavor === 'chialisp') {
+      try {
+        return program.compile().value;
+      } catch (error) {
+        setOutput(`While compiling: ${formatError('' + error)}`);
+        return null;
+      }
+    } else {
+      return program;
     }
-  }, [currentOutput, output, reporter]);
+  };
+
+  const evaluate = (program: Program, env: Program): ProgramOutput | null => {
+    if (program.isAtom) program = Program.fromSource(`(q . ${program})`);
+
+    try {
+      return program.run(env);
+    } catch (error) {
+      setOutput(`While evaluating: ${formatError('' + error)}`);
+      return null;
+    }
+  };
+
+  const run = () => {
+    const parsed = parse();
+    if (!parsed) return;
+
+    const compiled = compile(parsed);
+    if (!compiled) return;
+
+    const inputProgram = input ? Program.fromSource(input) : Program.nil;
+    const outputProgram = evaluate(compiled, inputProgram);
+    if (outputProgram) {
+      setOutput(outputProgram.value.toSource());
+      setCost(outputProgram.cost);
+    }
+
+    let isCorrect = true;
+
+    for (const [testedInput, expectedOutput] of Object.entries(tests ?? {})) {
+      const inputProgram = Program.fromSource(testedInput);
+      const outputProgram = evaluate(compiled, inputProgram);
+
+      if (!outputProgram || outputProgram.value.toSource() !== expectedOutput) {
+        isCorrect = false;
+        break;
+      }
+    }
+
+    reporter?.(isCorrect);
+    setCorrect(isCorrect);
+  };
 
   return (
     <Highlight
@@ -98,13 +114,13 @@ export default function Runnable({
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre className={className} style={{ ...style, position: 'relative' }}>
-          {!currentInput ? (
+          {!input ? (
             ''
           ) : (
             <>
               <HighlightCode
-                code={currentInput}
-                setCode={setCurrentInput}
+                code={input}
+                setCode={setInput}
                 language="chialisp"
               />
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
@@ -124,7 +140,7 @@ export default function Runnable({
             }
             padding={0}
           />
-          {!currentInput && (
+          {!input && (
             <FaKeyboard
               size={24}
               className="icon-button"
@@ -134,7 +150,7 @@ export default function Runnable({
                 right: '60px',
                 cursor: 'pointer',
               }}
-              onClick={() => setCurrentInput('()')}
+              onClick={() => setInput('()')}
             />
           )}
           <FaPlay
@@ -148,15 +164,15 @@ export default function Runnable({
             }}
             onClick={run}
           />
-          {!currentOutput && !output ? (
+          {!output ? (
             ''
           ) : (
             <>
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
               <div style={{ display: 'inline-block' }}>
-                <HighlightCode code={currentOutput ?? ''} language="chialisp" />
+                <HighlightCode code={output} language="chialisp" />
               </div>
-              {output !== undefined && (
+              {output && (
                 <>
                   <div
                     style={{
@@ -165,9 +181,9 @@ export default function Runnable({
                       right: '60px',
                     }}
                   >
-                    <HighlightCode code={output} language="chialisp" />
+                    <HighlightCode code={`Cost: ${cost}`} language="chialisp" />
                   </div>
-                  {!currentOutput ? (
+                  {!output ? (
                     <FaQuestion
                       size={24}
                       style={{
@@ -177,7 +193,7 @@ export default function Runnable({
                         right: '16px',
                       }}
                     />
-                  ) : currentOutput === output ? (
+                  ) : correct ? (
                     <FaCheck
                       size={24}
                       style={{
