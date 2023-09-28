@@ -1,7 +1,7 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { Program, ProgramOutput } from 'clvm-lib';
 import Highlight, { Prism } from 'prism-react-renderer';
-import React, { PropsWithChildren, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import {
   FaCheck,
   FaKeyboard,
@@ -105,10 +105,16 @@ export default function Runnable({
     setCorrect(isCorrect);
   };
 
+  // Prevent SSR
+  const [hydrated, setHydrated] = React.useState(false);
+  useEffect(() => setHydrated(true), []);
+
   return (
     <Highlight
       Prism={Prism}
-      theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+      theme={
+        hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
+      }
       code={code}
       language={'chialisp' as any}
     >
@@ -233,10 +239,16 @@ interface HighlightCodeProps {
 function HighlightCode({ code, setCode, language }: HighlightCodeProps) {
   const { colorMode } = useColorMode();
 
+  // Prevent SSR
+  const [hydrated, setHydrated] = React.useState(false);
+  useEffect(() => setHydrated(true), []);
+
   return (
     <Highlight
       Prism={Prism}
-      theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+      theme={
+        hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
+      }
       code={code}
       language={language as any}
     >
