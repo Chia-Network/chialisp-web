@@ -2,13 +2,7 @@ import { useColorMode } from '@docusaurus/theme-common';
 import { Program, ProgramOutput } from 'clvm-lib';
 import Highlight, { Prism } from 'prism-react-renderer';
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import {
-  FaCheck,
-  FaKeyboard,
-  FaPlay,
-  FaQuestion,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaCheck, FaKeyboard, FaPlay, FaTimes } from 'react-icons/fa';
 import Editor from 'react-simple-code-editor';
 import darkTheme from '../theme/prism-dark-theme-chialisp';
 import lightTheme from '../theme/prism-light-theme-chialisp';
@@ -65,8 +59,6 @@ export default function Runnable({
   };
 
   const evaluate = (program: Program, env: Program): ProgramOutput | null => {
-    if (program.isAtom) program = Program.fromSource(`(q . ${program})`);
-
     try {
       return program.run(env);
     } catch (error) {
@@ -79,11 +71,17 @@ export default function Runnable({
     const parsed = parse();
     if (!parsed) return;
 
+    const shouldEval =
+      flavor === 'clvm' ||
+      (parsed.isCons && parsed.first.equals(Program.fromText('mod')));
+
     const compiled = compile(parsed);
     if (!compiled) return;
 
     const inputProgram = input ? Program.fromSource(input) : Program.nil;
-    const outputProgram = evaluate(compiled, inputProgram);
+    const outputProgram = shouldEval
+      ? evaluate(compiled, inputProgram)
+      : { value: compiled, cost: 0n };
     if (outputProgram) {
       setOutput(outputProgram.value.toSource());
       setCost(outputProgram.cost);
@@ -93,9 +91,11 @@ export default function Runnable({
 
     for (const [testedInput, expectedOutput] of Object.entries(tests ?? {})) {
       const inputProgram = Program.fromSource(testedInput);
-      const outputProgram = evaluate(compiled, inputProgram);
+      const outputProgram = shouldEval
+        ? evaluate(compiled, inputProgram)?.value
+        : compiled;
 
-      if (!outputProgram || outputProgram.value.toSource() !== expectedOutput) {
+      if (!outputProgram || outputProgram.toSource() !== expectedOutput) {
         isCorrect = false;
         break;
       }
@@ -104,6 +104,8 @@ export default function Runnable({
     reporter?.(isCorrect);
     setCorrect(isCorrect);
   };
+
+  const CorrectIcon = correct ? FaCheck : FaTimes;
 
   // Prevent SSR
   const [hydrated, setHydrated] = React.useState(false);
@@ -118,7 +120,7 @@ export default function Runnable({
       code={code}
       language={'chialisp' as any}
     >
-      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+      {({ className, style }) => (
         <pre className={className} style={{ ...style, position: 'relative' }}>
           {!input ? (
             ''
@@ -132,44 +134,28 @@ export default function Runnable({
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
             </>
           )}
-          <Editor
-            value={code}
-            onValueChange={(code) => setCode(code)}
-            highlight={() =>
-              tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token })} />
-                  ))}
-                </div>
-              ))
-            }
-            padding={0}
-          />
-          {!input && (
-            <FaKeyboard
-              size={24}
-              className="icon-button"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '60px',
-                cursor: 'pointer',
-              }}
-              onClick={() => setInput('()')}
-            />
-          )}
-          <FaPlay
-            size={24}
-            className="icon-button"
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              cursor: 'pointer',
-            }}
-            onClick={run}
-          />
+          <HighlightCode code={code} setCode={setCode} language="chialisp" />
+          <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <span style={{ marginRight: '8px' }}>
+                {!flavor || flavor === 'chialisp' ? 'Chialisp' : 'CLVM'}
+              </span>
+              {!input && (
+                <FaKeyboard
+                  size={24}
+                  className="icon-button"
+                  cursor="pointer"
+                  onClick={() => setInput('()')}
+                />
+              )}
+              <FaPlay
+                size={24}
+                className="icon-button"
+                cursor="pointer"
+                onClick={run}
+              />
+            </div>
+          </div>
           {!output ? (
             ''
           ) : (
@@ -189,37 +175,15 @@ export default function Runnable({
                   >
                     <HighlightCode code={`Cost: ${cost}`} language="chialisp" />
                   </div>
-                  {!output ? (
-                    <FaQuestion
-                      size={24}
-                      style={{
-                        color: '#999999',
-                        position: 'absolute',
-                        bottom: '16px',
-                        right: '16px',
-                      }}
-                    />
-                  ) : correct ? (
-                    <FaCheck
-                      size={24}
-                      style={{
-                        color: '#77FF77',
-                        position: 'absolute',
-                        bottom: '16px',
-                        right: '16px',
-                      }}
-                    />
-                  ) : (
-                    <FaTimes
-                      size={24}
-                      style={{
-                        color: '#FF7777',
-                        position: 'absolute',
-                        bottom: '16px',
-                        right: '16px',
-                      }}
-                    />
-                  )}{' '}
+                  <CorrectIcon
+                    size={24}
+                    color={correct ? '#77FF77' : '#FF7777'}
+                    style={{
+                      position: 'absolute',
+                      bottom: '16px',
+                      right: '16px',
+                    }}
+                  />
                 </>
               )}
             </>
@@ -244,34 +208,36 @@ function HighlightCode({ code, setCode, language }: HighlightCodeProps) {
   useEffect(() => setHydrated(true), []);
 
   return (
-    <Highlight
-      Prism={Prism}
-      theme={
-        hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
-      }
-      code={code}
-      language={language as any}
-    >
-      {({ tokens, getLineProps, getTokenProps }) => {
-        let children = tokens.map((line, i) => (
-          <div key={i} {...getLineProps({ line })}>
-            {line.map((token, key) => (
-              <span key={key} {...getTokenProps({ token })} />
-            ))}
-          </div>
-        ));
+    <>
+      <Highlight
+        Prism={Prism}
+        theme={
+          hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
+        }
+        code={code}
+        language={language as any}
+      >
+        {({ tokens, getLineProps, getTokenProps }) => {
+          let children = tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
+            </div>
+          ));
 
-        return setCode ? (
-          <Editor
-            value={code}
-            onValueChange={(newCode) => setCode(newCode)}
-            highlight={() => children}
-            padding={0}
-          />
-        ) : (
-          children
-        );
-      }}
-    </Highlight>
+          return setCode ? (
+            <Editor
+              value={code}
+              onValueChange={(newCode) => setCode(newCode)}
+              highlight={() => children}
+              padding={0}
+            />
+          ) : (
+            children
+          );
+        }}
+      </Highlight>
+    </>
   );
 }
