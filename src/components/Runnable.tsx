@@ -1,175 +1,191 @@
 import { useColorMode } from '@docusaurus/theme-common';
-import { Program } from 'clvm-lib';
+import { Program, ProgramOutput } from 'clvm-lib';
 import Highlight, { Prism } from 'prism-react-renderer';
-import React, {
-  Children,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode,
-  isValidElement,
-  useMemo,
-  useState,
-} from 'react';
-import { FaKeyboard, FaPlay } from 'react-icons/fa';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { FaCheck, FaKeyboard, FaPlay, FaTimes } from 'react-icons/fa';
 import Editor from 'react-simple-code-editor';
 import darkTheme from '../theme/prism-dark-theme-chialisp';
 import lightTheme from '../theme/prism-light-theme-chialisp';
+import { onlyText } from '../utils/stringify';
+
+export interface RunnableProps {
+  flavor?: 'clvm' | 'chialisp';
+  input?: string;
+  tests?: Record<string, string>;
+  reporter?: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 export default function Runnable({
   children,
   flavor,
-  input,
-}: PropsWithChildren<{ flavor?: 'clvm' | 'chialisp'; input?: string }>) {
+  input: initialInput,
+  tests,
+  reporter,
+}: PropsWithChildren<RunnableProps>) {
   const { colorMode } = useColorMode();
 
-  const initialValue = useMemo(() => onlyText(children), []);
+  const initialCode = useMemo(() => onlyText(children).trim(), []);
+  const [code, setCode] = useState(initialCode);
 
-  const [currentInput, setCurrentInput] = useState(input?.trim() ?? '');
-  const [code, setCode] = useState(initialValue.trim());
-  const [output, setOutput] = useState<string | null>(null);
+  const [input, setInput] = useState(
+    initialInput ?? Object.keys(tests ?? {})[0]?.trim() ?? ''
+  );
+  const [output, setOutput] = useState('');
+  const [cost, setCost] = useState(0n);
+  const [correct, setCorrect] = useState<boolean | null>(null);
+
+  const formatError = (error: string) => error.replace('Error: ', '');
+
+  const parse = (): Program | null => {
+    try {
+      return Program.fromSource(code);
+    } catch (error) {
+      setOutput(`While parsing: ${formatError('' + error)}`);
+      return null;
+    }
+  };
+
+  const compile = (program: Program): Program | null => {
+    if (!flavor || flavor === 'chialisp') {
+      try {
+        return program.compile().value;
+      } catch (error) {
+        setOutput(`While compiling: ${formatError('' + error)}`);
+        return null;
+      }
+    } else {
+      return program;
+    }
+  };
+
+  const evaluate = (program: Program, env: Program): ProgramOutput | null => {
+    try {
+      return program.run(env);
+    } catch (error) {
+      setOutput(`While evaluating: ${formatError('' + error)}`);
+      return null;
+    }
+  };
+
+  const run = () => {
+    const parsed = parse();
+    if (!parsed) return;
+
+    const shouldEval =
+      flavor === 'clvm' ||
+      (parsed.isCons && parsed.first.equals(Program.fromText('mod')));
+
+    const compiled = compile(parsed);
+    if (!compiled) return;
+
+    const inputProgram = input ? Program.fromSource(input) : Program.nil;
+    const outputProgram = shouldEval
+      ? evaluate(compiled, inputProgram)
+      : { value: compiled, cost: 0n };
+    if (outputProgram) {
+      setOutput(outputProgram.value.toSource());
+      setCost(outputProgram.cost);
+    }
+
+    let isCorrect = true;
+
+    for (const [testedInput, expectedOutput] of Object.entries(tests ?? {})) {
+      const inputProgram = Program.fromSource(testedInput);
+      const outputProgram = shouldEval
+        ? evaluate(compiled, inputProgram)?.value
+        : compiled;
+
+      if (!outputProgram || outputProgram.toSource() !== expectedOutput) {
+        isCorrect = false;
+        break;
+      }
+    }
+
+    reporter?.(isCorrect);
+    setCorrect(isCorrect);
+  };
+
+  const CorrectIcon = correct ? FaCheck : FaTimes;
+
+  // Prevent SSR
+  const [hydrated, setHydrated] = React.useState(false);
+  useEffect(() => setHydrated(true), []);
 
   return (
     <Highlight
       Prism={Prism}
-      theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
+      theme={
+        hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
+      }
       code={code}
       language={'chialisp' as any}
     >
-      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+      {({ className, style }) => (
         <pre className={className} style={{ ...style, position: 'relative' }}>
-          {!currentInput ? (
+          {!input ? (
             ''
           ) : (
             <>
-              <Highlight
-                Prism={Prism}
-                theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
-                code={currentInput}
-                language={'chialisp' as any}
-              >
-                {({ tokens, getLineProps, getTokenProps }) => (
-                  <Editor
-                    value={currentInput}
-                    onValueChange={(currentInput) =>
-                      setCurrentInput(currentInput)
-                    }
-                    highlight={() =>
-                      tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line })}>
-                          {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token })} />
-                          ))}
-                        </div>
-                      ))
-                    }
-                    padding={0}
-                  />
-                )}
-              </Highlight>
+              <HighlightCode
+                code={input}
+                setCode={setInput}
+                language="chialisp"
+              />
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
             </>
           )}
-          <Editor
-            value={code}
-            onValueChange={(code) => setCode(code)}
-            highlight={() =>
-              tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token })} />
-                  ))}
-                </div>
-              ))
-            }
-            padding={0}
-          />
-          {!currentInput && (
-            <FaKeyboard
-              size={24}
-              className="icon-button"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '60px',
-                cursor: 'pointer',
-              }}
-              onClick={() => setCurrentInput('()')}
-            />
-          )}
-          <FaPlay
-            size={24}
-            className="icon-button"
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              let program: Program;
-              try {
-                program = Program.fromSource(code);
-              } catch (error) {
-                setOutput(
-                  `Parsing error: ${('' + error).replace('Error: ', '')}`
-                );
-                return;
-              }
-
-              let compiled: Program;
-
-              if (!flavor || flavor === 'chialisp') {
-                try {
-                  compiled = program.compile().value;
-                } catch (error) {
-                  setOutput(
-                    `Compilation error: ${('' + error).replace('Error: ', '')}`
-                  );
-                  return;
-                }
-
-                if (compiled.isAtom) {
-                  setOutput(compiled.toSource());
-                  return;
-                }
-              } else {
-                compiled = program;
-              }
-
-              let output: Program;
-              try {
-                output = compiled.run(
-                  currentInput ? Program.fromSource(currentInput) : Program.nil
-                ).value;
-              } catch (error) {
-                setOutput(`Eval error: ${('' + error).replace('Error: ', '')}`);
-                return;
-              }
-
-              setOutput(output.toSource());
-            }}
-          />
-          {output === null ? (
+          <HighlightCode code={code} setCode={setCode} language="chialisp" />
+          <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <span style={{ marginRight: '8px' }}>
+                {!flavor || flavor === 'chialisp' ? 'Chialisp' : 'CLVM'}
+              </span>
+              {!input && (
+                <FaKeyboard
+                  size={24}
+                  className="icon-button"
+                  cursor="pointer"
+                  onClick={() => setInput('()')}
+                />
+              )}
+              <FaPlay
+                size={24}
+                className="icon-button"
+                cursor="pointer"
+                onClick={run}
+              />
+            </div>
+          </div>
+          {!output ? (
             ''
           ) : (
             <>
               <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
-              <Highlight
-                Prism={Prism}
-                theme={(colorMode === 'dark' ? darkTheme : lightTheme) as any}
-                code={output}
-                language={'chialisp' as any}
-              >
-                {({ tokens, getLineProps, getTokenProps }) =>
-                  tokens.map((line, i) => (
-                    <div key={i} {...getLineProps({ line })}>
-                      {line.map((token, key) => (
-                        <span key={key} {...getTokenProps({ token })} />
-                      ))}
-                    </div>
-                  ))
-                }
-              </Highlight>
+              <div style={{ display: 'inline-block' }}>
+                <HighlightCode code={output} language="chialisp" />
+              </div>
+              {output && (
+                <>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      position: 'absolute',
+                      right: '60px',
+                    }}
+                  >
+                    <HighlightCode code={`Cost: ${cost}`} language="chialisp" />
+                  </div>
+                  <CorrectIcon
+                    size={24}
+                    color={correct ? '#77FF77' : '#FF7777'}
+                    style={{
+                      position: 'absolute',
+                      bottom: '16px',
+                      right: '16px',
+                    }}
+                  />
+                </>
+              )}
             </>
           )}
         </pre>
@@ -178,47 +194,50 @@ export default function Runnable({
   );
 }
 
-export const childToString = (child?: ReactNode): string => {
-  if (
-    typeof child === 'undefined' ||
-    child === null ||
-    typeof child === 'boolean'
-  ) {
-    return '';
-  }
+interface HighlightCodeProps {
+  code: string;
+  setCode?: React.Dispatch<React.SetStateAction<string>>;
+  language: string;
+}
 
-  if (JSON.stringify(child) === '{}') {
-    return '';
-  }
+function HighlightCode({ code, setCode, language }: HighlightCodeProps) {
+  const { colorMode } = useColorMode();
 
-  return (child as number | string).toString();
-};
+  // Prevent SSR
+  const [hydrated, setHydrated] = React.useState(false);
+  useEffect(() => setHydrated(true), []);
 
-const hasChildren = (
-  element: ReactNode
-): element is ReactElement<{ children: ReactNode | ReactNode[] }> =>
-  isValidElement<{ children?: ReactNode[] }>(element) &&
-  Boolean(element.props.children);
+  return (
+    <>
+      <Highlight
+        Prism={Prism}
+        theme={
+          hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
+        }
+        code={code}
+        language={language as any}
+      >
+        {({ tokens, getLineProps, getTokenProps }) => {
+          let children = tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
+            </div>
+          ));
 
-const onlyText = (children: ReactNode | ReactNode[]): string => {
-  if (!(children instanceof Array) && !isValidElement(children)) {
-    return childToString(children);
-  }
-
-  return Children.toArray(children).reduce(
-    (text: string, child: ReactNode): string => {
-      let newText = '';
-
-      if (isValidElement(child) && hasChildren(child)) {
-        newText = onlyText(child.props.children);
-      } else if (isValidElement(child) && !hasChildren(child)) {
-        newText = '';
-      } else {
-        newText = childToString(child);
-      }
-
-      return text.concat(newText);
-    },
-    ''
+          return setCode ? (
+            <Editor
+              value={code}
+              onValueChange={(newCode) => setCode(newCode)}
+              highlight={() => children}
+              padding={0}
+            />
+          ) : (
+            children
+          );
+        }}
+      </Highlight>
+    </>
   );
-};
+}
