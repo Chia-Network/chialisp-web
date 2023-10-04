@@ -98,7 +98,7 @@ module.exports = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/Chia-Network/{{ REPOSITORY_NAME }}/blob/main/',
+            'https://github.com/Chia-Network/chialisp-web/blob/main/',
         },
       },
     ],
