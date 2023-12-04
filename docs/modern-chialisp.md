@@ -16,12 +16,6 @@ variables are no longer treated as values, and return diagnostics instead. Let
 bindings and related assign forms allow programs to be structured more logically
 and preprocessing is now a separate pass that can be inspected on its own.
 
-It is installable currently from the clvm_tools_rs dev branch:
-
-```shell
-$ pip install git+https://github.com/Chia-Network/clvm_tools_rs.git@dev
-```
-
 ## Description of the new language
 
 ### An example of modern chialisp exercising many of the new features:
@@ -854,9 +848,10 @@ code that's frugal at the CLVM level.
   (defconstant EQ 0)
   (defconstant GT 1)
 
-  (deftype Key a ((k : A)))
+  (defun-inline new_Key (k) k)
 
-  (deftype Bound (bound key))
+  (defun-inline new_Bound (bound key) (c bound key))
+
   (defconst lb (new_Bound LB ()))
   (defun ib (k) (new_Bound IB k))
   (defconst ub (new_Bound UB ()))
@@ -867,9 +862,10 @@ code that's frugal at the CLVM level.
 
   (defun-inline max (a b) (if (> a b) a b))
 
-  (deftype Balance (bt))
+  (defun-inline new_Balance (bt) bt)
+  (defun-inline get_Balance_bt (b) b)
 
-  (defun-inline balr ((b : Balance)) -> Balance
+  (defun-inline balr (b)
     (new_Balance
       (if
         (= (get_Balance_bt b) BalanceR)
@@ -879,7 +875,7 @@ code that's frugal at the CLVM level.
       )
     )
 
-  (defun-inline ball ((b : Balance)) -> Balance
+  (defun-inline ball (b)
     (new_Balance
       (if
         (= (get_Balance_bt b) BalanceL)
@@ -892,15 +888,16 @@ code that's frugal at the CLVM level.
   (defconstant Stay 0)
   (defconstant Incr 1)
 
-  (deftype Rebalance t (rt (tree : t)))
+  (defun-inline new_Rebalance (rt tree) (c rt tree))
+  (defun-inline get_Rebalance_rt ((@ r (rt . tree))) rt)
+  (defun-inline get_Rebalance_tree ((@ r (rt . tree))) tree)
 
-  (deftype Node
-    (key
-     value
-     balance
-     left
-     right
-    ))
+  (defun-inline new_Node (key value balance left right) (list key value balance left right))
+  (defun-inline get_Node_key ((@ n (key value balance left right))) key)
+  (defun-inline get_Node_value ((@ n (key value balance left right))) value)
+  (defun-inline get_Node_balance ((@ n (key value balance left right))) balance)
+  (defun-inline get_Node_left ((@ n (key value balance left right))) left)
+  (defun-inline get_Node_right ((@ n (key value balance left right))) right)
 
   (defun-inline rotr-l (x xv left cnode)
     (assign
