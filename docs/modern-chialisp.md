@@ -239,10 +239,6 @@ $ brun maybe.clvm '(())'
 ()
 ```
 
-### optional types
-
-There is an optional type system described [here](/docs/types-tutorial.md)
-
 ### Function closures
 
 Chialisp allows function names to be treated as closures when used as values.
