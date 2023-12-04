@@ -1099,8 +1099,15 @@ code that's frugal at the CLVM level.
     (r (divmod key (lsh 1 (+ number-of-children number-of-segments))))
     )
 
-  (deftype HAMT (type bitmap hash-table))
-  (deftype HNode (type key value))
+  (defun-inline new_HAMT (type bitmap hash-table) (list type bitmap hash-table))
+  (defun-inline get_HAMT_type ((@ h (type bitmap hash-table))) type)
+  (defun-inline get_HAMT_bitmap ((@ h (type bitmap hash-table))) bitmap)
+  (defun-inline get_HAMT_hash-table ((@ h (type bitmap hash-table))) hash-table)
+  
+  (defun-inline new_HNode (type key value) (list type key value))
+  (defun-inline get_HNode_type ((@ n (type key value))) type)
+  (defun-inline get_HNode_key ((@ n (type key value))) key)
+  (defun-inline get_HNode_value ((@ n (type key value))) value)
 
   (defun-inline htype (obj) (f obj))
 
@@ -1249,7 +1256,10 @@ code that's frugal at the CLVM level.
      )
     )
 
-  (deftype SubhashBuilder (colliding-segs finished subhash-node))
+  (defun-inline new_SubhashBuilder (colliding-segs finished subhash-node) (list colliding-segs finished subhash-node))
+  (defun-inline get_SubhashBuilder_colliding-segs ((@ n (colliding-segs finished subhash-node))) colliding-segs)
+  (defun-inline get_SubhashBuilder_finished ((@ n (colliding-segs finished subhash-node))) finished)
+  (defun-inline get_SubhashBuilder_subhash-node ((@ n (colliding-segs finished subhash-node))) subhash-node)
 
   (defun insert (hm child-index k v)
     (assign
