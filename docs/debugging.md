@@ -4,6 +4,8 @@ title: Debugging
 slug: /debugging
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+
 Debugging Chialisp at times can be frustrating. Due to the nature of how it handles data structures, programs will often continue on with incorrect values only to error out at a later spot that gives no clue to the initial breakage. For example, a variable typo will often result in the variable being evaluated as a string, and if that gets hashed into something it's impossible to tell.
 
 However, there are some tricks you can use to more easily catch bugs in your code.
@@ -20,6 +22,8 @@ You can use the `x` operator to debug your programs. This allows you to print th
 
 Here is an example of a program you may want to debug:
 
+<Runnable flavor='chialisp' input='(hello)'>
+
 ```chialisp
 (mod (something)
     (defun some (something)
@@ -30,9 +34,13 @@ Here is an example of a program you may want to debug:
 )
 ```
 
+</Runnable>
+
 This would throw an error if you try to use `sha256` on a list (because it's the solution to the program).
 
 Here is how you would debug it by wrapping an expression in the `x` operator:
+
+<Runnable flavor='chialisp' input='(hello)'>
 
 ```chialisp
 (mod (something)
@@ -43,6 +51,8 @@ Here is how you would debug it by wrapping an expression in the `x` operator:
     (some something)
 )
 ```
+
+</Runnable>
 
 As you can see, when it gets to that point, it would raise an error and print the value of `something` rather than continuing and crashing.
 

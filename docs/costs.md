@@ -4,6 +4,8 @@ title: Costs
 slug: /costs
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+
 Every operator has a cost associated with it. Additionally, there can be a separate cost dependent on the number of arguments or bytes used when calling it.
 
 If you deploy your program as a puzzle on the Chia blockchain, it will terminate if it surpasses a cost of 11,000,000,000 (11 billion), and it can have higher fees associated with it based on the cost.
@@ -70,9 +72,13 @@ This is an example of how to calculate the cost of a simple CLVM program by hand
 
 Refer to the following CLVM program:
 
+<Runnable flavor='clvm'>
+
 ```chialisp
 (concat (q . gu) (q . ide))
 ```
+
+</Runnable>
 
 The atoms `gu` and `ide` are quoted, so that they are interpreted as values rather than programs.
 

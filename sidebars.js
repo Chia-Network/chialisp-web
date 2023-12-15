@@ -13,6 +13,7 @@ module.exports = {
     'examples',
     'costs',
     'optimization',
+    'common_issues',
     'debugging',
     {
       type: 'category',

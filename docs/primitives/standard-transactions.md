@@ -9,6 +9,27 @@ The standard transaction is a puzzle used by the Chia wallet to generate its add
 Before you read this page, it may be worth checking out this [Agg Sigs, Taproot, and Graftroot blog post](https://www.chia.net/2021/05/27/Agrgregated-Sigs-Taproot-Graftroot.html) by Bram Cohen on why the standard transaction is the way it is.
 :::
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Spend standard transaction](https://github.com/Chia-Network/chia-blockchain/blob/e07f9196ffd8fcb6d6e7e9dc9079f2bb9bcfe464/chia/wallet/wallet.py#L421)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Puzzle and solution types](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-primitives/src/primitives/standard_puzzle.rs)
+- [Spend standard transaction](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L1166)
+
+### chia-wallet-lib
+
+The [Chia wallet library NPM package](https://github.com/Chia-Network/node-chia-wallet-lib) has the following reference implementation:
+
+- [Spend standard transaction](https://github.com/Chia-Network/node-chia-wallet-lib/blob/6c8d564538be121079596e492fa0da497c9dd39c/src/types/puzzles/StandardTransaction.ts#L27)
+
 ## Terminology
 
 **Hidden Puzzle** -

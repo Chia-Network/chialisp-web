@@ -11,19 +11,22 @@
     "serve": "docusaurus serve"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.1.0",
-    "@docusaurus/plugin-google-analytics": "^2.1.0",
-    "@docusaurus/plugin-google-gtag": "^2.1.0",
-    "@docusaurus/preset-classic": "^2.1.0",
+    "@docusaurus/core": "^2.4.1",
+    "@docusaurus/plugin-google-analytics": "^2.4.1",
+    "@docusaurus/plugin-google-gtag": "^2.4.1",
+    "@docusaurus/preset-classic": "^2.4.1",
     "@easyops-cn/docusaurus-search-local": "^0.33.5",
     "@mdx-js/react": "^1.6.21",
     "@svgr/webpack": "^6.5.0",
     "clsx": "^1.1.1",
+    "clvm-lib": "^1.0.0",
     "file-loader": "^6.2.0",
     "nodejieba": "^2.5.2",
     "prism-react-renderer": "^1.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-icons": "^4.11.0",
+    "react-simple-code-editor": "^0.13.1",
     "yarn": "^1.22.19"
   },
   "browserslist": {

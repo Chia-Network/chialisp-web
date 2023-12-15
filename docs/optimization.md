@@ -4,9 +4,13 @@ title: Optimization
 slug: /optimization
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+
 It is possible to optimize the cost of your programs by making certain changes and keeping things in mind as you write code using the language. Let's explore some of these methods now.
 
 ## Conditions
+
+Check out the [full conditions list](https://docs.chia.net/conditions/#list) for detailed information on conditions and their use.
 
 If you are writing a puzzle for the Chia blockchain, minimize the number of spends and conditions used. Specifically, the `CREATE_COIN`, `AGG_SIG_ME`, and `AGG_SIG_UNSAFE` conditions have a massive cost associated with them. This is because they are an expensive operation to perform on the node.
 
@@ -18,15 +22,23 @@ Check out the [list of operator costs](/costs) to understand the implications of
 
 For example, this costly method to check if a number is odd:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
-(r (divmod value 2))
+(r (divmod 7 2))
 ```
+
+</Runnable>
 
 Can be replaced with this simpler and more efficient method:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
-(logand value 1)
+(logand 7 1)
 ```
+
+</Runnable>
 
 Sometimes it may not always be obvious, but optimizing these things can make a difference over time.
 
@@ -38,37 +50,53 @@ Sometimes, functions can actually help you save on cost, by reusing the same par
 
 Here is an example of a good use of a function:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
-(defun square (number)
-    (* number number) ; The number is reused twice here.
+(mod ()
+    (defun square (number)
+        (* number number) ; The number is reused twice here.
+    )
+    (square 8)
 )
 ```
+
+</Runnable>
 
 However, when you only use the values once, you are just wasting cost on the function call. This is where inline functions come in.
 
 We can use an inline function to insert code at compile time:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
-(defun-inline double (number)
-    (* number 2) ; This code will be directly inserted when the function is called.
+(mod ()
+    (defun-inline double (number)
+        (* number 2) ; This function will be replaced with its contents.
+    )
+    (double 8)
 )
 ```
+
+</Runnable>
 
 This is a form of macro, and allows you to clean up your code without adding any additional overhead.
 
 However, if you used an inline function for the previous example, you can see what happens:
 
+<Runnable flavor='chialisp'>
+
 ```chialisp
-(defun-inline square (number)
-    (* number number) ; The expression for number is reused twice here.
+(mod ()
+    (defun-inline square (number)
+        (* number number) ; The expression for number is reused twice here.
+    )
+
+    (square (* 2 3)) ; Inlines to (* (* 2 3) (* 2 3))
 )
-
-; This usage of the function:
-(square (* 2 3))
-
-; Becomes the following:
-(* (* 2 3) (* 2 3))
 ```
+
+</Runnable>
 
 The expression passed in as the parameter gets verbatim copied multiple times, which is very inefficient.
 

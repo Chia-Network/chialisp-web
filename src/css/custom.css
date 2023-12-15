@@ -61,3 +61,11 @@ h4 {
 .footer__logo {
   width:10rem;
 }
+
+.icon-button {
+  transition: 0.5s;
+}
+
+.icon-button:hover {
+  color: #888;
+}

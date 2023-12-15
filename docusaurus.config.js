@@ -98,21 +98,21 @@ module.exports = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/Chia-Network/{{ REPOSITORY_NAME }}/blob/main/',
+            'https://github.com/Chia-Network/chialisp-web/blob/main/',
         },
       },
     ],
   ],
   themes: [
     [
-      "@easyops-cn/docusaurus-search-local",
+      '@easyops-cn/docusaurus-search-local',
       /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
       ({
         hashed: true,
-        language: ["en", "zh"],
+        language: ['en', 'zh'],
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
-        docsRouteBasePath: "/"
+        docsRouteBasePath: '/',
       }),
     ],
   ],

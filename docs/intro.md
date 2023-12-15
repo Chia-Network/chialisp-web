@@ -5,9 +5,13 @@ title: About Chialisp
 slug: /
 ---
 
+import Runnable from '../src/components/Runnable.tsx';
+
 Chialisp is a pure and functional language with a focus on security and auditability. Chialisp is commonly used on the Chia blockchain to lock funds in smart coins until spent and released by their owner. This enables behavior similar to that of smart contracts.
 
 Here is an example:
+
+<Runnable flavor='chialisp'>
 
 ```chialisp
 (mod ()
@@ -15,9 +19,15 @@ Here is an example:
         (* number number)
     )
 
-    (square 5) ; 25
+    (square 5)
 )
 ```
+
+</Runnable>
+
+:::tip
+Many Chialisp code block examples on this site can be edited, and evaluated by clicking the play button in the top right. You can edit the program arguments at the top (if not present, click the keyboard button to add arguments).
+:::
 
 ## Design Decisions
 

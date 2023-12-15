@@ -5,6 +5,21 @@ slug: /singletons
 
 Singletons allow you to keep track of the state of something on the blockchain, with the ability to verify and check any part of its history using a unique id. It proves that the puzzle is unique and cannot be duplicated. Singletons can use any arbitrary inner puzzle, and is used to make NFTs, DIDs, the pooling puzzle, and many other things possible.
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Create singleton solution](https://github.com/Chia-Network/chia-blockchain/blob/e07f9196ffd8fcb6d6e7e9dc9079f2bb9bcfe464/chia/wallet/nft_wallet/nft_wallet.py#L777)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Puzzle and solution types](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-primitives/src/primitives/singleton.rs)
+- [Create singleton solution](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L1130)
+
 ## Singleton Code {#code}
 
 This is the source code of the singleton, which can also be found in the chia-blockchain repository in the puzzle [`singleton_top_layer_v1_1.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/8b70466a70388d0fff437d138192ba38faf92be8/chia/wallet/puzzles/singleton_top_layer_v1_1.clvm).

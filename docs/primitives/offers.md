@@ -5,6 +5,20 @@ slug: /offers
 
 Offers are a way to enable peer-to-peer asset exchange on the Chia blockchain. In other words, you can swap tokens without needing to go through an exchange. Only two parties are required, the maker and the taker. They don't need to trust each other, since any attempts to modify the offer will invalidate it.
 
+## Code Examples
+
+### chia-blockchain
+
+The official Chia wallet has a reference implementation for the following in Python:
+
+- [Offer multiple assets](https://github.com/Chia-Network/chia-blockchain/blob/010cedf83718aa8e4d97da76f892fe69387a5d82/chia/wallet/trade_manager.py#L410)
+
+### chia-rs
+
+The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+
+- [Offer NFT1 for CAT2](https://github.com/Chia-Network/chia_rs/blob/2334c842f694444da317fa7432f308f159f62d70/chia-wallet/src/wallet.rs#L101)
+
 ## Offer Files
 
 When you create an offer, you get a string of text that is usually stored in a file. This describes the details of the trade, including the assets you are requesting and the assets you are giving in return. This file can be published on various platforms and downloaded by anyone to fulfill in the wallet of their choice. This allows for the flexibility of exchanges, while keeping it fully decentralized and preventing tampering or relying on a third party or middleman.
@@ -14,11 +28,10 @@ You can use a wallet to generate an offer file for a given trade, then distribut
 - [Dexie](https://dexie.space)
 - [OfferPool](https://offerpool.io)
 - [OfferBin](https://offerbin.io)
-- [HashGreen](https://hash.green)
 
 ## Settlement Payments Code {#code}
 
-This is the source code of the settlement payments puzzle, which can also be found in the chia-blockchain repository in the puzzle [`settlement_payments.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/164fd158c8626893bc45ba00b87ae69d2ab5f8b7/chia/wallet/puzzles/settlement_payments.clvm).
+This is the source code of the settlement payments puzzle, which can also be found in the chia-blockchain repository in the puzzle [`settlement_payments.clvm`](https://github.com/Chia-Network/chia-blockchain/blob/8224d2fd657780b224a1fc40d3081ce734d70016/chia/wallet/puzzles/settlement_payments.clsp).
 
 <details>
   <summary>Expand Settlement Payments Puzzle</summary>
@@ -32,25 +45,29 @@ This is the source code of the settlement payments puzzle, which can also be fou
   ;; The idea is the other side of this trade requires observing the announcement from a
   ;; `settlement_payments` puzzle hash as a condition of one or more coin spends.
 
-  (include condition_codes.clvm)
+  (include condition_codes.clib)
+  (include utility_macros.clib)
 
   (defun sha256tree (TREE)
-     (if (l TREE)
-         (sha256 2 (sha256tree (f TREE)) (sha256tree (r TREE)))
-         (sha256 1 TREE)
-     )
+    (if (l TREE)
+        (sha256 2 (sha256tree (f TREE)) (sha256tree (r TREE)))
+        (sha256 1 TREE)
+    )
   )
 
   (defun create_coins_for_payment (payment_params so_far)
     (if payment_params
-        (c (c CREATE_COIN (f payment_params)) (create_coins_for_payment (r payment_params) so_far))
+        (assert (> (f (r (f payment_params))) 0)  ; assert the amount is positive
+          ; then
+          (c (c CREATE_COIN (f payment_params)) (create_coins_for_payment (r payment_params) so_far))
+        )
         so_far
     )
   )
 
   (defun-inline create_announcement_for_payment (notarized_payment)
-      (list CREATE_PUZZLE_ANNOUNCEMENT
-            (sha256tree notarized_payment))
+    (list CREATE_PUZZLE_ANNOUNCEMENT
+    (sha256tree notarized_payment))
   )
 
   (defun-inline augment_condition_list (notarized_payment so_far)
