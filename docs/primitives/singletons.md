@@ -381,7 +381,7 @@ The idea is that you curry in the necessary information to calculate the singlet
 This is the source code, which can also be found in the chia-blockchain repository in the puzzle [`p2_singleton`](https://github.com/Chia-Network/chia-blockchain/blob/fad414132e6950e79e805629427af76bf9ddcbc5/chia/wallet/puzzles/p2_singleton.clvm).
 
 <details>
-  <summary>Singleton Launcher</summary>
+  <summary>Pay to Singleton</summary>
 
 ```chialisp title="p2_singleton.clvm"
 (mod (
