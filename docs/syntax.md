@@ -135,6 +135,20 @@ Which is equivalent to the following Chialisp code:
 Because quotation prevents execution, any operators or constants used within will be left in the form they are written in rather than being replaced.
 :::
 
+#### Quoting Evaluation
+
+It's necessary to think about how clvm functions in order to fully understand `q`.  The evaluation process is basically the following:
+"If the current thing is an atom, evaluate it.  If the current thing is a pair, evaluate the thing on the right, and pass it as an argument to the operator on the left."
+
+`q` is one of two special operators in clvm.  Its job is basically to say, "don't evaluate the thing on the right, and just return it".  It puts an end to the recursive evaluation.
+
+`qq` by itself does the same thing as `q`.  When used with unquote it's like f-strings in python.  You don't want to evaluate the thing on the right, but you need to do some evaluation to generate it.
+`(qq ("don't evaluate me" . ("nor me" . (unquote "but this needs to be evaluated"))))`
+
+:::note
+The other special operator is `a` which resets the environment before continuing with the evaluation.
+:::
+
 ## Destructuring
 
 Usually for things such as modules and functions, you will only need a list of parameters. However, more advanced behavior is possible for destructuring those arguments. In fact, you can write a named list, cons pair, or single atom in whatever structure you need, and it will automatically destructure the environment into the constants provided.
