@@ -51,6 +51,11 @@ Code written in Chialisp has no side effects or hidden information. This makes i
 
 A program in Lisp is just a list. This enables powerful techniques that allow you to modify source code during program evaluation. You can even have multiple layers of a program that get executed at different stages.
 
+#### New language features
+
+Chialisp has been receiving new features which mirror other languages in the scheme and lisp family. Install the chialisp nightly tools to enable these features.
+New features are listed in detail [here](/modern-chialisp).
+
 ## Getting Started
 
 If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](https://docs.chia.net/guides) guide. Throughout this series, you will write programs in the language, create smart coins on the Chia blockchain, and spend them on the command-line.
