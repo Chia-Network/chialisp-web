@@ -46,15 +46,15 @@ module.exports = {
               label: 'CLVM',
               to: '/clvm',
             },
+            {
+              label: 'Chia Docs',
+              href: 'https://docs.chia.net',
+            },
           ],
         },
         {
           title: 'Community',
           items: [
-            {
-              label: 'Chia Developers Forum',
-              href: 'https://developers.chia.net/',
-            },
             {
               label: 'Discord',
               href: 'https://discord.gg/chia',
