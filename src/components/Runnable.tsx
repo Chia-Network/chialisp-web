@@ -1,6 +1,6 @@
 import { useColorMode } from '@docusaurus/theme-common';
 import { Program, ProgramOutput } from 'clvm-lib';
-import Highlight, { Prism } from 'prism-react-renderer';
+import { Highlight } from 'prism-react-renderer';
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { FaCheck, FaKeyboard, FaPlay, FaTimes } from 'react-icons/fa';
 import Editor from 'react-simple-code-editor';
@@ -113,7 +113,7 @@ export default function Runnable({
 
   return (
     <Highlight
-      Prism={Prism}
+      Prism={globalThis.Prism}
       theme={
         hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
       }
@@ -210,7 +210,7 @@ function HighlightCode({ code, setCode, language }: HighlightCodeProps) {
   return (
     <>
       <Highlight
-        Prism={Prism}
+        Prism={globalThis.Prism}
         theme={
           hydrated && ((colorMode === 'dark' ? darkTheme : lightTheme) as any)
         }
