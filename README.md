@@ -37,8 +37,8 @@ This command serves the static content in the `build` directory.
 These are the commands being run in the github CI, run them all locally in this order to ensure there are no issues building and serving the content prior to submitting a pr:
 
 ```
-$ npm ci
 $ npm install
+$ npm ci
 $ npm run build
 $ npm run serve
 ```
