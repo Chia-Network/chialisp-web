@@ -4,7 +4,7 @@ title: CLVM
 slug: /clvm
 ---
 
-import Runnable from '../src/components/Runnable.tsx';
+import Runnable from '@site/src/components/Runnable.tsx';
 import Program from 'clvm-lib';
 
 Chialisp is compiled to bytecode, which is executed on the Chialisp Virtual Machine. CLVM is as minimal as possible, and doesn't have direct support for language constructs such as functions, constants, and modules.

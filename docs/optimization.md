@@ -4,7 +4,7 @@ title: Optimization
 slug: /optimization
 ---
 
-import Runnable from '../src/components/Runnable.tsx';
+import Runnable from '@site/src/components/Runnable.tsx';
 
 It is possible to optimize the cost of your programs by making certain changes and keeping things in mind as you write code using the language. Let's explore some of these methods now.
 

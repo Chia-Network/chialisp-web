@@ -1,0 +1,144 @@
+name: Deploy Review App on PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.event.pull_request.number }}
+
+jobs:
+  check-secret-access:
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.check-secret.outputs.allowed }}
+    steps:
+      - name: Test for secrets access
+        id: check-secret
+        shell: bash
+        run: |
+          unset allowed
+          if [ "${{ secrets.TEST_SECRETS_ACCESS }}" != '' ]; then
+            echo "allowed=true" >> $GITHUB_OUTPUT;
+          else
+            echo "allowed=false" >> $GITHUB_OUTPUT;
+          fi
+
+  build:
+    runs-on: ubuntu-latest
+    container: node:18-alpine
+    steps:
+      - name: 'Install deps'
+        run: |
+          apk add python3 make g++ git
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: 'npm install and build'
+        run: |
+          npm install
+          npm ci
+          npm run build
+      - name: Upload build to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+
+  package:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - check-secret-access
+    if: needs.check-secret-access.outputs.allowed == 'true'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Download build from artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: ./build
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,format=long
+      - name: Build Docker Container
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  deploy:
+    name: Deploy
+    needs:
+      - package
+      - check-secret-access
+    if: needs.check-secret-access.outputs.allowed == 'true'
+    runs-on: [k8s-public]
+    container:
+      image: registry.gitlab.com/cmmarslender/kubectl-helm:v3
+    environment:
+      name: Review ${{ github.event.pull_request.number }}
+      url: https://${{ github.event.pull_request.number }}.chialisp-web.chia.net
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Vault Login
+        uses: Chia-Network/actions/vault/login@main
+        with:
+          vault_url: ${{ secrets.VAULT_URL }}
+          role_name: github-chialisp-web
+
+      - name: Get secrets from vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ env.VAULT_TOKEN }}
+          secrets: |
+            secret/data/fmt/k8s/fremont-public api_server_url | K8S_API_SERVER_URL;
+
+      - name: Login to k8s cluster
+        uses: Chia-Network/actions/vault/k8s-login@main
+        with:
+          vault_url: ${{ secrets.VAULT_URL }}
+          vault_token: ${{ env.VAULT_TOKEN }}
+          backend_name: fremont-public
+          role_name: github-actions
+          cluster_url: ${{ env.K8S_API_SERVER_URL }}
+
+      - name: Install certificate
+        run: |
+          kubectl create namespace chialisp-web || true
+          kubectl apply -n chialisp-web -f ./k8s/certificate.yaml
+
+      - uses: Chia-Network/actions/helm/deploy@main
+        env:
+          DOCKER_TAG: "sha-${{ github.sha }}"
+          REVIEW_SLUG: ${{ github.event.pull_request.number }}
+        with:
+          namespace: "chialisp-web"
+          app_name: "chialisp-web-${{ env.REVIEW_SLUG }}"
+          helm_chart_repo: "https://chia-network.github.io/helm-charts"
+          helm_chart: "generic"
+          helm_values: "./k8s/review.yaml"
