@@ -1,0 +1,68 @@
+name: Delete Review App
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.event.pull_request.number }}
+
+jobs:
+  check-secret-access:
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.check-secret.outputs.allowed }}
+    steps:
+      - name: Test for secrets access
+        id: check-secret
+        shell: bash
+        run: |
+          unset allowed
+          if [ "${{ secrets.TEST_SECRETS_ACCESS }}" != '' ]; then
+            echo "allowed=true" >> $GITHUB_OUTPUT;
+          else
+            echo "allowed=false" >> $GITHUB_OUTPUT;
+          fi
+
+  delete:
+    runs-on: [k8s-public]
+    container:
+      image: registry.gitlab.com/cmmarslender/kubectl-helm:v3
+    needs:
+      - check-secret-access
+    if: needs.check-secret-access.outputs.allowed == 'true'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Vault Login
+        uses: Chia-Network/actions/vault/login@main
+        with:
+          vault_url: ${{ secrets.VAULT_URL }}
+          role_name: github-chialisp-web
+
+      - name: Get secrets from vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ env.VAULT_TOKEN }}
+          secrets: |
+            secret/data/fmt/k8s/fremont-public api_server_url | K8S_API_SERVER_URL;
+
+      - name: Login to k8s cluster
+        uses: Chia-Network/actions/vault/k8s-login@main
+        with:
+          vault_url: ${{ secrets.VAULT_URL }}
+          vault_token: ${{ env.VAULT_TOKEN }}
+          backend_name: fremont-public
+          role_name: github-actions
+          cluster_url: ${{ env.K8S_API_SERVER_URL }}
+
+      - name: Helm Uninstall
+        env:
+          REVIEW_SLUG: ${{ github.event.pull_request.number }}
+        run: |
+          helm uninstall -n "chialisp-web" "chialisp-web-$REVIEW_SLUG"
