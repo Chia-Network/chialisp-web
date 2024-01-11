@@ -100,7 +100,7 @@ jobs:
       image: registry.gitlab.com/cmmarslender/kubectl-helm:v3
     environment:
       name: Review ${{ github.event.pull_request.number }}
-      url: https://${{ github.event.pull_request.number }}.chialisp.com
+      url: https://${{ github.event.pull_request.number }}.chialisp-web.chia.net
     steps:
       - uses: actions/checkout@v3
 

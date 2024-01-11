@@ -8,7 +8,7 @@ metadata:
 spec:
   secretName: chialisp-web-star-tls
   dnsNames:
-    - "*.chialisp.com"
+    - "*chialisp-web.chia.net"
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-cf
