@@ -4,7 +4,7 @@ title: Debugging
 slug: /debugging
 ---
 
-import Runnable from '../src/components/Runnable.tsx';
+import Runnable from '@site/src/components/Runnable.tsx';
 
 Debugging Chialisp at times can be frustrating. Due to the nature of how it handles data structures, programs will often continue on with incorrect values only to error out at a later spot that gives no clue to the initial breakage. For example, a variable typo will often result in the variable being evaluated as a string, and if that gets hashed into something it's impossible to tell.
 

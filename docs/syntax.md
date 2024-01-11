@@ -4,7 +4,7 @@ title: Syntax
 slug: /syntax
 ---
 
-import Runnable from '../src/components/Runnable.tsx';
+import Runnable from '@site/src/components/Runnable.tsx';
 
 Chialisp's syntax is based on [Lisp](<https://en.wikipedia.org/wiki/Lisp_(programming_language)>), but there are some differences. This is a primer on the structure of expressions. Everything in the language shares the same [S-expression](https://en.wikipedia.org/wiki/S-expression) syntax, including operators and functions.
 

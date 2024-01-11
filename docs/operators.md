@@ -4,12 +4,12 @@ title: Operators
 slug: /operators
 ---
 
-import Runnable from '../src/components/Runnable.tsx';
+import Runnable from '@site/src/components/Runnable.tsx';
 
 This is a basic description of each operator. If you want tangible examples for how to use them, check out the [Examples page](/examples).
 
 :::note
-The operators in the [Modules section](#modules), as well as `if`, `qq`, and `unquote` are only part of Chialisp, not the compiled CLVM representation.
+The operators in the [Modules section](#chialisp-modules), as well as `if`, `qq`, and `unquote` are only part of Chialisp, not the compiled CLVM representation.
 
 Additionally, they do not have an intrinsic cost, since they are compiled to CLVM and not actually executed on their own.
 :::

@@ -4,7 +4,7 @@ title: Examples
 slug: /examples
 ---
 
-import Runnable from '../src/components/Runnable.tsx';
+import Runnable from '@site/src/components/Runnable.tsx';
 
 This is a set of examples for various operators. If you want to see their documentation, checkout the [Operators page](/operators).
 
