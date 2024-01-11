@@ -8,6 +8,7 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'Chia-Network',
   projectName: 'chialisp-web',
+  trailingSlash: true,
   themeConfig: {
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
@@ -28,6 +29,11 @@ module.exports = {
         {
           href: 'https://github.com/Chia-Network/chialisp-web',
           label: 'GitHub',
+          position: 'left',
+        },
+        {
+          href: 'https://docs.chia.net',
+          label: 'Chia Docs',
           position: 'left',
         },
       ],
