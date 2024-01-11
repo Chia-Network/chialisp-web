@@ -129,6 +129,7 @@ jobs:
 
       - name: Install certificate
         run: |
+          kubectl create namespace chialisp-web || true
           kubectl apply -n chialisp-web -f ./k8s/certificate.yaml
 
       - uses: Chia-Network/actions/helm/deploy@main
