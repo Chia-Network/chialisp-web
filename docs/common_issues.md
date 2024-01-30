@@ -38,7 +38,7 @@ The problem with this puzzle is that whoever farms the coin will see the `passwo
 
 ### How to avoid
 
-Password coins are easy to create, so they are often used in training materials (see [our documentation](https://docs.chia.net/guides/chialisp-first-smart-coin/#password-puzzle) for more info). However, coins locked with a password (and nothing else) are not secure. Instead, use announcements and the `AGG_SIG_ME` condition to secure your coins, as explained in the [standard transaction puzzle](https://chialisp.com/standard-transactions/).
+Password coins are easy to create, so they are often used in training materials (see [our documentation](/chialisp-first-smart-coin/#password-puzzle) for more info). However, coins locked with a password (and nothing else) are not secure. Instead, use announcements and the `AGG_SIG_ME` condition to secure your coins, as explained in the [standard transaction puzzle](/standard-transactions/).
 
 Also keep in mind that a farmer can attempt to modify a coin's solution as it is being spent. If modifying any of the conditions from your coin's solution would result in the solution remaining valid, then you should assume the farmer will do exactly this.
 
@@ -185,7 +185,7 @@ Note that Replace By Fee cannot be used for spend bundle splitting. The spend bu
 
 ### How to avoid
 
-If your spend bundle would be vulnerable to being split in a malicious way, you can link all coin spends together with [announcements](https://docs.chia.net/conditions#assert-coin-announcement). This will ensure that the spend bundle must remain intact when spent.
+If your spend bundle would be vulnerable to being split in a malicious way, you can link all coin spends together with [announcements](/conditions#assert-coin-announcement). This will ensure that the spend bundle must remain intact when spent.
 
 ---
 
