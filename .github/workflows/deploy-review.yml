@@ -116,14 +116,14 @@ jobs:
           url: ${{ secrets.VAULT_URL }}
           token: ${{ env.VAULT_TOKEN }}
           secrets: |
-            secret/data/fmt/k8s/fremont-public api_server_url | K8S_API_SERVER_URL;
+            secret/data/fmt/k8s/fmt-k8s-public api_server_url | K8S_API_SERVER_URL;
 
       - name: Login to k8s cluster
         uses: Chia-Network/actions/vault/k8s-login@main
         with:
           vault_url: ${{ secrets.VAULT_URL }}
           vault_token: ${{ env.VAULT_TOKEN }}
-          backend_name: fremont-public
+          backend_name: fmt-k8s-public
           role_name: github-actions
           cluster_url: ${{ env.K8S_API_SERVER_URL }}
 
