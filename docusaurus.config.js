@@ -22,20 +22,26 @@ module.exports = {
       },
       items: [
         {
-          href: 'https://chia.net',
-          label: 'Chia.net',
-          position: 'left',
-        },
-        {
-          href: 'https://github.com/Chia-Network/chialisp-web',
-          label: 'GitHub',
-          position: 'left',
-        },
-        {
           href: 'https://docs.chia.net',
           label: 'Chia Docs',
           position: 'left',
         },
+        {
+          href: 'https://docs.chia.net/academy-home/',
+          label: 'Chia Academy',
+          position: 'left',
+        },
+        {
+          href: 'https://chia.net',
+          label: 'Chia.net',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/Chia-Network/',
+          label: 'GitHub',
+          position: 'right',
+        },
+
       ],
     },
     footer: {

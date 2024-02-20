@@ -58,4 +58,4 @@ New features are listed in detail [here](/modern-chialisp).
 
 ## Getting Started
 
-If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](https://docs.chia.net/guides) guide. Throughout this series, you will write programs in the language, create smart coins on the Chia blockchain, and spend them on the command-line.
+If you'd like to get started learning and using Chialisp, you can start with the [Intro to Chialisp](/chialisp-primer/intro) guide. Throughout this series, you will write programs in the language, create smart coins on the Chia blockchain, and spend them on the command-line.

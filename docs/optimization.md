@@ -10,7 +10,7 @@ It is possible to optimize the cost of your programs by making certain changes a
 
 ## Conditions
 
-Check out the [full conditions list](https://docs.chia.net/conditions/#list) for detailed information on conditions and their use.
+Check out the [full conditions list](/conditions/#list) for detailed information on conditions and their use.
 
 If you are writing a puzzle for the Chia blockchain, minimize the number of spends and conditions used. Specifically, the `CREATE_COIN`, `AGG_SIG_ME`, and `AGG_SIG_UNSAFE` conditions have a massive cost associated with them. This is because they are an expensive operation to perform on the node.
 
