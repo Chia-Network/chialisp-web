@@ -261,7 +261,7 @@ This is the source code of the default NFT metadata updater, which can also be f
 
 </details>
 
-## Decision Decisions
+## Design Decisions
 
 #### Multiple separate forms of data {#data}
 
