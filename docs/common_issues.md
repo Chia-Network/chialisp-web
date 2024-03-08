@@ -191,4 +191,38 @@ If your spend bundle would be vulnerable to being split in a malicious way, you 
 
 ## Signature Replay / Signature Subtraction
 
-Replay attacks on signatures are possible, if a malicious farmer can find a way to isolate a useful signature. All the BLS signatures in a spend bundle are aggregated by arithmetically adding them together. Therefore, if a malicious farmer sees one aggregated signature that includes messages `A`, `B` and `C` signed with public keys `A'`, `B'` and `C'`, and then subsequently sees a spend bundle with an aggregated signature that includes messages `B` and `C`, with public keys `B'` and `C'`, then the farmer can subtract the latter aggregated signature from the former and derive the signature of message `A` with public key `A'`. The malicious farmer can then attempt to use that derived signature to initiate spends with a key they don't have.
+### Problem
+
+Replay attacks on signatures are possible if a malicious farmer can find a way to isolate a useful signature. 
+
+### Cause
+
+All of the BLS signatures in a spend bundle are aggregated by arithmetically adding them together. Therefore, if a malicious farmer sees one aggregated signature that includes messages `A`, `B` and `C` signed with public keys `A'`, `B'` and `C'`, and then subsequently sees a spend bundle with an aggregated signature that includes messages `B` and `C`, with public keys `B'` and `C'`, then the farmer can subtract the latter aggregated signature from the former and derive the signature of message `A` with public key `A'`. The malicious farmer can then attempt to use that derived signature to initiate spends with a key they don't have.
+
+Other scenarios where signature subtraction could be possible include:
+* Given signatures `A` and `A+B`, a malicious party could calculate the signature for `B`
+* Given signatures `A+B`, `B+C`, and `A+C`, a malicious party could calculate the signatures for `A`, `B`, and `C`
+
+### Example
+
+In a one-sided Offer, an asset is given in exchange for nothing. This can be a valuable technique, for example when air-dropping NFTs to unknown addresses. However, if the Offer maker's signature is accidentally revealed (in addition to the aggregated signature, which is always revealed), a malicious party could acquire `A` and `A+B`, as outlined above.
+
+In this case, the malicious party could potentially receive the NFT; the honest Offer taker would pay the transaction fee.
+
+In theory, individual signatures are not revealed to the broader network (only aggregated signatures must be revealed). However, signatures are not treated as private information. Some reasons a wallet may accidentally reveal an individual signature include:
+
+1. A coin spend is submitted, but the fee is too low and the transaction is evicted from the mempool
+2. A re-org causes a spent coin to reappear as unspent
+3. Replace By Fee (RBF) is used on a coin spend in the mempool
+
+In each of these cases, a wallet's attempt to spend a coin is unsuccessful. Even if the wallet waits a long time before attempting to spend the same coin again, it should assume that at least one node has maintained a copy of the original signature.
+
+### How to avoid
+
+Presume that all signatures are public. In cases where coins are only secured with signatures (and not with announcements), after an individual coin's signature has been revealed, the wallet should be careful never to submit an identical signature again.
+
+One hypothetical way for the wallet to accomplish this would be to keep track of every signature it has ever published, as well as each aggregate that would be unsafe to publish. This would be impractical; the reference wallet does not attempt to do it.
+
+Instead, the recommended method for preventing signature subtraction is to secure all coin spends with announcements. For example, in the case of a one-sided Offer, this could be accomplished by requesting 1 mojo from the taker. The Offer will then include an announcement, thereby making it secure. In other words, the safest way to secure a one-sided Offer is to make it two-sided.
+
+Another technique for preventing signature subtraction is to add a nonce to each spend bundle. If the nonce is generated correctly and consistently, the same spend bundle will never be signed twice, thus preventing the possibility of signature subtraction.
