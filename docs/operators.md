@@ -139,7 +139,7 @@ The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is 
 
 | Operator       | Format                  | Description                                                                                                |
 | -------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------- |
-| point_add      | `(point_add p1 p2 ...)` | Adds two or more G1 points (public keys) together. Renamed to g1_add in [CHIP-0111](#chip-0011-operators). |
+| point_add      | `(point_add p1 p2 ...)` | Adds two or more G1 points (public keys) together. Renamed to g1_add in [CHIP-0011](#chip-0011-operators). |
 | pubkey_for_exp | `(pubkey_for_exp A)`    | Maps an exponent (secret key) to a G1 point (public key).                                                  |
 
 ## Softfork
