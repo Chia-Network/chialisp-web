@@ -29,7 +29,7 @@ jobs:
           fi
 
   delete:
-    runs-on: [k8s-public]
+    runs-on: [k8s-public-fmt]
     container:
       image: registry.gitlab.com/cmmarslender/kubectl-helm:v3
     needs:

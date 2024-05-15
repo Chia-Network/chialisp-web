@@ -95,7 +95,7 @@ jobs:
       - package
       - check-secret-access
     if: needs.check-secret-access.outputs.allowed == 'true'
-    runs-on: [k8s-public]
+    runs-on: [k8s-public-fmt]
     container:
       image: registry.gitlab.com/cmmarslender/kubectl-helm:v3
     environment:
