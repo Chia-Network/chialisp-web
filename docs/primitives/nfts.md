@@ -19,7 +19,7 @@ The official Chia wallet has a reference implementation for the following in Pyt
 
 ### chia-rs
 
-The wallet code used by the [MonsterSprouts example game](https://github.com/Chia-Network/MonsterSprouts) has the following reference methods:
+Wallet code can use the following reference methods:
 
 - [Puzzle and solution types](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-primitives/src/primitives/nft.rs)
 - [Bulk mint NFTs](https://github.com/Chia-Network/chia_rs/blob/wallet-dev/chia-wallet/src/wallet.rs#L665)
