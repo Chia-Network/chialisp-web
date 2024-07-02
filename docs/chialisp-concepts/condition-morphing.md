@@ -109,24 +109,28 @@ You will use this public key in the next step.
 
 Now, we will wrap this inner puzzle in the outer puzzle we wrote previously. This will require the spend to be signed by a given key, and any coins created will have double the amount.
 
-First, run this command to get the compiled form of the inner puzzle:
+First, run this command to curry in the public key previously calculated:
 
 ```bash
-run -i include any-with-signature.clsp
+cdv clsp curry any-with-signature.clsp -a "0xPublicKey" -i include
 ```
 
-Yes, the output is just `2`.
+The output should look like this:
 
-You can run this command to curry in the public key previously calculated and the inner puzzle:
+```chialisp
+(a (q 2 (q 4 (c 4 (c 5 (c (a 6 (c 2 (c 11 ()))) ()))) 11) (c (q 50 2 (i (l 5) (q 11 (q . 2) (a 6 (c 2 (c 9 ()))) (a 6 (c 2 (c 13 ())))) (q 11 (q . 1) 5)) 1) 1)) (c (q . 0xPublicKey) 1))
+```
+
+You can run this command to curry in the inner puzzle above:
 
 ```bash
-cdv clsp curry coin-doubler.clsp -a "0xPublicKey" -a 2
+cdv clsp curry coin-doubler.clsp -a "(a (q 2 (q 4 (c 4 (c 5 (c (a 6 (c 2 (c 11 ()))) ()))) 11) (c (q 50 2 (i (l 5) (q 11 (q . 2) (a 6 (c 2 (c 9 ()))) (a 6 (c 2 (c 13 ())))) (q 11 (q . 1) 5)) 1) 1)) (c (q . 0xPublicKey) 1))" 
 ```
 
 That should produce an output similar to this:
 
 ```chialisp
-(a (q 2 (q 2 6 (c 2 (c (a 5 7) ()))) (c (q (a (i (= 9 (q . 51)) (q 4 (q . 51) (c 21 (c (* 45 (q . 2)) ()))) (q . 5)) 1) 2 (i (l 5) (q 4 (a 4 (c 2 (c 9 ()))) (a 6 (c 2 (c 13 ())))) ()) 1) 1)) (c (q . 0xPublicKey) (c (q 2 (q 4 (c 4 (c 5 (c (a 6 (c 2 (c 11 ()))) ()))) 11) (c (q 50 2 (i (l 5) (q 11 (q . 2) (a 6 (c 2 (c 9 ()))) (a 6 (c 2 (c 13 ())))) (q 11 (q . 1) 5)) 1) 1)) 1)))
+(a (q 2 (q 2 6 (c 2 (c (a 5 7) ()))) (c (q (a (i (= 9 (q . 51)) (q 4 (q . 51) (c 21 (c (* 45 (q . 2)) ()))) (q . 5)) 1) 2 (i (l 5) (q 4 (a 4 (c 2 (c 9 ()))) (a 6 (c 2 (c 13 ())))) ()) 1) 1)) (c (q 2 (q 2 (q 4 (c 4 (c 5 (c (a 6 (c 2 (c 11 ()))) ()))) 11) (c (q 50 2 (i (l 5) (q 11 (q . 2) (a 6 (c 2 (c 9 ()))) (a 6 (c 2 (c 13 ())))) (q 11 (q . 1) 5)) 1) 1)) (c (q . 0xPublicKey) 1)) 1))
 ```
 
 Now the inner puzzle and outer puzzle have been combined together.
