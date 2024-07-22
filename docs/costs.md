@@ -64,7 +64,7 @@ Additionally, there is a cost of 10 per byte of memory allocated in the return v
 
 ## Conditions
 
-More information on the costs associated with conditions can be found on the [Conditions page](/conditions#costs) of the Chia docs.
+More information on the costs associated with conditions can be found on the [Conditions page](https://docs.chia.net/coin-set-costs/) of the Chia docs.
 
 ## Evaluating Cost
 
