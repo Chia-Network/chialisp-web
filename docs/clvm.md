@@ -63,7 +63,7 @@ If the program being evaluated is a cons pair, then all of the parameters (conta
 
 If CLVM is running in strict mode, an unknown opcode will cause the program to terminate. During developer testing, CLVM may be run in non-strict mode, which allows for unknown opcodes to be used and treated as no-ops.
 
-The quote operator, `q`, is [special](/syntax#quoting_evaluation). When it is recognized by the interpreter, it causes whatever is on the right to be returned as a value rather than being evaluated as a program. In every other case, the right hand side is evaluated, then passed as operands to the operator on the left.
+The quote operator, `q`, is [special](/syntax#quoting). When it is recognized by the interpreter, it causes whatever is on the right to be returned as a value rather than being evaluated as a program. In every other case, the right hand side is evaluated, then passed as operands to the operator on the left.
 
 A CLVM program can be thought of as a binary tree.
 
