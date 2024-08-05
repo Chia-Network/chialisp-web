@@ -33,26 +33,15 @@ Additionally, they do not have an intrinsic cost, since they are compiled to CLV
 | +        | `(+ A B ...)`  | Adds multiple atoms.                            |
 | -        | `(- A B ...)`  | Subtracts multiple atoms.                       |
 | \*       | `(* A B ...)`  | Multiplies multiple atoms.                      |
-| /        | `(/ A B)`      | Divides two atoms.                              |
+| /        | `(/ A B)`      | Divides two atoms. Rounds towards negative      |
+|          |                | infinity.                                       |
 | divmod   | `(divmod A B)` | Calculates quotient and remainder in cons pair. |
 
 ### Negative Division
 
 :::info
 
-The `/` operator cannot be used to divide negative numbers. Previously this worked, but used the wrong method of dividing negative integers. The operator was [soft-forked at block height 2,300,000](https://www.chia.net/2022/03/04/divided-we-fork.en.html) to prevent this.
-
-You should use `divmod` instead in situations where you need to divide negative numbers.
-
-For example:
-
-<Runnable flavor='chialisp'>
-
-```chialisp
-(f (divmod -6 3))
-```
-
-</Runnable>
+In earlier versions of Chia, the `/` operator produced incorrect rounding when used with negative numbers. It was disabled in a [soft-fork at block height 2,300,000](https://www.chia.net/2022/03/04/divided-we-fork.en.html). It was enabled again in the hard fork, with correct behavior. It always rounds towards negative infinity
 
 :::
 
