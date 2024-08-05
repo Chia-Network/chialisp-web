@@ -40,7 +40,11 @@ Additionally, they do not have an intrinsic cost, since they are compiled to CLV
 
 :::info
 
-In earlier versions of Chia, the `/` operator produced incorrect rounding when used with negative numbers. It was disabled in a [soft-fork at block height 2,300,000](https://www.chia.net/2022/03/04/divided-we-fork.en.html). It was enabled again in the hard fork, with correct behavior. It always rounds towards negative infinity
+In earlier versions of Chia, the `/` operator produced incorrect rounding when
+used with negative numbers. It was disabled in a [soft-fork at block height
+2,300,000](https://www.chia.net/2022/03/04/divided-we-fork.en.html). It was
+enabled again in the hard fork, with correct behavior. It always rounds towards
+negative infinity.
 
 :::
 
