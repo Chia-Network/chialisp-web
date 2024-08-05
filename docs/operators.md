@@ -28,14 +28,13 @@ Additionally, they do not have an intrinsic cost, since they are compiled to CLV
 
 ## Arithmetic
 
-| Operator | Format         | Description                                     |
-| -------- | -------------- | ----------------------------------------------- |
-| +        | `(+ A B ...)`  | Adds multiple atoms.                            |
-| -        | `(- A B ...)`  | Subtracts multiple atoms.                       |
-| \*       | `(* A B ...)`  | Multiplies multiple atoms.                      |
-| /        | `(/ A B)`      | Divides two atoms. Rounds towards negative      |
-|          |                | infinity.                                       |
-| divmod   | `(divmod A B)` | Calculates quotient and remainder in cons pair. |
+| Operator | Format         | Description                                           |
+| -------- | -------------- | ----------------------------------------------------- |
+| +        | `(+ A B ...)`  | Adds multiple atoms.                                  |
+| -        | `(- A B ...)`  | Subtracts multiple atoms.                             |
+| \*       | `(* A B ...)`  | Multiplies multiple atoms.                            |
+| /        | `(/ A B)`      | Divides two atoms. Rounds towards negative infinity.  |
+| divmod   | `(divmod A B)` | Calculates quotient and remainder in cons pair.       |
 
 ### Negative Division
 
