@@ -368,6 +368,58 @@ The following parameters are expected:
 
 ---
 
+### 66 `SEND_MESSAGE` {#send-message}
+
+:::info
+This condition is part of [CHIP-0025](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0025.md), and became available at block height 5,716,000.
+:::
+
+Format: `(66 mode message ...)`
+
+Asserts that exactly one of the destination coin issues exactly one corresponding `RECEIVE_MESSAGE` condition.
+
+The following parameters are expected:
+
+| Name          | Type         |
+| ------------- | ------------ |
+| `mode`        | Unsigned Int |
+| `message`     | Bytes        |
+| `destination` | ...          |
+
+`mode` may only have bits 0-5 set.
+
+`message` may not be greater than 1024 bytes long.
+
+The parameters after `message` depends on which bits are set in `mode`. They identify the receiving spend.
+
+---
+
+### 67 `RECEIVE_MESSAGE` {#receive-message}
+
+:::info
+This condition is part of [CHIP-0025](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0025.md), and became available at block height 5,716,000.
+:::
+
+Format: `(67 mode message ...)`
+
+Asserts that exactly one of the source coin issues exactly one corresponding `SEND_MESSAGE` condition.
+
+The following parameters are expected:
+
+| Name          | Type         |
+| ------------- | ------------ |
+| `mode`        | Unsigned Int |
+| `message`     | Bytes        |
+| `source`      | ...          |
+
+`mode` may only have bits 0-5 set.
+
+`message` may not be greater than 1024 bytes long.
+
+The parameters after `message` depend on which bits are set in `mode`. They identify the sending spend.
+
+---
+
 ### 70 `ASSERT_MY_COIN_ID` {#assert-my-coin-id}
 
 Format: `(70 coin_id)`
