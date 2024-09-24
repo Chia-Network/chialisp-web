@@ -249,6 +249,11 @@ The number of skipped bits is also the number of total bytes the size is encoded
 
 The number of size bytes includes the first.
 
+
+:::note
+
+It is possible, although discouraged, to encode the length of the atom in more bytes than necessary to fit the number. i.e. have unnecessary leading zeroes. This is similar to [UTF-8 overlong encoding](https://en.wikipedia.org/wiki/UTF-8#Overlong_encodings). It is not safe to compare CLVM programs in serialized form, since identical programs may compare not equal. To compare programs, use tree hash.
+
 :::
 
 ### Cons Pairs
@@ -258,6 +263,60 @@ A cons pair begins with the special value `0xFF`. The first and rest values can 
 For example, `(1 . 2)` would be represented as `0xFF0102`. Once you read `0xFF`, you know that the next value is the first of the cons pair, which is `0x01`. Then, the rest of the cons pair is the final value, which in this case is `0x02`.
 
 Lists are typically chains of cons pairs that end in a nil terminator.
+
+### Back references
+
+As of the hard fork at block height 5 496 000, CLVM serialization was extended with *back references*. This feature allows to refer back to previous CLVM structure, that should be duplicated in the deserialized output. This feature is also sometimes referred to as CLVM compression.
+
+The compression comes from being able to collapse repeated structures. It only needs to be included once, and then referred back to every time it is repeated. This is especially helpful in a block generator where the same puzzle reveal may be included multiple times, for coins secured by the same puzzle. The curried parameters are not repeated, but the underlying puzzle is.
+
+A back reference is introduced by a `0xFE` byte. This byte is followed by an atom that's interpreted as a *path*. The path points into a tree of previously parsed expressions (environment). The lookup works the same as into the CLVM execution [Environnment](#Environment).
+
+CLVM trees are parsed bottom-up, left to right. As each atom is parsed, it is prepended to the environment. As each pair is parsed, it pops the top two values of the environment, forms a pair that is then prepended to the environment. Each back-reference performs a path lookup into the environment and prepends the resulting sub tree to the environment.
+
+For example, the following buffer is a serialization of `("foobar" . ("foobar" . NIL))`, `ff86666f6f626172fe01`. It is parsed in the order described in the tree below:
+
+```
+   [3]
+  /   \
+ 1     2 (backref)
+```
+
+The environment is looks like this in each step:
+
+1. parse atom "foobar"
+```
+       []
+      /  \
+     /    \
+"foobar"   NIL
+```
+
+2. parse back reference `01`
+```
+             []
+            /  \
+           /    \
+          /      \
+         /        \
+        /          \
+       []          []
+      /  \        /  \
+     /    \      /    \
+ "foobar" NIL "foobar" NIL
+```
+
+3. parse pair. pop top 2 items and form a pair
+```
+       []
+      /  \
+     /    \
+    /      \
+ "foobar"  []
+          /  \
+         /    \
+      "foobar" NIL
+```
 
 ## Programs as Parameters
 
