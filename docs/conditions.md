@@ -21,7 +21,9 @@ You are recommended to use the `coinid` operator when computing coin IDs. This o
 
 :::warning
 
-`ASSERT_COIN_ANNOUNCEMENT` and `ASSERT_PUZZLE_ANNOUNCEMENT` should typically only be used in a puzzle's _solution_, and not in the puzzle itself. This is especially important when using `ASSERT_COIN_ANNOUNCEMENT`, because it refers to a specific coin.
+While `ASSERT_COIN_ANNOUNCEMENT` and `ASSERT_PUZZLE_ANNOUNCEMENT` will continue to be supported, they are no longer recommended. Instead, you should consider using the [SEND_MESSAGE](#66-send_message) and [RECEIVE_MESSAGE](#67-receive_message) conditions.
+
+When you do need to use `ASSERT_COIN_ANNOUNCEMENT` and `ASSERT_PUZZLE_ANNOUNCEMENT` (for example, when spending coins that were created prior to the existence of `SEND_MESSAGE` and `RECEIVE_MESSAGE`), typically you should only use the conditions in a puzzle's _solution_, and not in the puzzle itself. This is especially important when using `ASSERT_COIN_ANNOUNCEMENT`, because it refers to a specific coin.
 
 To illustrate the danger, let's say `coin A` uses this condition in its puzzle, and it asserts a coin announcement from `coin B`.
 In this case, `coin A` requires `coin B` to be spent in the same block as it is spent.
@@ -33,6 +35,59 @@ It is somewhat less dangerous to use `ASSERT_PUZZLE_ANNOUNCEMENT` in a coin's pu
 However, it is still best practice to only use this condition in a coin's solution.
 
 :::
+
+### About MESSAGE conditions' `mode` parameter
+
+The [SEND_MESSAGE](#66-send_message) and [RECEIVE_MESSAGE](#67-receive_message) conditions require a 1-byte `mode` parameter to commit to the sender and receiver of the message. This parameter is a bitmask of three bits for the sender, and three bits for the receiver. Only the lowest six bits are used (the highest two bits are unused).
+
+Each bit represents whether an attribute from the coin is required (`1`) or not (`0`):
+
+- The first bit represents the parent coin.
+- The second bit represents the puzzle hash of the coin.
+- The third bit represents the amount (value) of the coin.
+
+The sender and receiver bits each use the following convention:
+
+| Type          | Bits | Parent | Puzzle | Amount |
+| :------------ | :--- | :----- | :----- | :----- |
+| Coin          | 111  | True   | True   | True   |
+| Parent        | 100  | True   | False  | False  |
+| Puzzle        | 010  | False  | True   | False  |
+| Amount        | 001  | False  | False  | True   |
+| Parent-Puzzle | 110  | True   | True   | False  |
+| Parent-Amount | 101  | True   | False  | True   |
+| Puzzle-Amount | 011  | False  | True   | True   |
+| None          | 000  | False  | False  | False  |
+
+The eight conditions from this table apply to both the sender and receiver coins. Therefore, there are 64 possible combinations (8 \* 8). For example, if a specific coin sends a message, and a coin with a specific parent coin and puzzle hash receives it, the bitmask would be `111` concatenated with `110`, or `111110`.
+
+Additional parameters will depend on these six bits. This enables a coin that can send a message to another coin based on a parent/puzzle/amount combination of that destination coin. The recipient coin can receive that message if it also specifies which coin sent it.
+
+Note 1: The `mode` parameter must be identical for both the `SEND_MESSAGE` and the corresponding `RECEIVE_MESSAGE`. In the above example, the sender's `mode` parameter was `111110`. In this case, the receiver's mode parameter must also be `111110` in order for the spend to succeed.
+
+Note 2: The consensus and the mempool will each allow any of the eight possible combinations from the above table.
+
+### About MESSAGE conditions' `varargs` parameter
+
+The [SEND_MESSAGE](#66-send_message) and [RECEIVE_MESSAGE](#67-receive_message) conditions include a varargs (`...`) parameter. This parameter is required for asserting the parent coin ID, puzzle hash, and/or amount of the coin that sent or received the message, depending on the condition:
+
+- When using `SEND_MESSAGE`, the `...` parameter refers to the coin that will receive the message.
+- When using `RECEIVE_MESSAGE`, the `...` parameter refers to the coin that sent the message.
+
+The length of this parameter depends on `mode`. Continuing with the table from the previous section, the following arguments are required in the `...` parameter:
+
+| Type          | Bits | Arguments required in `...`        |
+| :------------ | :--- | :--------------------------------- |
+| Coin          | 111  | `<coin ID>`                        |
+| Parent        | 100  | `<parent coin ID>`                 |
+| Puzzle        | 010  | `<puzzle hash>`                    |
+| Amount        | 001  | `<amount>`                         |
+| Parent-Puzzle | 110  | `<parent coin ID>` `<puzzle hash>` |
+| Parent-Amount | 101  | `<parent coin ID>` `<amount>`      |
+| Puzzle-Amount | 011  | `<puzzle hash>` `<amount>`         |
+| None          | 000  | Not used                           |
+
+Note that when all three bits are set, the `coin ID` will be passed instead of its components parts.
 
 ### 1 `REMARK` {#remark}
 
@@ -286,6 +341,12 @@ The following parameters are expected:
 
 ### 60 `CREATE_COIN_ANNOUNCEMENT` {#create-coin-announcement}
 
+:::warning
+
+While this condition will be supported going forward, it is no longer recommended. Consider using [SEND_MESSAGE](#66-send_message) instead.
+
+:::
+
 Format: `(60 message)`
 
 Creates an announcement of a given message, tied to this coin's id. For more details, see the section on [Announcements](#announcements).
@@ -299,6 +360,12 @@ The following parameters are expected:
 ---
 
 ### 61 `ASSERT_COIN_ANNOUNCEMENT` {#assert-coin-announcement}
+
+:::warning
+
+While this condition will be supported going forward, it is no longer recommended. Consider using [RECEIVE_MESSAGE](#67-receive_message) instead.
+
+:::
 
 Format: `(61 announcement_id)`
 
@@ -314,6 +381,12 @@ The following parameters are expected:
 
 ### 62 `CREATE_PUZZLE_ANNOUNCEMENT` {#create-puzzle-announcement}
 
+:::warning
+
+This condition will be supported going forward, but it is no longer recommended. Consider using [`SEND_MESSAGE`](#66-send_message) instead.
+
+:::
+
 Format: `(62 message)`
 
 Creates an announcement of a given message, tied to this coin's puzzle hash. For more details, see the section on [Announcements](#announcements).
@@ -327,6 +400,12 @@ The following parameters are expected:
 ---
 
 ### 63 `ASSERT_PUZZLE_ANNOUNCEMENT` {#assert-puzzle-announcement}
+
+:::warning
+
+This condition will be supported going forward, but it is no longer recommended. Consider using [`RECEIVE_MESSAGE`](#67-receive_message) instead.
+
+:::
 
 Format: `(63 announcement_id)`
 
@@ -368,7 +447,7 @@ The following parameters are expected:
 
 ---
 
-### 66 `SEND_MESSAGE` {#send-message}
+### 66 `SEND_MESSAGE`
 
 :::info
 This condition is part of [CHIP-0025](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0025.md), and became available at block height 5,716,000.
@@ -376,7 +455,15 @@ This condition is part of [CHIP-0025](https://github.com/Chia-Network/chips/blob
 
 Format: `(66 mode message ...)`
 
-Asserts that exactly one of the destination coin issues exactly one corresponding `RECEIVE_MESSAGE` condition.
+Sends a `message` using the specified `mode` and `...` parameters. See the sections on the [mode](#about-message-conditions-mode-parameter) and [varargs](#about-message-conditions-varargs-parameter) parameters for more info.
+
+For more info about the thought process that led to the creation of this condition, see [CHIP-25](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0025.md#mode-parameter).
+
+Note 1: If this condition's `message` is not received in the same block where this condition is used, the spend bundle containing this condition will fail.
+
+Note 2: This condition can be issued multiple times, to send identical messages in a single block. In this case, there must be a separate `RECEIVE_MESSAGE` condition to match each `SEND_MESSAGE` condition, and the `RECEIVE_MESSAGE` condition(s) must be issued in the same block where the messages are sent. If the number of messages sent does not equal the number of messages received, the condition will fail.
+
+Note 3: The `message` parameter has a maximum size of 1024 bytes.
 
 The following parameters are expected:
 
@@ -394,7 +481,7 @@ The parameters after `message` depends on which bits are set in `mode`. They ide
 
 ---
 
-### 67 `RECEIVE_MESSAGE` {#receive-message}
+### 67 `RECEIVE_MESSAGE`
 
 :::info
 This condition is part of [CHIP-0025](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0025.md), and became available at block height 5,716,000.
@@ -404,13 +491,17 @@ Format: `(67 mode message ...)`
 
 Asserts that exactly one of the source coin issues exactly one corresponding `SEND_MESSAGE` condition.
 
+See the sections on the [mode](#about-message-conditions-mode-parameter) and [varargs](#about-message-conditions-varargs-parameter) parameters
+
+For more info about the thought process that led to the creation of this condition, see [CHIP-25](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0025.md#mode-parameter).
+
 The following parameters are expected:
 
-| Name          | Type         |
-| ------------- | ------------ |
-| `mode`        | Unsigned Int |
-| `message`     | Bytes        |
-| `source`      | ...          |
+| Name      | Type         |
+| --------- | ------------ |
+| `mode`    | Unsigned Int |
+| `message` | Bytes        |
+| `source`  | ...          |
 
 `mode` may only have bits 0-5 set.
 
