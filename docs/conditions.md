@@ -539,7 +539,7 @@ The following parameters are expected:
 
 ---
 
-### 72 `ASSERT_MY_PUZZLE_HASH` {#assert-my-puzzle-hash}
+### 72 `ASSERT_MY_PUZZLEHASH` {#assert-my-puzzlehash}
 
 Format: `(72 puzzle_hash)`
 
