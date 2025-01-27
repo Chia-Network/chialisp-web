@@ -211,7 +211,7 @@ The following table shows the bits used to indicate the number of size bytes.
 | 4          | 0x7FFFFFF   | 1111 ...  | ...    | ...    | ...    |        |
 | 5          | 0x3FFFFFFFF | 11111 ... | ...    | ...    | ...    | ...    |
 
-In other words, the number of bits set to 1 at the start of the first size byte indicate the total number of size bytes.
+In other words, the number of bits set to 1 at the start of the first size byte indicate the total number of size bytes. This sequence of 1-bits that represent the number of size bytes is then followed by a 0-bit to mark the end of this sequence.
 
 ### Cons Pairs
 
