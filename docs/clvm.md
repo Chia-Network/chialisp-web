@@ -199,19 +199,19 @@ Values that are 7 bits or fewer can be represented as a single byte, equivalent 
 
 Values longer than 7 bits are represented as a sequence of bytes that encode the size, followed by the value.
 
-The first serialized byte determines the number of size bytes. The size takes up anywhere from 1 to 6 bytes in total, including the first. The size then determines the number of bytes denoting the value - anywhere from 0 to 17,179,869,183 bytes long.
+The first serialized byte determines the number of size bytes. The size takes up anywhere from 1 to 5 bytes in total, including the first. The size then determines the number of bytes denoting the value - anywhere from 0 to 17,179,869,183 bytes long.
 
 The following table shows the bits used to indicate the number of size bytes.
 
-| Size Bytes | Max Length  | Byte 1    | Byte 2 | Byte 3 | Byte 4 | Byte 5 |
-| ---------- | ----------- | --------- | ------ | ------ | ------ | ------ |
-| 1          | 0x3F        | 1 ...     |        |        |        |        |
-| 2          | 0x1FFF      | 11 ...    | ...    |        |        |        |
-| 3          | 0xFFFFF     | 111 ...   | ...    | ...    |        |        |
-| 4          | 0x7FFFFFF   | 1111 ...  | ...    | ...    | ...    |        |
-| 5          | 0x3FFFFFFFF | 11111 ... | ...    | ...    | ...    | ...    |
+| Size Bytes | Max Length  | Byte 1     | Byte 2 | Byte 3 | Byte 4 | Byte 5 |
+| ---------- | ----------- | ---------- | ------ | ------ | ------ | ------ |
+| 1          | 0x3F        | 10 ...     |        |        |        |        |
+| 2          | 0x1FFF      | 110 ...    | ...    |        |        |        |
+| 3          | 0xFFFFF     | 1110 ...   | ...    | ...    |        |        |
+| 4          | 0x7FFFFFF   | 11110 ...  | ...    | ...    | ...    |        |
+| 5          | 0x3FFFFFFFF | 111110 ... | ...    | ...    | ...    | ...    |
 
-In other words, the number of bits set to 1 at the start of the first size byte indicate the total number of size bytes.
+In other words, the number of bits set to 1 at the start of the first size byte indicate the total number of size bytes. After this sequence of 1-bits follows a 0-bit to mark the end of the sequence.
 
 ### Cons Pairs
 
