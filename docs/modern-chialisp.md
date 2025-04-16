@@ -8,7 +8,7 @@ slug: /modern-chialisp
 Chialisp can evolve over time and still serve its role in preserving the
 representation of older programs in previous iterations of the language by using
 a sigil to indicate what tooling version the program was finalized in. The
-current sigil is ```*standard-cl-23*```. Use an 'include' form to set the
+current sigil is ```*standard-cl-24*```. Use an 'include' form to set the
 tooling version. Chialisp has a lot of new features which make programs easier
 to understand, read and write. The speed of its optimizer has been improved to
 allow faster iteration and several features make chialisp safer. Undefined
@@ -23,7 +23,7 @@ and preprocessing is now a separate pass that can be inspected on its own.
 ```chialisp
 (mod (X)
 
-  ;; Specify that this program is compiled with *standard-cl-23*.
+  ;; Specify that this program is compiled with *standard-cl-24*.
   ;; After release, the chialisp compiler guarantees that programs
   ;; with a specific sigil (including no sigil) compile to the
   ;; same representation forever (it is a bug that must be fixed
@@ -31,7 +31,7 @@ and preprocessing is now a separate pass that can be inspected on its own.
   ;; release).  In this way, program source code can also provide
   ;; enough information to re-produce a puzzle hash from source
   ;; code.
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   ;; Normal functions are now allowed to be called from macros.
   ;; When run in macro space, they can used special forms to detect
@@ -119,7 +119,7 @@ representation of inlining it or placing it in the environment.
 ```chialisp
 (mod (Z)
 
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   ; takes a lisp tree and returns the hash of it
   (defun sha256tree1 (TREE)
@@ -158,7 +158,7 @@ of bindings as long as they don't form a cycle.
 ```chialisp
 (mod (Z)
   
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
   
   (let ((X (+ Z 1))
         (Y (- Z 1)))
@@ -202,7 +202,7 @@ In chialisp:
 
 ```chialisp
 (mod (p) 
-  (include *standard-cl-23*) 
+  (include *standard-cl-24*) 
       
   (defun F ((@ p (x y))) (if p (+ x y) 0)) 
       
@@ -224,7 +224,7 @@ generic algorithms, it might be needed.
 ```chialisp
 (mod (p)
     
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
     
   (defun fromMaybe (v (@ m (content))) (if m content v))
   (defun mapMaybe (f (@ m (content))) (if m (list (a f (list content))) ()))
@@ -249,7 +249,7 @@ expression.
 ```chialisp
 (mod (Z)
    
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
     
   (defun add-one (X) (+ X 1))
     
@@ -276,19 +276,21 @@ and is in general safe to use for higher-order functions.
 
 The above program could be re-stated as:
 
-    (mod (Z)
-   
-      (include *standard-cl-23*)
-    
-      (defun map (F L)
-        (if L
-          (c (a F (list (f L))) (map F (r L)))
-          ()
-          )
-        )
-    
-      (map (lambda (Y) (+ Y 1)) Z)
+```chialisp
+(mod (Z)
+
+  (include *standard-cl-24*)
+
+  (defun map (F L)
+    (if L
+      (c (a F (list (f L))) (map F (r L)))
+      ()
       )
+    )
+
+  (map (lambda (Y) (+ Y 1)) Z)
+  )
+```
 
 ### embed and compile include forms
 
@@ -304,7 +306,7 @@ include programs from different versions of the language accurately.
 ```chialisp
 (mod (Z)
     
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
     
   (embed-file hello-data bin "hello.txt")
     
@@ -334,7 +336,7 @@ without stopping execution while the program runs:
 
 ```chialisp
 (mod (X)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
   
   (defun print (l x) (i (all "$print$" l x) x x))
 
@@ -384,7 +386,7 @@ depend on each other to keep from having runtime errors.
 ```chialisp
 (mod (X)
 
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defun and_ (CLAUSES)
     (if (r CLAUSES)
@@ -413,14 +415,14 @@ We can check what this macro unrolls to:
 
 ```shell
 $ run -E strict-and.clsp
-(mod (X) (include *standard-cl-23*) (a (i X (com (a (i (r X) (com (f (r X))) (com ())) @)) (com ())) @))
+(mod (X) (include *standard-cl-24*) (a (i X (com (a (i (r X) (com (f (r X))) (com ())) @)) (com ())) @))
 ```
 
 We can format it nicely:
 
 ```chialisp
 (mod (X)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (a (i X
     (com
@@ -474,7 +476,7 @@ We can start with a simple check:
 
 ```chialisp
 (mod (X Y Z)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defmac or CLAUSES "hi from or")
 
@@ -484,14 +486,14 @@ We can start with a simple check:
 
 ```shell
 $ run -E or-test.clsp
-(mod (X Y Z) (include *standard-cl-23*) "hi from or")
+(mod (X Y Z) (include *standard-cl-24*) "hi from or")
 ```
 
 And expand on it:
 
 ```chialisp
 (mod (X Y Z)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defun or_ (CLAUSES) "hi from or")
 
@@ -503,7 +505,7 @@ And expand on it:
 
 ```shell
 $ run -E or-test.clsp
-(mod (X Y Z) (include *standard-cl-23*) (c () "hi from or"))
+(mod (X Y Z) (include *standard-cl-24*) (c () "hi from or"))
 ```
 
 Then decide how 'or' should work:
@@ -523,7 +525,7 @@ quoted code.  It makes for fairly understandable macros.
 
 ```chialisp
 (mod (X Y Z)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defun or_ (CLAUSES)
     (if (r CLAUSES) ;; There are more.
@@ -547,7 +549,7 @@ So we fix that :-)
 
 ```chialisp
 (mod (X Y Z)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defun or_ (CLAUSES)
     (if (r CLAUSES) ;; There are more.
@@ -564,14 +566,14 @@ So we fix that :-)
 
 ```shell
 $ run -E or-test.clsp
-(mod (X Y Z) (include *standard-cl-23*) (a (i X (com X) (com (a (i Y (com Y) (com Z)) @))) @))
+(mod (X Y Z) (include *standard-cl-24*) (a (i X (com X) (com (a (i Y (com Y) (com Z)) @))) @))
 ```
 
 So this output:
 
 ```chialisp
 (mod (X Y Z)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
   (a (i X
     (com X)
     (com (a (i Y
@@ -654,7 +656,7 @@ code that's frugal at the CLVM level.
 ;; Adapted from https://rosettacode.org/wiki/ABC_problem#Scheme
 (mod (word)
     
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
     
   (defconst *blocks*
     (list
@@ -751,7 +753,7 @@ code that's frugal at the CLVM level.
 ```chialisp
 ;; Adapted from: https://rosettacode.org/wiki/Babbage_problem#Scheme
 (mod (N)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
     
   (defun digits_ (result n)
     ;; The new assign form allows destructuring assignment.
@@ -834,7 +836,7 @@ code that's frugal at the CLVM level.
 ;; Given an AVL tree representation and a key and value to add, return
 ;; the new tree.
 (mod (tree k v)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defconstant LB 0)
   (defconstant IB 1)
@@ -1085,7 +1087,7 @@ code that's frugal at the CLVM level.
 ```chialisp
 ;; HAMT ported from https://github.com/tomjkidd/simple-hamt/blob/master/src/simple_hamt/impl/core.clj
 (mod (h idx . rest)
-  (include *standard-cl-23*)
+  (include *standard-cl-24*)
 
   (defconstant number-of-segments 4)
   (defconstant number-of-children 4)
