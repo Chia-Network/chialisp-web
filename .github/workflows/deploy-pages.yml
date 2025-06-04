@@ -13,6 +13,8 @@ jobs:
       - name: 'Install deps'
         run: |
           apk add python3 make g++ git
+      - name: Add safe Git directoryAdd commentMore actions
+        uses: Chia-Network/actions/git-mark-workspace-safe@main
       - name: Checkout Code
         uses: actions/checkout@v4
       - name: Set up commit signing
