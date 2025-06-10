@@ -170,7 +170,7 @@ The syntax is defined as follows:
 - The `extension` is an unsigned (up to 32-bit in size) integer indicating the set of extensions available in the softfork guard.
 - The `program` is executed with the specified `arguments`. The output is always either null or termination of the program if it failed.
 
-Here is a CLVM example using the `coinid` operator described in the [CHIP-0011 Operators](#chip-0011-operators) section:
+Here is a CLVM example using the `coinid` operator described in the [Other Cryptography](#other-cryptography) section:
 
 ```chialisp
 (softfork
