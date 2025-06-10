@@ -28,13 +28,15 @@ Additionally, they do not have an intrinsic cost, since they are compiled to CLV
 
 ## Arithmetic
 
-| Operator | Format         | Description                                           |
-| -------- | -------------- | ----------------------------------------------------- |
-| +        | `(+ A B ...)`  | Adds multiple atoms.                                  |
-| -        | `(- A B ...)`  | Subtracts multiple atoms.                             |
-| \*       | `(* A B ...)`  | Multiplies multiple atoms.                            |
-| /        | `(/ A B)`      | Divides two atoms. Rounds towards negative infinity.  |
-| divmod   | `(divmod A B)` | Calculates quotient and remainder in cons pair.       |
+| Operator | Format                           | Description                                                                                                |
+| -------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| +        | `(+ A B ...)`                    | Adds multiple atoms.                                                                                       |
+| -        | `(- A B ...)`                    | Subtracts multiple atoms.                                                                                  |
+| \*       | `(* A B ...)`                    | Multiplies multiple atoms.                                                                                 |
+| /        | `(/ A B)`                        | Divides two atoms. Rounds towards negative infinity.                                                       |
+| divmod   | `(divmod A B)`                   | Calculates quotient and remainder in cons pair.                                                            |
+| %        | `(% numerator denominator)`      | Computes the remainder of the numerator divided by the denominator.                                        |
+| modpow   | `(modpow base exponent modulus)` | Computes `(base ^ exponent) % modulus`. Base may be negative, exponent must not be, modulus must not be 0. |
 
 ### Negative Division
 
@@ -116,7 +118,6 @@ The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is 
 
 | Operator                 | Format             | Description                                  |
 | ------------------------ | ------------------ | -------------------------------------------- |
-| sha256                   | `(sha256 A B ...)` | Calculates the sha256 hash of the atoms.     |
 | concat                   | `(concat A B ...)` | Concatenates the bytes of the atoms.         |
 | strlen                   | `(strlen A)`       | Returns the length of the atom.              |
 | substr                   | `(substr A B C)`   | Slice of bytes A between B and C, exclusive. |
@@ -129,10 +130,31 @@ The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is 
 
 ## BLS12-381
 
-| Operator       | Format                  | Description                                                                                                |
-| -------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------- |
-| point_add      | `(point_add p1 p2 ...)` | Adds two or more G1 points (public keys) together. Renamed to g1_add in [CHIP-0011](#chip-0011-operators). |
-| pubkey_for_exp | `(pubkey_for_exp A)`    | Maps an exponent (secret key) to a G1 point (public key).                                                  |
+| Operator             | Format                             | Description                                                                                 |
+| -------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
+| pubkey_for_exp       | `(pubkey_for_exp A)`               | Maps an exponent (secret key) to a G1 point (public key).                                   |
+| g1_add               | `(g1_add p1 p2 ...)`               | Formerly named point_add. Adds two or more G1 points (public keys).                         |
+| g1_subtract          | `(g1_subtract p1 p2 ...)`          | Subtracts one or more G1 points (public keys) from a base G1 point.                         |
+| g1_multiply          | `(g1_multiply p1 p2)`              | Multiplies a G1 point (public key) by a scalar value.                                       |
+| g1_negate            | `(g1_negate point)`                | Negates a G1 point (public key).                                                            |
+| g2_add               | `(g2_add p1 p2 ...)`               | Adds two or more G2 points (signatures).                                                    |
+| g2_subtract          | `(g2_subtract p1 p2 ...)`          | Subtracts one or more G2 points (signatures) from a base G2 point.                          |
+| g2_multiply          | `(g2_multiply p1 p2)`              | Multiplies a G2 point (signature) by a scalar value.                                        |
+| g2_negate            | `(g2_negate point)`                | Negates a G2 point (signature).                                                             |
+| g1_map               | `(g1_map data dst)`                | Hashes the data to a G1 point with sha256 and ExpandMsgXmd. DST is optional.                |
+| g2_map               | `(g2_map data dst)`                | Hashes the data to a G2 point with sha256 and ExpandMsgXmd. DST is optional.                |
+| bls_pairing_identity | `(bls_pairing_identity g1 g2 ...)` | Returns nil if the pairing of all pairs is the identity, otherwise raises an exception.     |
+| bls_verify           | `(bls_verify g2 g1 msg ...)`       | Nil if signature g2 is valid with public key g1 and message, otherwise raises an exception. |
+
+## Other Cryptography
+
+| Operator         | Format                                         | Description                                                                                 |
+| ---------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| sha256           | `(sha256 A B ...)`                             | Calculates the sha256 hash of the atoms.                                                    |
+| keccak256        | `(keccak256 A B ...)`                          | Calculates the keccak256 hash of the atoms.                                                 |
+| coinid           | `(coinid parent_id puzzle_hash amount)`        | Validates inputs and calculates the coin id with a parent coin id, puzzle hash, and amount. |
+| secp256k1_verify | `(secp256k1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256k1 curve.                                         |
+| secp256r1_verify | `(secp256r1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256r1 curve.                                         |
 
 ## Softfork
 
@@ -177,31 +199,3 @@ Pre-softfork, this always passes and returns `()` at a cost of `cost` (or 140, w
 Post-softfork, this also returns `()` at a cost of `cost`, but may also fail if the coin id doesn't match. We can't export the result outside the `softfork` boundary, but we can compare it to something inside and raise if it doesn't match.
 
 We take the cost of running the program inside the `softfork` boundary and ensure it exactly matches `cost`, and raise an exception if it's wrong. That way, the program really does have the same cost pre-softfork and post-softfork (or it fails post-softfork).
-
-## [CHIP-0011](https://github.com/Chia-Network/chips/blob/main/CHIPs/chip-0011.md) Operators
-
-:::info
-These operators will be usable within the `softfork` operator starting at block height 4,510,000.
-
-At block height 5,496,000, the operators can be used directly as well.
-:::
-
-| Operator             | Format                                         | Description                                                                                                |
-| -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| g1_add               | `(g1_add p1 p2 ...)`                           | Adds two or more G1 points (public keys) together.                                                         |
-| g1_subtract          | `(g1_subtract p1 p2 ...)`                      | Subtracts one or more G1 points (public keys) from a base G1 point.                                        |
-| g1_multiply          | `(g1_multiply p1 p2)`                          | Multiplies a G1 point (public key) by a scalar value.                                                      |
-| g1_negate            | `(g1_negate point)`                            | Negates a G1 point (public key).                                                                           |
-| g2_add               | `(g2_add p1 p2 ...)`                           | Adds two or more G2 points (signatures) together.                                                          |
-| g2_subtract          | `(g2_subtract p1 p2 ...)`                      | Subtracts one or more G2 points (signatures) from a base G2 point.                                         |
-| g2_multiply          | `(g2_multiply p1 p2)`                          | Multiplies a G2 point (signature) by a scalar value.                                                       |
-| g2_negate            | `(g2_negate point)`                            | Negates a G2 point (signature).                                                                            |
-| g1_map               | `(g1_map data dst)`                            | Hashes the data to a G1 point with sha256 and ExpandMsgXmd. DST is optional.                               |
-| g2_map               | `(g2_map data dst)`                            | Hashes the data to a G2 point with sha256 and ExpandMsgXmd. DST is optional.                               |
-| bls_pairing_identity | `(bls_pairing_identity g1 g2 ...)`             | Returns nil if the pairing of all pairs is the identity, otherwise raises an exception.                    |
-| bls_verify           | `(bls_verify g2 g1 msg ...)`                   | Nil if signature g2 is valid with public key g1 and message, otherwise raises an exception.                |
-| coinid               | `(coinid parent_id puzzle_hash amount)`        | Validates inputs and calculates the coin id with a parent coin id, puzzle hash, and amount.                |
-| modpow               | `(modpow base exponent modulus)`               | Computes `(base ^ exponent) % modulus`. Base may be negative, exponent must not be, modulus must not be 0. |
-| %                    | `(% numerator denominator)`                    | Computes the remainder of the numerator divided by the denominator.                                        |
-| secp256k1_verify     | `(secp256k1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256k1 curve.                                                        |
-| secp256r1_verify     | `(secp256r1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256r1 curve.                                                        |

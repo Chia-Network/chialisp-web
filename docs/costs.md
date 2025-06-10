@@ -47,14 +47,29 @@ brun --cost "<Compiled CLVM>" "<Environment>"
 | strlen                   | 173     | 0        | 1                                                                                           |
 | concat                   | 142     | 135      | 3                                                                                           |
 | divmod                   | 1116    | 0        | 6                                                                                           |
+| %                        | 988     | 0        | 4                                                                                           |
+| modpow                   | 17000   | 0        | 38 (+3/exp +21/mod)                                                                         |
 | sha256                   | 87      | 134      | 2                                                                                           |
+| keccak256                | 50      | 160      | 2                                                                                           |
 | ash - _arithmetic shift_ | 596     | 0        | 3                                                                                           |
 | lsh - _logical shift_    | 277     | 0        | 3                                                                                           |
 | not                      | 200     | 300      | 0                                                                                           |
 | any                      | 200     | 300      | 0                                                                                           |
 | all                      | 200     | 300      | 0                                                                                           |
-| point_add                | 101094  | 1343980  | 0                                                                                           |
 | pubkey_for_exp           | 1325730 | 0        | 38                                                                                          |
+| g1_add                   | 101094  | 1343980  | 0                                                                                           |
+| g1_subtract              | 101094  | 1343980  | 0                                                                                           |
+| g1_multiply              | 705500  | 0        | 10                                                                                          |
+| g1_negate                | 916     | 0        | 0                                                                                           |
+| g2_add                   | 80000   | 1950000  | 0                                                                                           |
+| g2_subtract              | 80000   | 1950000  | 0                                                                                           |
+| g2_multiply              | 2100000 | 0        | 5                                                                                           |
+| g2_negate                | 1204    | 0        | 0                                                                                           |
+| g1_map                   | 195000  | 4        | 4                                                                                           |
+| g2_map                   | 815000  | 4        | 4                                                                                           |
+| bls_pairing_identity     | 3000000 | 1343980  | 0                                                                                           |
+| bls_verify               | 3000000 | 1200000  | 0                                                                                           |
+| coinid                   | 480     | 0        | 0                                                                                           |
 
 ## Additional Costs
 
