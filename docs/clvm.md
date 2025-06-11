@@ -249,7 +249,6 @@ The number of skipped bits is also the number of total bytes the size is encoded
 
 The number of size bytes includes the first.
 
-
 :::note
 
 It is possible, although discouraged, to encode the length of the atom in more bytes than necessary to fit the number. i.e. have unnecessary leading zeroes. This is similar to [UTF-8 overlong encoding](https://en.wikipedia.org/wiki/UTF-8#Overlong_encodings). It is not safe to compare CLVM programs in serialized form, since identical programs may compare not equal. To compare programs, use tree hash.
@@ -266,11 +265,11 @@ Lists are typically chains of cons pairs that end in a nil terminator.
 
 ### Back references
 
-As of the hard fork at block height 5 496 000, CLVM serialization was extended with *back references*. This feature allows to refer back to previous CLVM structure, that should be duplicated in the deserialized output. This feature is also sometimes referred to as CLVM compression.
+As of the hard fork at block height 5 496 000, CLVM serialization was extended with _back references_. This feature allows to refer back to previous CLVM structure, that should be duplicated in the deserialized output. This feature is also sometimes referred to as CLVM compression.
 
 The compression comes from being able to collapse repeated structures. It only needs to be included once, and then referred back to every time it is repeated. This is especially helpful in a block generator where the same puzzle reveal may be included multiple times, for coins secured by the same puzzle. The curried parameters are not repeated, but the underlying puzzle is.
 
-A back reference is introduced by a `0xFE` byte. This byte is followed by an atom that's interpreted as a *path*. The path points into a tree of previously parsed expressions (environment). The lookup works the same as into the CLVM execution [Environnment](#Environment).
+A back reference is introduced by a `0xFE` byte. This byte is followed by an atom that's interpreted as a _path_. The path points into a tree of previously parsed expressions (environment). The lookup works the same as into the CLVM execution [Environnment](#environment).
 
 CLVM trees are parsed bottom-up, left to right. As each atom is parsed, it is prepended to the environment. As each pair is parsed, it pops the top two values of the environment, forms a pair that is then prepended to the environment. Each back-reference performs a path lookup into the environment and prepends the resulting sub tree to the environment.
 
@@ -285,6 +284,7 @@ For example, the following buffer is a serialization of `("foobar" . ("foobar" .
 The environment is looks like this in each step:
 
 1. parse atom "foobar"
+
 ```
        []
       /  \
@@ -293,6 +293,7 @@ The environment is looks like this in each step:
 ```
 
 2. parse back reference `01`
+
 ```
              []
             /  \
@@ -307,6 +308,7 @@ The environment is looks like this in each step:
 ```
 
 3. parse pair. pop top 2 items and form a pair
+
 ```
        []
       /  \
