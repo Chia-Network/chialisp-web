@@ -16,7 +16,7 @@ jobs:
       - name: Add safe Git directory
         uses: Chia-Network/actions/git-mark-workspace-safe@main
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up commit signing
         uses: Chia-Network/actions/commit-sign/gpg@main
         with:
