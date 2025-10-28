@@ -44,7 +44,7 @@ jobs:
           npm ci
           npm run build
       - name: Upload build to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build
           path: build
