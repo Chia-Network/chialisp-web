@@ -49,6 +49,7 @@ module.exports = {
     'conditions',
     'optimization',
     'common_issues',
+    'attacks-and-countermeasures',
     'debugging',
     {
       type: 'category',
