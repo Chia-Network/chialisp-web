@@ -40,11 +40,10 @@ jobs:
         uses: actions/checkout@v5
       - name: 'npm install and build'
         run: |
-          npm install
           npm ci
           npm run build
       - name: Upload build to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build
           path: build
@@ -59,7 +58,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v5
       - name: Download build from artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: build
           path: ./build
