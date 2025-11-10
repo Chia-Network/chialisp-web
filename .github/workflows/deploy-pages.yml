@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    container: node:18-alpine
+    container: node:20-alpine
     steps:
       - name: 'Install deps'
         run: |
@@ -25,7 +25,6 @@ jobs:
       - name: 'npm install and build'
         run: |
           npm ci
-          npm install
           npm run build
       - name: 'npm deploy'
         run: |

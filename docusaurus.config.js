@@ -4,7 +4,11 @@ module.exports = {
   url: 'https://chialisp.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
   favicon: 'img/favicon.ico',
   organizationName: 'Chia-Network',
   projectName: 'chialisp-web',
