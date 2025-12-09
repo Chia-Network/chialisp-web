@@ -37,7 +37,7 @@ jobs:
         run: |
           apk add python3 make g++ git
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 'npm install and build'
         run: |
           npm ci
@@ -56,7 +56,7 @@ jobs:
     if: needs.check-secret-access.outputs.allowed == 'true'
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Download build from artifacts
         uses: actions/download-artifact@v6
         with:
@@ -101,7 +101,7 @@ jobs:
       name: Review ${{ github.event.pull_request.number }}
       url: https://${{ github.event.pull_request.number }}.chialisp-web.chia.net
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Vault Login
         uses: Chia-Network/actions/vault/login@main
