@@ -58,7 +58,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v5
       - name: Download build from artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build
           path: ./build
