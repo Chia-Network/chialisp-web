@@ -776,3 +776,11 @@ Hints are only necessary for outer puzzles, of which the inner puzzle hash match
 Announcements are ephemeral, meaning that they don't last forever. They can only be asserted within the block they are created. Their purpose is to ensure multiple coins are spent together, either for fees, verification, or as a security measure.
 
 For coin announcements, the id is the `coin_id` and `message` sha256 hashed together. Likewise, for puzzle announcements, it's the `puzzle_hash` and `message` sha256 hashed together.
+
+## Ephemeral coins
+
+A coin can be created and spent in the same block. Such coins are called "ephemeral coins". Certain restrictions apply to ephemeral coins when they are spent. Ephemeral coins are not allowed to introspect their own creation height nor creation time. Allowing this would make the mempool much more complex.
+
+Ephemeral coins are not allowed to emit any relative time lock conditions; `ASSERT_SECONDS_RELATIVE`, `ASSERT_HEIGHT_RELATIVE`, `ASSERT_BEFORE_SECONDS_RELATIVE`, `ASSERT_BEFORE_HEIGHT_RELATIVE`, `ASSERT_MY_BIRTH_HEIGHT` or `ASSERT_MY_BIRTH_SECONDS`.
+
+Ephemeral coins *can* however emit `ASSERT_EPHEMERAL`, to ensure that it is an ephemeral coin.
