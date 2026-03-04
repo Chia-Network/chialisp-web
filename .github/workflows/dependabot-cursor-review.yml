@@ -4,6 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Dependabot PR number to analyze"
+        required: true
+        type: number
 
 permissions:
   contents: read
@@ -11,11 +16,49 @@ permissions:
 
 jobs:
   dependabot-review:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve target PR context
+        id: target_pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let pr;
+            if (context.eventName === 'pull_request') {
+              pr = context.payload.pull_request;
+            } else {
+              const raw = context.payload.inputs?.pr_number;
+              const prNumber = Number(raw);
+              if (!Number.isInteger(prNumber) || prNumber <= 0) {
+                core.setFailed(`Invalid pr_number input: ${raw}`);
+                return;
+              }
+              const { data } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+              pr = data;
+            }
+
+            if (!pr) {
+              core.setFailed('Could not resolve target pull request context.');
+              return;
+            }
+            if (pr.user?.login !== 'dependabot[bot]') {
+              core.setFailed(`Target PR #${pr.number} is not opened by dependabot[bot].`);
+              return;
+            }
+
+            core.setOutput('number', String(pr.number));
+            core.setOutput('title', pr.title || '');
+            core.setOutput('body', pr.body || '');
+            core.setOutput('head_sha', pr.head?.sha || '');
+
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.target_pr.outputs.head_sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,7 +75,7 @@ jobs:
           script: |
             const fs = require('fs');
             const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
+            const issue_number = Number('${{ steps.target_pr.outputs.number }}');
 
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
@@ -115,8 +158,8 @@ jobs:
       - name: Run Cursor analysis
         env:
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ steps.target_pr.outputs.title }}
+          PR_BODY: ${{ steps.target_pr.outputs.body }}
           PACKAGE_NAME: ${{ steps.dependabot_context.outputs.package_name }}
           FROM_VERSION: ${{ steps.dependabot_context.outputs.from_version }}
           TO_VERSION: ${{ steps.dependabot_context.outputs.to_version }}
@@ -219,7 +262,7 @@ jobs:
             ${String(analysis).slice(0, maxLen)}`;
 
             const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
+            const issue_number = Number('${{ steps.target_pr.outputs.number }}');
             const { data: comments } = await github.rest.issues.listComments({
               owner,
               repo,
