@@ -74,7 +74,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const body = `${{ toJSON(steps.target_pr.outputs.body) }}` || '';
+            const body = ${{ toJSON(steps.target_pr.outputs.body) }} || '';
             const releaseMatch = body.match(
               /<details>\s*<summary>\s*Release notes\s*<\/summary>\s*([\s\S]*?)<\/details>/i
             );
@@ -88,7 +88,7 @@ jobs:
               /https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?:\/|$)/i
             );
             const upstreamRepo = repoMatch ? repoMatch[1].replace(/\.git$/i, '') : '';
-            const title = `${{ toJSON(steps.target_pr.outputs.title) }}` || '';
+            const title = ${{ toJSON(steps.target_pr.outputs.title) }} || '';
             const titleMatch = title.match(/[Bb]ump\s+(.+?)\s+from\s+([^\s]+)\s+to\s+([^\s]+)/);
             const packageName = titleMatch ? titleMatch[1].trim() : '';
             const fromVersion = titleMatch ? titleMatch[2].trim() : '';
