@@ -1,0 +1,258 @@
+name: Dependabot Cursor Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependabot-review:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install Cursor CLI
+        run: npm install -g cursor-agent
+
+      - name: Extract Dependabot comment context
+        id: dependabot_context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const firstDependabot = comments
+              .filter((c) => c.user?.login === 'dependabot[bot]')
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))[0];
+
+            if (!firstDependabot) {
+              core.setFailed('Expected first Dependabot comment, but none was found.');
+              return;
+            }
+
+            const body = firstDependabot.body || '';
+            const releaseMatch = body.match(/###\s*Release notes\s*([\s\S]*?)\n###\s*Commits/i);
+            const commitsMatch = body.match(/###\s*Commits\s*([\s\S]*?)$/i);
+
+            const releaseNotes = releaseMatch ? releaseMatch[1].trim() : '';
+            const commits = commitsMatch ? commitsMatch[1].trim() : '';
+            const repoMatch = body.match(/https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?:\/|$)/i);
+            const upstreamRepo = repoMatch ? repoMatch[1].replace(/\.git$/i, '') : '';
+            const title = context.payload.pull_request?.title || '';
+            const titleMatch = title.match(/[Bb]ump\s+(.+?)\s+from\s+([^\s]+)\s+to\s+([^\s]+)/);
+            const packageName = titleMatch ? titleMatch[1].trim() : '';
+            const fromVersion = titleMatch ? titleMatch[2].trim() : '';
+            const toVersion = titleMatch ? titleMatch[3].trim() : '';
+
+            if (!releaseNotes || !commits || !upstreamRepo) {
+              core.setFailed('Dependabot comment is missing Release notes, Commits, or an upstream GitHub repository link.');
+              return;
+            }
+
+            const out = {
+              commentId: firstDependabot.id,
+              upstreamRepo,
+              packageName,
+              fromVersion,
+              toVersion,
+              releaseNotes,
+              commits,
+            };
+            fs.writeFileSync('dependabot_comment_context.json', JSON.stringify(out, null, 2));
+            fs.writeFileSync('dependabot_release_notes.md', releaseNotes);
+            fs.writeFileSync('dependabot_commits.md', commits);
+            core.setOutput('upstream_repo', upstreamRepo);
+            core.setOutput('package_name', packageName);
+            core.setOutput('from_version', fromVersion);
+            core.setOutput('to_version', toVersion);
+
+      - name: Prepare upstream checkout directory
+        run: mkdir -p ".upstream-dependency"
+
+      - name: Checkout upstream repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ steps.dependabot_context.outputs.upstream_repo }}
+          path: .upstream-dependency
+          fetch-depth: 0
+
+      - name: Gather local usage hints
+        shell: bash
+        env:
+          PACKAGE_NAME: ${{ steps.dependabot_context.outputs.package_name }}
+        run: |
+          PACKAGE_REGEX="$(python3 -c 'import os, re; print(re.escape(os.getenv("PACKAGE_NAME", "")))')"
+          if [ -z "$PACKAGE_REGEX" ]; then
+            echo "No package detected from Dependabot metadata." > package_usage.txt
+          else
+            {
+              echo "Search pattern: $PACKAGE_NAME"
+              echo
+              rg -n --hidden --glob '!.git' --glob '!node_modules' --glob '!.upstream-dependency/**' "$PACKAGE_REGEX" . || true
+            } > package_usage.txt
+          fi
+
+      - name: Run Cursor analysis
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PACKAGE_NAME: ${{ steps.dependabot_context.outputs.package_name }}
+          FROM_VERSION: ${{ steps.dependabot_context.outputs.from_version }}
+          TO_VERSION: ${{ steps.dependabot_context.outputs.to_version }}
+        shell: bash
+        run: |
+          if [ -z "$CURSOR_API_KEY" ]; then
+            echo '{"result":"CURSOR_API_KEY is not set; analysis was skipped."}' > cursor_output.json
+            exit 0
+          fi
+
+          python3 - <<'PY'
+          import json
+          import os
+
+          def read_file(path):
+            try:
+              with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+            except FileNotFoundError:
+              return ""
+
+          prompt = f"""
+          This is a Dependabot PR review request.
+
+          PR title:
+          {os.getenv("PR_TITLE", "")}
+
+          PR body:
+          {os.getenv("PR_BODY", "")}
+
+          Package metadata:
+          - package: {os.getenv("PACKAGE_NAME", "")}
+          - from: {os.getenv("FROM_VERSION", "")}
+          - to: {os.getenv("TO_VERSION", "")}
+
+          Dependabot comment context JSON:
+          {read_file("dependabot_comment_context.json")}
+
+          Dependabot Release notes:
+          {read_file("dependabot_release_notes.md")}
+
+          Dependabot Commits:
+          {read_file("dependabot_commits.md")}
+
+          Local usage hints (non-authoritative grep hits):
+          {read_file("package_usage.txt")[:12000]}
+
+          Repository layout:
+          - Current repository root: .
+          - Upstream dependency repository: .upstream-dependency (full git history is available)
+
+          Please produce:
+          1) Where in this repo the dependency appears to be used (treat grep hints as directional, not exhaustive).
+          2) Whether those usage sites intersect with likely changed APIs based on release notes, commits, and direct inspection of .upstream-dependency.
+          3) Risks / unknowns.
+          4) Recommendation: merge / merge-with-caveats / hold.
+          Keep it concise and actionable.
+          """.strip()
+
+          with open("cursor_prompt.txt", "w", encoding="utf-8") as f:
+            f.write(prompt)
+          PY
+
+          cursor-agent -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
+
+      - name: Post or update PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- cursor-dependabot-review -->';
+            const maxLen = 60000;
+
+            function readText(path, fallback = '') {
+              try {
+                return fs.readFileSync(path, 'utf8');
+              } catch (_) {
+                return fallback;
+              }
+            }
+
+            const raw = readText('cursor_output.json', '{"result":"No Cursor output generated."}');
+            let parsed;
+            try {
+              parsed = JSON.parse(raw);
+            } catch (_) {
+              parsed = { result: raw };
+            }
+
+            const analysis =
+              parsed.result ||
+              parsed.output ||
+              parsed.text ||
+              parsed.message ||
+              raw;
+
+            const body = `${marker}
+            ## 🤖 Cursor Dependency Analysis
+
+            ${String(analysis).slice(0, maxLen)}`;
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const created = await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
+
+            // If this creates two consecutive bot analysis comments, prune the older
+            // one only when it was posted within the last hour.
+            const ordered = [...comments, created.data].sort(
+              (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+            );
+            const newIdx = ordered.findIndex((c) => c.id === created.data.id);
+            const prev = newIdx > 0 ? ordered[newIdx - 1] : null;
+
+            if (
+              prev &&
+              prev.user?.type === 'Bot' &&
+              typeof prev.body === 'string' &&
+              prev.body.includes(marker)
+            ) {
+              const ageMs = Date.now() - new Date(prev.created_at).getTime();
+              if (ageMs >= 0 && ageMs <= 60 * 60 * 1000) {
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: prev.id,
+                });
+              }
+            }
