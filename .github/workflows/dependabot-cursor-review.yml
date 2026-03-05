@@ -68,7 +68,7 @@ jobs:
       - name: Install Cursor CLI
         shell: bash
         run: |
-          curl https://cursor.com/install -fsS | bash
+          curl https://cursor.com/install -fsSL | bash
           for bin_dir in "$HOME/.cursor/bin" "$HOME/.local/bin"; do
             if [ -d "$bin_dir" ]; then
               echo "$bin_dir" >> "$GITHUB_PATH"
