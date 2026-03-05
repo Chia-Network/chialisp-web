@@ -263,9 +263,9 @@ jobs:
             f.write(prompt)
           PY
 
-          if ! agent --mode ask -p --output-format json < cursor_prompt.txt > cursor_output.json; then
+          if ! agent -f --mode ask -p --output-format json < cursor_prompt.txt > cursor_output.json; then
             # Fallback for older CLI behavior that may require a prompt argument.
-            agent --mode ask -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
+            agent -f --mode ask -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
           fi
 
       - name: Post or update PR comment
