@@ -7,6 +7,7 @@
 # Generated files
 .docusaurus
 .cache-loader
+.upstream-dependency/
 
 # Misc
 .DS_Store
