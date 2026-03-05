@@ -69,10 +69,12 @@ jobs:
         shell: bash
         run: |
           curl https://cursor.com/install -fsS | bash
-          if [ -x "$HOME/.cursor/bin/agent" ]; then
-            echo "$HOME/.cursor/bin" >> "$GITHUB_PATH"
-            export PATH="$HOME/.cursor/bin:$PATH"
-          fi
+          for bin_dir in "$HOME/.cursor/bin" "$HOME/.local/bin"; do
+            if [ -d "$bin_dir" ]; then
+              echo "$bin_dir" >> "$GITHUB_PATH"
+              export PATH="$bin_dir:$PATH"
+            fi
+          done
           if ! command -v agent >/dev/null 2>&1; then
             echo "Could not locate 'agent' binary after Cursor CLI install."
             exit 1
