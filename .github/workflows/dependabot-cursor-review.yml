@@ -10,6 +10,10 @@ on:
         required: true
         type: number
 
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow_ref, github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
@@ -96,7 +100,7 @@ jobs:
             const releaseNotes = releaseMatch ? releaseMatch[1].trim() : '';
             const commits = commitsMatch ? commitsMatch[1].trim() : '';
             const repoMatch = body.match(
-              /https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?:\/|$)/i
+              /https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?=\/|$|[)\]>\s"'?#])/i
             );
             const upstreamRepo = repoMatch ? repoMatch[1].replace(/\.git$/i, '') : '';
             const title = ${{ toJSON(steps.target_pr.outputs.title) }} || '';
