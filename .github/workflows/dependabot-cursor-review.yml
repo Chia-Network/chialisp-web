@@ -90,15 +90,48 @@ jobs:
           script: |
             const fs = require('fs');
             const body = ${{ toJSON(steps.target_pr.outputs.body) }} || '';
-            const releaseMatch = body.match(
-              /<details>\s*<summary>\s*Release notes\s*<\/summary>\s*([\s\S]*?)<\/details>/i
-            );
-            const commitsMatch = body.match(
-              /<details>\s*<summary>\s*Commits\s*<\/summary>\s*([\s\S]*?)<\/details>/i
-            );
 
-            const releaseNotes = releaseMatch ? releaseMatch[1].trim() : '';
-            const commits = commitsMatch ? commitsMatch[1].trim() : '';
+            function escapeRegex(text) {
+              return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            function extractDetailsSection(text, summaryLabel) {
+              const summaryRe = new RegExp(
+                `<details[^>]*>\\s*<summary>\\s*${escapeRegex(summaryLabel)}\\s*</summary>`,
+                'i'
+              );
+              const summaryMatch = summaryRe.exec(text);
+              if (!summaryMatch) return '';
+
+              const start = summaryMatch.index;
+              const tagRe = /<details\b[^>]*>|<\/details>/gi;
+              tagRe.lastIndex = start;
+              let depth = 0;
+              let end = -1;
+              let tag;
+
+              while ((tag = tagRe.exec(text)) !== null) {
+                if (tag[0].toLowerCase().startsWith('<details')) {
+                  depth += 1;
+                } else {
+                  depth -= 1;
+                }
+                if (depth === 0) {
+                  end = tagRe.lastIndex;
+                  break;
+                }
+              }
+
+              if (end === -1) return '';
+              const block = text.slice(start, end);
+              return block
+                .replace(summaryRe, '')
+                .replace(/<\/details>\s*$/i, '')
+                .trim();
+            }
+
+            const releaseNotes = extractDetailsSection(body, 'Release notes');
+            const commits = extractDetailsSection(body, 'Commits');
             const repoMatch = body.match(
               /https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?=\/|$|[)\]>\s"'?#])/i
             );
@@ -279,33 +312,35 @@ jobs:
               issue_number,
               per_page: 100,
             });
-            const created = await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number,
-              body,
-            });
+            const markerComments = comments
+              .filter((c) => typeof c.body === 'string' && c.body.includes(marker))
+              .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+            const latestMarker = markerComments.length > 0 ? markerComments[markerComments.length - 1] : null;
 
-            // If this creates two consecutive bot analysis comments, prune the older
-            // one only when it was posted within the last hour.
-            const ordered = [...comments, created.data].sort(
-              (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-            );
-            const newIdx = ordered.findIndex((c) => c.id === created.data.id);
-            const prev = newIdx > 0 ? ordered[newIdx - 1] : null;
+            // Hybrid policy: keep a stable status comment by updating in place, but if
+            // people have commented after the latest marker then create a new comment so
+            // prior discussion remains attached to the older analysis.
+            const hasHumanDiscussionAfterLatest =
+              latestMarker &&
+              comments.some(
+                (c) =>
+                  c.id !== latestMarker.id &&
+                  c.user?.type !== 'Bot' &&
+                  new Date(c.created_at).getTime() > new Date(latestMarker.created_at).getTime()
+              );
 
-            if (
-              prev &&
-              prev.user?.type === 'Bot' &&
-              typeof prev.body === 'string' &&
-              prev.body.includes(marker)
-            ) {
-              const ageMs = Date.now() - new Date(prev.created_at).getTime();
-              if (ageMs >= 0 && ageMs <= 60 * 60 * 1000) {
-                await github.rest.issues.deleteComment({
-                  owner,
-                  repo,
-                  comment_id: prev.id,
-                });
-              }
+            if (latestMarker && !hasHumanDiscussionAfterLatest) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: latestMarker.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
             }
