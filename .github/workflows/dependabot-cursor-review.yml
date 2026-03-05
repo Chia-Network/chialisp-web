@@ -268,7 +268,7 @@ jobs:
             f.write(prompt)
           PY
 
-          agent --trust --mode ask -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
+          agent --mode ask -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
 
       - name: Post or update PR comment
         uses: actions/github-script@v7
