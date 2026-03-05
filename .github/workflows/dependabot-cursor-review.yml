@@ -319,19 +319,19 @@ jobs:
               .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
             const latestMarker = markerComments.length > 0 ? markerComments[markerComments.length - 1] : null;
 
-            // Hybrid policy: keep a stable status comment by updating in place, but if
-            // people have commented after the latest marker then create a new comment so
-            // prior discussion remains attached to the older analysis.
-            const hasHumanDiscussionAfterLatest =
+            // Hybrid policy: default to updating the latest managed marker comment.
+            // If any non-managed commentary (human or bot) appears after it, create a
+            // new managed comment so prior discussion stays anchored to older analysis.
+            const hasNonManagedCommentaryAfterLatest =
               latestMarker &&
               comments.some(
                 (c) =>
                   c.id !== latestMarker.id &&
-                  c.user?.type !== 'Bot' &&
+                  !(typeof c.body === 'string' && c.body.includes(marker)) &&
                   new Date(c.created_at).getTime() > new Date(latestMarker.created_at).getTime()
               );
 
-            if (latestMarker && !hasHumanDiscussionAfterLatest) {
+            if (latestMarker && !hasNonManagedCommentaryAfterLatest) {
               await github.rest.issues.updateComment({
                 owner,
                 repo,
