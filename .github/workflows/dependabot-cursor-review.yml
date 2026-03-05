@@ -193,14 +193,13 @@ jobs:
         env:
           PACKAGE_NAME: ${{ steps.dependabot_context.outputs.package_name }}
         run: |
-          PACKAGE_REGEX="$(python3 -c 'import os, re; print(re.escape(os.getenv("PACKAGE_NAME", "")))')"
-          if [ -z "$PACKAGE_REGEX" ]; then
+          if [ -z "$PACKAGE_NAME" ]; then
             echo "No package detected from Dependabot metadata." > package_usage.txt
           else
             {
               echo "Search pattern: $PACKAGE_NAME"
               echo
-              rg -n --hidden --glob '!.git' --glob '!node_modules' --glob '!.upstream-dependency/**' "$PACKAGE_REGEX" . || true
+              rg -n --fixed-strings --hidden --glob '!.git' --glob '!node_modules' --glob '!.upstream-dependency/**' -- "$PACKAGE_NAME" . || true
             } > package_usage.txt
           fi
 
