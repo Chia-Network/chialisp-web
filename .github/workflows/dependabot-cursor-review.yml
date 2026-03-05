@@ -137,6 +137,13 @@ jobs:
           path: .upstream-dependency
           fetch-depth: 0
 
+      - name: Remove upstream agent-instruction files
+        shell: bash
+        run: |
+          rm -rf .upstream-dependency/.cursor || true
+          rm -f .upstream-dependency/.cursorrules || true
+          rm -f .upstream-dependency/AGENTS.md || true
+
       - name: Gather local usage hints
         shell: bash
         env:
@@ -222,7 +229,7 @@ jobs:
             f.write(prompt)
           PY
 
-          agent --trust -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
+          agent --trust --mode ask --sandbox enabled -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
 
       - name: Post or update PR comment
         uses: actions/github-script@v7
