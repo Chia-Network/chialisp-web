@@ -137,7 +137,10 @@ jobs:
             );
             const upstreamRepo = repoMatch ? repoMatch[1].replace(/\.git$/i, '') : '';
             const title = ${{ toJSON(steps.target_pr.outputs.title) }} || '';
-            const titleMatch = title.match(/[Bb]ump\s+(.+?)\s+from\s+([^\s]+)\s+to\s+([^\s]+)/);
+            const titleMatch =
+              title.match(/[Uu]pdate\s+(.+?)\s+requirement\s+from\s+([^\s]+)\s+to\s+([^\s]+)/) ||
+              title.match(/[Bb]ump\s+(.+?)\s+from\s+([^\s]+)\s+to\s+([^\s]+)/) ||
+              title.match(/[Uu]pdate\s+(.+?)\s+from\s+([^\s]+)\s+to\s+([^\s]+)/);
             const packageName = titleMatch ? titleMatch[1].trim() : '';
             const fromVersion = titleMatch ? titleMatch[2].trim() : '';
             const toVersion = titleMatch ? titleMatch[3].trim() : '';
@@ -213,7 +216,6 @@ jobs:
           fi
 
           python3 - <<'PY'
-          import json
           import os
 
           def read_file(path):
