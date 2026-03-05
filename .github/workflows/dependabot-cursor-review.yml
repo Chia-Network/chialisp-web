@@ -127,7 +127,12 @@ jobs:
 
             const releaseNotes = extractDetailsSection(body, 'Release notes');
             const commits = extractDetailsSection(body, 'Commits');
-            const repoMatch = body.match(
+            // Prefer the dependency link from Dependabot's lead sentence.
+            // Fallback to any GitHub repo URL if that sentence format changes.
+            const dependencyRepoMatch = body.match(
+              /^\s*(?:Bumps|Update(?:s|d)?)\s+\[[^\]]+\]\(\s*https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?:[\/#?][^)\s]*)?\s*\)/im
+            );
+            const repoMatch = dependencyRepoMatch || body.match(
               /https?:\/\/github\.com\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(?=\/|$|[)\]>\s"'?#])/i
             );
             const upstreamRepo = repoMatch ? repoMatch[1].replace(/\.git$/i, '') : '';
@@ -177,7 +182,9 @@ jobs:
         run: |
           rm -rf .upstream-dependency/.cursor || true
           rm -f .upstream-dependency/.cursorrules || true
+          rm -f .upstream-dependency/.cursorignore || true
           rm -f .upstream-dependency/AGENTS.md || true
+          rm -f .upstream-dependency/CLAUDE.md || true
 
       - name: Gather local usage hints
         shell: bash
