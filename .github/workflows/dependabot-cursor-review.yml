@@ -68,16 +68,12 @@ jobs:
       - name: Install Cursor CLI
         shell: bash
         run: |
-          npm install -g cursor-agent
-          BIN_DIR="$(npm config get prefix)/bin"
-          echo "$BIN_DIR" >> "$GITHUB_PATH"
-          if [ -x "$BIN_DIR/cursor-agent" ]; then
-            echo "CURSOR_AGENT_CMD=$BIN_DIR/cursor-agent" >> "$GITHUB_ENV"
-          elif [ -x "$BIN_DIR/cursor" ]; then
-            echo "CURSOR_AGENT_CMD=$BIN_DIR/cursor" >> "$GITHUB_ENV"
-          else
-            echo "Could not locate Cursor CLI binary after install."
-            ls -la "$BIN_DIR"
+          curl https://cursor.com/install -fsS | bash
+          if [ -x "$HOME/.cursor/bin/agent" ]; then
+            echo "$HOME/.cursor/bin" >> "$GITHUB_PATH"
+          fi
+          if ! command -v agent >/dev/null 2>&1; then
+            echo "Could not locate 'agent' binary after Cursor CLI install."
             exit 1
           fi
 
@@ -223,7 +219,7 @@ jobs:
             f.write(prompt)
           PY
 
-          "$CURSOR_AGENT_CMD" -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
+          agent -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
 
       - name: Post or update PR comment
         uses: actions/github-script@v7
