@@ -22,6 +22,7 @@ jobs:
   dependabot-review:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Resolve target PR context
         id: target_pr
@@ -64,11 +65,19 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ steps.target_pr.outputs.head_sha }}
+          persist-credentials: false
 
       - name: Install Cursor CLI
         shell: bash
         run: |
-          curl https://cursor.com/install -fsSL | bash
+          installer="$(mktemp)"
+          trap 'rm -f "$installer"' EXIT
+          curl https://cursor.com/install -fsSL -o "$installer"
+          if [ ! -s "$installer" ]; then
+            echo "Cursor installer download was empty."
+            exit 1
+          fi
+          bash "$installer"
           for bin_dir in "$HOME/.cursor/bin" "$HOME/.local/bin"; do
             if [ -d "$bin_dir" ]; then
               echo "$bin_dir" >> "$GITHUB_PATH"
@@ -147,10 +156,14 @@ jobs:
             const fromVersion = titleMatch ? titleMatch[2].trim() : '';
             const toVersion = titleMatch ? titleMatch[3].trim() : '';
 
-            if (!releaseNotes || !commits || !upstreamRepo) {
-              core.setFailed('Dependabot PR body is missing Release notes, Commits, or an upstream GitHub repository link.');
+            if (!upstreamRepo) {
+              core.setFailed('Dependabot PR body is missing an upstream GitHub repository link.');
               return;
             }
+            const normalizedReleaseNotes =
+              releaseNotes || 'Dependabot did not include a Release notes details section.';
+            const normalizedCommits =
+              commits || 'Dependabot did not include a Commits details section.';
 
             const out = {
               prNumber: Number('${{ steps.target_pr.outputs.number }}'),
@@ -158,12 +171,12 @@ jobs:
               packageName,
               fromVersion,
               toVersion,
-              releaseNotes,
-              commits,
+              releaseNotes: normalizedReleaseNotes,
+              commits: normalizedCommits,
             };
             fs.writeFileSync('dependabot_comment_context.json', JSON.stringify(out, null, 2));
-            fs.writeFileSync('dependabot_release_notes.md', releaseNotes);
-            fs.writeFileSync('dependabot_commits.md', commits);
+            fs.writeFileSync('dependabot_release_notes.md', normalizedReleaseNotes);
+            fs.writeFileSync('dependabot_commits.md', normalizedCommits);
             core.setOutput('upstream_repo', upstreamRepo);
             core.setOutput('package_name', packageName);
             core.setOutput('from_version', fromVersion);
@@ -178,6 +191,7 @@ jobs:
           repository: ${{ steps.dependabot_context.outputs.upstream_repo }}
           path: .upstream-dependency
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Remove upstream agent-instruction files
         shell: bash
@@ -204,6 +218,7 @@ jobs:
           fi
 
       - name: Run Cursor analysis
+        timeout-minutes: 10
         env:
           CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           PR_TITLE: ${{ steps.target_pr.outputs.title }}
@@ -273,7 +288,20 @@ jobs:
 
           if ! agent -f --mode ask -p --output-format json < cursor_prompt.txt > cursor_output.json; then
             # Fallback for older CLI behavior that may require a prompt argument.
-            agent -f --mode ask -p --output-format json "$(cat cursor_prompt.txt)" > cursor_output.json
+            # Bound prompt size to avoid shell argument length limits.
+            FALLBACK_PROMPT="$(python3 - <<'PY'
+            from pathlib import Path
+
+            max_bytes = 60000
+            raw = Path("cursor_prompt.txt").read_bytes()
+            truncated = raw[:max_bytes]
+            text = truncated.decode("utf-8", errors="ignore")
+            if len(raw) > max_bytes:
+              text += "\n\n[Prompt truncated for CLI argument compatibility.]"
+            print(text, end="")
+            PY
+            )"
+            agent -f --mode ask -p --output-format json "$FALLBACK_PROMPT" > cursor_output.json
           fi
 
       - name: Post or update PR comment
