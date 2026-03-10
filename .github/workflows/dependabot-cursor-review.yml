@@ -216,13 +216,30 @@ jobs:
         env:
           PACKAGE_NAME: ${{ steps.dependabot_context.outputs.package_name }}
         run: |
+          if ! command -v rg >/dev/null 2>&1; then
+            echo "ripgrep (rg) not found; installing..."
+            if sudo apt-get update && sudo apt-get install -y ripgrep; then
+              echo "ripgrep installed successfully."
+            else
+              echo "WARNING: failed to install ripgrep; will fall back to grep."
+            fi
+          fi
+
           if [ -z "$PACKAGE_NAME" ]; then
             echo "No package detected from Dependabot metadata." > package_usage.txt
           else
             {
               echo "Search pattern: $PACKAGE_NAME"
               echo
-              rg -n --fixed-strings --hidden --glob '!.git' --glob '!node_modules' --glob '!.upstream-dependency/**' -- "$PACKAGE_NAME" . || true
+              if command -v rg >/dev/null 2>&1; then
+                rg -n --fixed-strings --hidden --glob '!.git' --glob '!node_modules' --glob '!.upstream-dependency/**' -- "$PACKAGE_NAME" . || true
+              elif command -v grep >/dev/null 2>&1; then
+                echo "WARNING: using grep fallback; output may include vendor files." >&2
+                grep -R -n -F --binary-files=without-match --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.upstream-dependency -- "$PACKAGE_NAME" . || true
+              else
+                echo "Neither ripgrep nor grep is available on runner." >&2
+                exit 1
+              fi
             } > package_usage.txt
           fi
 
