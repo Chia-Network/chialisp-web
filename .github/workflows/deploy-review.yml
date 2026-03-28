@@ -81,7 +81,7 @@ jobs:
           tags: |
             type=sha,format=long
       - name: Build Docker Container
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
