@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkchialisp_web=globalThis.webpackChunkchialisp_web||[]).push([[7472],{5513(s){s.exports=JSON.parse('{"title":"Recent posts","items":[]}')}}]);
