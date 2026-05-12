@@ -110,7 +110,7 @@ jobs:
           role_name: github-chialisp-web
 
       - name: Get secrets from vault
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v3.4.0
         with:
           url: ${{ secrets.VAULT_URL }}
           token: ${{ env.VAULT_TOKEN }}
