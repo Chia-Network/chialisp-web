@@ -49,6 +49,7 @@ jobs:
         with:
           url: ${{ secrets.VAULT_URL }}
           token: ${{ env.VAULT_TOKEN }}
+          exportEnv: true
           secrets: |
             secret/data/fmt/k8s/k8s-fmt api_server_url | K8S_API_SERVER_URL;
 
