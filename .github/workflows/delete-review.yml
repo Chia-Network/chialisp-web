@@ -45,10 +45,11 @@ jobs:
           role_name: github-chialisp-web
 
       - name: Get secrets from vault
-        uses: hashicorp/vault-action@v3
+        uses: hashicorp/vault-action@v4
         with:
           url: ${{ secrets.VAULT_URL }}
           token: ${{ env.VAULT_TOKEN }}
+          exportEnv: true
           secrets: |
             secret/data/fmt/k8s/k8s-fmt api_server_url | K8S_API_SERVER_URL;
 
