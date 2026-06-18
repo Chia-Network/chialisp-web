@@ -57,3 +57,60 @@ The way to prevent this is to either:
 
 Perhaps the cleanest approach is to simply include an [`ASSERT_MY_COIN_ID`](/conditions#assert-my-coin-id) condition using the current coin id, since rekeys aren't fast forwardable anyways (nor should they be).
 
+## CLVM Denial-of-Service Vectors
+
+CLVM programs are evaluated on-chain and off-chain. Poorly constrained programs or inputs can lead to denial-of-service through excessive memory allocation, CPU usage, or exponential blowup during serialization. This section describes the known attack surfaces and the countermeasures available.
+
+### Ladder Bombs (Serialization Attacks)
+
+A **ladder bomb** (also called a backref bomb) exploits CLVM's compressed serialization format. CLVM supports backreferences: a serialized byte stream can reference earlier subtrees instead of repeating them. This creates a DAG (shared structure) that, when traversed naively as a tree, produces exponential blowup. A payload of approximately 200 bytes with around 30 levels of doubling references would expand to gigabytes if fully materialized.
+
+**Countermeasure:** Use the non-backref deserializer (`node_from_bytes`) for all untrusted CLVM deserialization. This deserializer does not understand backref encoding, so a backref-laden payload is either rejected as malformed or interpreted as a small literal tree. Without backrefs, deserialized tree size is linear in serialized byte length.
+
+The backref-aware deserializer (`node_from_bytes_backrefs`) should only be used when the source is trusted (e.g., data you serialized yourself).
+
+#### Ladder Bombs in Puzzle Trees
+
+Ladder bombs can also arise in locally-constructed CLVM trees if attacker-influenced data is inserted as a subtree that gets referenced from multiple places. Even without serialization backrefs, a tree node that appears as a child of multiple parents (possible in the allocator's DAG representation) can cause exponential work during serialization (`node_to_bytes`) or tree hashing (`shatree`).
+
+**General principle:** Data that is "unused" from the protocol's perspective can still cause DoS if the implementation carries it around and processes it (serializes, hashes, or traverses it). Every field in a puzzle tree should either be validated or constrained to a harmless value.
+
+### Execution Cost Attacks
+
+Every `run_program` call in clvmr accepts a `max_cost` parameter. When `max_cost = 0`, clvmr maps this to `Cost::MAX` (effectively `u64::MAX`), allowing unlimited CLVM execution. An attacker who controls the program or its arguments could construct CLVM that produces exponentially large intermediates at runtime — `concat` cascades, `(* x x)` doublings, deep cons-spine construction — exhausting memory or CPU.
+
+**Countermeasure:** All production `run_program` calls should use `MAX_BLOCK_COST_CLVM` (11,000,000,000 — the Chia block cost limit) as the cost cap. On-chain spends are already constrained by this limit via farmer validation. Off-chain evaluation of untrusted programs must explicitly pass this cap.
+
+#### Trust Categories for run_program
+
+When deciding what cost cap to use, consider which category your `run_program` call falls into:
+
+| Category | Program source      | Data source         | Risk                                                              |
+| -------- | ------------------- | ------------------- | ----------------------------------------------------------------- |
+| 1        | Locally constructed | Locally constructed | No adversarial input — cost cap is defense-in-depth               |
+| 2        | Locally held        | Bounded peer data   | Peer cannot make your program run expensively if input is bounded |
+| 3        | On-chain puzzle     | On-chain solution   | Farmer already validated within block cost limits                 |
+
+For category 2 (off-chain protocols), ensure that peer-provided input is bounded in size before passing it to your CLVM programs. Move data and similar fields should be typed as flat byte strings with explicit length checks, not arbitrary CLVM trees.
+
+### Allocator Resource Limits
+
+The clvmr `Allocator` enforces several limits as a second layer of defense beyond cost caps:
+
+| Limit           | Default             | Purpose                         |
+| --------------- | ------------------- | ------------------------------- |
+| `heap_limit`    | `u32::MAX` (~4 GiB) | Total bytes allocated for atoms |
+| `MAX_NUM_ATOMS` | 62,500,000          | Maximum atom count              |
+| `MAX_NUM_PAIRS` | 62,500,000          | Maximum pair (cons) count       |
+
+Combined with `MAX_BLOCK_COST_CLVM`, these limits prevent programs from allocating unbounded memory even if they somehow evade the cost counter. For tighter constraints, use `Allocator::new_limited(heap_limit)`.
+
+### Designing DoS-Resistant Puzzles
+
+When writing Chialisp puzzles that accept untrusted input (e.g., solutions from counterparties in multi-party protocols):
+
+1. **Destructure and validate solution fields** — Check argument types and lengths explicitly. Do not pass unchecked solution data to expensive operations.
+2. **Bound input sizes** — Use `strlen` checks to enforce maximum lengths on byte-string arguments before processing them.
+3. **Keep validation programs cheap** — Stick to byte-length checks, hashing, and simple arithmetic. Avoid patterns that could have super-linear cost in the input size.
+4. **Constrain unused fields** — Any field in a puzzle tree that is not validated on a given code path should be constrained to a known harmless value (e.g., nil). This prevents smuggling malicious data through unused branches.
+5. **Prefer `AGG_SIG_ME` or co-signing** — When solutions must come from a specific party, requiring a signature prevents arbitrary third parties from crafting expensive solutions.
