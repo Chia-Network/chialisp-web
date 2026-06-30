@@ -148,13 +148,14 @@ The `@` operator acts in a similar fashion to unquoted atoms in CLVM. If `@` is 
 
 ## Other Cryptography
 
-| Operator         | Format                                         | Description                                                                                 |
-| ---------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| sha256           | `(sha256 A B ...)`                             | Calculates the sha256 hash of the atoms.                                                    |
-| keccak256        | `(keccak256 A B ...)`                          | Calculates the keccak256 hash of the atoms.                                                 |
-| coinid           | `(coinid parent_id puzzle_hash amount)`        | Validates inputs and calculates the coin id with a parent coin id, puzzle hash, and amount. |
-| secp256k1_verify | `(secp256k1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256k1 curve.                                         |
-| secp256r1_verify | `(secp256r1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256r1 curve.                                         |
+| Operator         | Format                                         | Description                                                                                                                                                                              |
+| ---------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sha256           | `(sha256 A B ...)`                             | Calculates the sha256 hash of the atoms.                                                                                                                                                 |
+| sha256tree       | `(sha256tree (TREE))`                          | Calculates the sha256 puzzle hash (Merkle root) of the input tree. [More Info](https://github.com/Chia-Network/clvm_rs/blob/7a2784b22093264e2c22e1cce606722db2d8ef3f/docs/sha256tree.md) |
+| keccak256        | `(keccak256 A B ...)`                          | Calculates the keccak256 hash of the atoms.                                                                                                                                              |
+| coinid           | `(coinid parent_id puzzle_hash amount)`        | Validates inputs and calculates the coin id with a parent coin id, puzzle hash, and amount.                                                                                              |
+| secp256k1_verify | `(secp256k1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256k1 curve.                                                                                                                                      |
+| secp256r1_verify | `(secp256r1_verify pubkey msg_hash signature)` | Verifies a signature that uses the secp256r1 curve.                                                                                                                                      |
 
 ## Softfork
 
