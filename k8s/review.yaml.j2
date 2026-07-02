@@ -7,8 +7,9 @@ service:
 
 ingress:
   enabled: true
+  className: contour
   annotations:
-    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
     - host: {{ REVIEW_SLUG }}.chialisp-web.chia.net
       paths:
