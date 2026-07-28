@@ -1,1 +1,0 @@
-(globalThis.webpackChunkchialisp_web=globalThis.webpackChunkchialisp_web||[]).push([[5741],{8122(){}}]);
