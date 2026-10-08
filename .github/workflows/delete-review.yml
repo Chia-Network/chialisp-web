@@ -66,4 +66,8 @@ jobs:
         env:
           REVIEW_SLUG: ${{ github.event.pull_request.number }}
         run: |
-          helm uninstall -n "chialisp-web" "chialisp-web-$REVIEW_SLUG"
+          if helm status -n "chialisp-web" "chialisp-web-$REVIEW_SLUG" >/dev/null 2>&1; then
+            helm uninstall -n "chialisp-web" "chialisp-web-$REVIEW_SLUG"
+          else
+            echo "No review app release chialisp-web-$REVIEW_SLUG; nothing to delete"
+          fi
