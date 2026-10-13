@@ -85,7 +85,7 @@ In the case of CAT1, the vulnerability was discovered prior to the existence of 
 
 This function verifies that the `parent coin ID` and `puzzlehash` are each 32 bytes, and that the `amount` is at least zero (negative value coins are not allowed). With this function call in place, if an attacker attempts to shift any of the components, the Chialisp program will exit and raise an exception.
 
-For more information, see our [blog post discussing this issue](https://www.chia.net/2022/07/29/cat1-vulnerability-explained-cve-and-cwe/).
+For more information, see our [blog post discussing this issue](https://www.chia.net/blog/cat1-vulnerability-explained-cve-and-cwe/).
 
 ---
 
