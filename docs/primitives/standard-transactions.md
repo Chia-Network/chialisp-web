@@ -6,7 +6,7 @@ slug: /standard-transactions
 The standard transaction is a puzzle used by the Chia wallet to generate its addresses and spend coins within them. It is also used for CATs and NFTs, which simply wrap the standard transaction inside to enforce ownership by the wallet.
 
 :::tip
-Before you read this page, it may be worth checking out this [Agg Sigs, Taproot, and Graftroot blog post](https://www.chia.net/2021/05/27/Agrgregated-Sigs-Taproot-Graftroot.html) by Bram Cohen on why the standard transaction is the way it is.
+Before you read this page, it may be worth checking out this [Agg Sigs, Taproot, and Graftroot blog post](https://www.chia.net/blog/aggregated-signatures-taproot-graftroot-and-standard-transactions/) by Bram Cohen on why the standard transaction is the way it is.
 :::
 
 ## Code Examples

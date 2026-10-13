@@ -36,7 +36,7 @@ module.exports = {
           position: 'left',
         },
         {
-          href: 'https://chia.net',
+          href: 'https://www.chia.net/',
           label: 'Chia.net',
           position: 'right',
         },
@@ -100,7 +100,7 @@ module.exports = {
         src: 'img/full_logo_white.svg',
         href: '/',
       },
-      copyright: `© ${new Date().getFullYear()} Chia Network Inc., Licensed under the <a href="https://github.com/Chia-Network/chialisp-web/blob/main/LICENSE" target="_blank">Apache License, Version 2.0</a> | <a href="https://www.chia.net/terms">Terms</a>`,
+      copyright: `© ${new Date().getFullYear()} Chia Network Inc., Licensed under the <a href="https://github.com/Chia-Network/chialisp-web/blob/main/LICENSE" target="_blank">Apache License, Version 2.0</a> | <a href="https://www.chia.net/terms/">Terms</a>`,
     },
   },
   presets: [

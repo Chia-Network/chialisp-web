@@ -11,11 +11,11 @@ Aside from the TAIL, there is also an [inner puzzle](/chialisp-inner-puzzles) th
 
 The first version, known as CAT1, reached its end of life at block 2,311,760 on July 26th, 2022.
 
-It has been replaced with the current CAT2 standard because of [a vulnerability discovered during a security audit](https://www.chia.net/2022/07/25/upgrading-the-cat-standard.en.html).
+It has been replaced with the current CAT2 standard because of [a vulnerability discovered during a security audit](https://www.chia.net/blog/upgrading-the-cat-standard/).
 
 :::
 
-To learn more about the terminology used on this page, check out the [blog entry explaining CAT naming conventions](https://www.chia.net/2021/09/23/chia-token-standard-naming.en.html).
+To learn more about the terminology used on this page, check out the [blog entry explaining CAT naming conventions](https://www.chia.net/blog/chia-token-standard-naming/).
 
 Additionally, fungible tokens can be split apart and merged together, whereas non-fungible tokens are indivisible.
 
