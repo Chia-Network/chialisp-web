@@ -31,7 +31,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container: node:20-alpine
+    container: node:24-alpine
     steps:
       - name: 'Install deps'
         run: |
