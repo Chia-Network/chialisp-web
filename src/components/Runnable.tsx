@@ -121,7 +121,10 @@ export default function Runnable({
       language={'chialisp' as any}
     >
       {({ className, style }) => (
-        <pre className={className} style={{ ...style, position: 'relative' }}>
+        <pre
+          className={`${className} runnable`}
+          style={{ ...style, position: 'relative' }}
+        >
           {!input ? (
             ''
           ) : (
@@ -131,61 +134,57 @@ export default function Runnable({
                 setCode={setInput}
                 language="chialisp"
               />
-              <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
+              <hr className="runnable__divider" />
             </>
           )}
           <HighlightCode code={code} setCode={setCode} language="chialisp" />
-          <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <span style={{ marginRight: '8px' }}>
-                {!flavor || flavor === 'chialisp' ? 'Chialisp' : 'CLVM'}
-              </span>
-              {!input && (
-                <FaKeyboard
-                  size={24}
-                  className="icon-button"
-                  cursor="pointer"
-                  onClick={() => setInput('()')}
-                />
-              )}
-              <FaPlay
-                size={24}
-                className="icon-button"
-                cursor="pointer"
-                onClick={run}
-              />
-            </div>
+          <div className="runnable__controls">
+            <span className="runnable__flavor">
+              {!flavor || flavor === 'chialisp' ? 'Chialisp' : 'CLVM'}
+            </span>
+            {!input && (
+              <button
+                type="button"
+                className="icon-button icon-button--secondary"
+                aria-label="Add input"
+                title="Add input"
+                onClick={() => setInput('()')}
+              >
+                <FaKeyboard size={16} />
+              </button>
+            )}
+            <button
+              type="button"
+              className="icon-button"
+              aria-label="Run"
+              title="Run"
+              onClick={run}
+            >
+              <FaPlay size={14} />
+            </button>
           </div>
           {!output ? (
             ''
           ) : (
             <>
-              <hr style={{ marginTop: '14px', marginBottom: '14px' }} />
-              <div style={{ display: 'inline-block' }}>
-                <HighlightCode code={output} language="chialisp" />
+              <hr className="runnable__divider" />
+              <div className="runnable__output">
+                <div className="runnable__value">
+                  <HighlightCode code={output} language="chialisp" />
+                </div>
+                <div className="runnable__cost">
+                  <HighlightCode code={`Cost: ${cost}`} language="chialisp" />
+                </div>
+                <CorrectIcon
+                  size={24}
+                  aria-label={correct ? 'Correct' : 'Incorrect'}
+                  className={`runnable__result ${
+                    correct
+                      ? 'runnable__result--correct'
+                      : 'runnable__result--incorrect'
+                  }`}
+                />
               </div>
-              {output && (
-                <>
-                  <div
-                    style={{
-                      display: 'inline-block',
-                      position: 'absolute',
-                      right: '60px',
-                    }}
-                  >
-                    <HighlightCode code={`Cost: ${cost}`} language="chialisp" />
-                  </div>
-                  <CorrectIcon
-                    size={24}
-                    color={correct ? '#77FF77' : '#FF7777'}
-                    style={{
-                      position: 'absolute',
-                      bottom: '16px',
-                      right: '16px',
-                    }}
-                  />
-                </>
-              )}
             </>
           )}
         </pre>

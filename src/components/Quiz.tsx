@@ -31,8 +31,11 @@ export default function Quiz({ content }: QuizProps) {
   return (
     <>
       {resolved}
-      <br />
-      {!isComplete ? 'Incomplete' : `Score: ${score}%`}
+      <div
+        className={`quiz-score${isComplete ? ' quiz-score--complete' : ''}`}
+      >
+        {!isComplete ? 'Incomplete' : `Score: ${score}%`}
+      </div>
     </>
   );
 }

@@ -9,20 +9,39 @@ module.exports = {
       onBrokenMarkdownLinks: 'throw',
     },
   },
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'apple-touch-icon',
+        href: '/apple-touch-icon.png',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'theme-color',
+        content: '#122957',
+      },
+    },
+  ],
   organizationName: 'Chia-Network',
   projectName: 'chialisp-web',
   trailingSlash: true,
   themeConfig: {
+    image: '/img/chia-share.png',
     prism: {
       darkTheme: require('./src/theme/prism-dark-theme-chialisp'),
       theme: require('./src/theme/prism-light-theme-chialisp'),
     },
     navbar: {
-      title: 'Chialisp',
       logo: {
-        alt: 'Chialisp Logo',
-        src: 'img/logo.svg',
+        alt: 'Chialisp',
+        src: 'img/full_logo.svg',
+        srcDark: 'img/full_logo-on-dark.svg',
+        width: 144,
+        height: 37,
       },
       items: [
         {
@@ -76,8 +95,8 @@ module.exports = {
               href: 'https://discord.gg/chia',
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/chia_project',
+              label: 'X',
+              href: 'https://x.com/chia_project',
             },
           ],
         },
@@ -97,8 +116,9 @@ module.exports = {
       ],
       logo: {
         alt: 'Chialisp full logo',
-        src: 'img/full_logo_white.svg',
+        src: 'img/full_logo-on-dark.svg',
         href: '/',
+        width: 160,
       },
       copyright: `© ${new Date().getFullYear()} Chia Network Inc., Licensed under the <a href="https://github.com/Chia-Network/chialisp-web/blob/main/LICENSE" target="_blank">Apache License, Version 2.0</a> | <a href="https://www.chia.net/terms/">Terms</a>`,
     },

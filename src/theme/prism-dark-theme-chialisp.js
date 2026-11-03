@@ -3,7 +3,7 @@
 var theme = {
   plain: {
     color: "#F8F8F2",
-    backgroundColor: "#282A36",
+    backgroundColor: "#0b1c3f",
     fontWeight: "bold",
   },
   styles: [{
@@ -40,7 +40,7 @@ var theme = {
   }, {
     types: ["comment"],
     style: {
-      color: "rgb(98, 114, 164)",
+      color: "rgb(139, 154, 192)",
       fontWeight: "normal",
     }
   }, {
