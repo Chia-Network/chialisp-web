@@ -1,0 +1,181 @@
+/* Navy hero band with the ribbon art, as on chia.net's dark heroes. Used by the 404. */
+.heroBanner {
+  --hero-text-width: 42rem;
+  --hero-fade-floor: 0.25;
+  --hero-fade-reach: 12rem;
+  --holo-period: 39cqw;
+
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  padding: 6rem 0 5rem;
+  text-align: left;
+  color: var(--chia-white);
+  background: var(--chia-navy);
+  border-bottom: 1px solid rgb(250 251 252 / 12%);
+}
+
+/* When the hero is the whole page, it fills the space down to the footer. */
+.heroPage {
+  flex-grow: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ribbon art, as on chia.net: the line drawing is a mask over a drifting color sweep. It is a fixed
+   size pinned to the hero's top-right corner and dims to a floor behind the text column, then reaches
+   full strength past it, so the type never sits on full-strength lines. */
+.heroArt {
+  --hero-container: var(--ifm-container-width);
+  --hero-text-start: max(1rem, (100% - var(--hero-container)) / 2 + 1rem);
+  --hero-text-end: calc(var(--hero-text-start) + var(--hero-text-width));
+
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    90deg,
+    rgb(0 0 0 / var(--hero-fade-floor)) var(--hero-text-end),
+    black calc(var(--hero-text-end) + var(--hero-fade-reach))
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    rgb(0 0 0 / var(--hero-fade-floor)) var(--hero-text-end),
+    black calc(var(--hero-text-end) + var(--hero-fade-reach))
+  );
+}
+
+.heroRibbon {
+  position: relative;
+  flex: none;
+  width: 1934.7px;
+  aspect-ratio: 1038.9 / 267.8;
+  overflow: hidden;
+  translate: 437.6px 20px;
+  rotate: -27.5deg;
+  mask-image: url('/img/ribbons/markets.svg');
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  mask-mode: alpha;
+  -webkit-mask-image: url('/img/ribbons/markets.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+}
+
+/* The chia.net hologram sweep: blue, cyan, and green, one tile per --holo-period. */
+.heroHolo {
+  --holo-blue: #6fa8ff;
+  --holo-green: #5fd68a;
+  --holo-cyan: color-mix(in oklch, #7fe9ff 48%, var(--holo-blue));
+
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: calc(100% + var(--holo-period));
+  background-image: linear-gradient(
+    90deg,
+    var(--holo-blue) 0%,
+    var(--holo-blue) 22%,
+    var(--holo-cyan) 34%,
+    var(--holo-blue) 44%,
+    var(--holo-green) 66%,
+    var(--holo-cyan) 80%,
+    var(--holo-blue) 100%
+  );
+  background-repeat: repeat-x;
+  background-size: var(--holo-period) 100%;
+}
+
+/* Infima widens .container at 1440px; keep the fade on the text column. */
+@media (min-width: 1440px) {
+  .heroArt {
+    --hero-container: var(--ifm-container-width-xl);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .heroHolo {
+    animation: hero-holo-drift 14s linear infinite;
+  }
+}
+
+@keyframes hero-holo-drift {
+  to {
+    translate: calc(-1 * var(--holo-period)) 0;
+  }
+}
+
+.heroBanner :global(.hero__title) {
+  max-width: 48rem;
+  margin-bottom: 1.25rem;
+  color: var(--chia-white);
+  font-size: 3.75rem;
+  line-height: 1.04;
+}
+
+.heroEyebrow {
+  color: var(--chia-green-light);
+}
+
+.heroLede {
+  max-width: 40rem;
+  margin-bottom: 2.25rem;
+  color: rgb(250 251 252 / 75%);
+  font-size: 1.1875rem;
+  line-height: 1.6;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.buttons :global(.button) {
+  --chia-focus: var(--chia-white);
+  min-height: 2.75rem;
+}
+
+/* Green fill, navy label; white on hover */
+.buttonInverse {
+  border: 1px solid var(--chia-green-light);
+  background: var(--chia-green-light);
+  color: var(--chia-navy);
+}
+
+.buttonInverse:hover {
+  border-color: var(--chia-white);
+  background: var(--chia-white);
+  color: var(--chia-navy);
+}
+
+.buttonInverseOutline {
+  border: 1px solid rgb(250 251 252 / 35%);
+  background: transparent;
+  color: var(--chia-white);
+}
+
+.buttonInverseOutline:hover {
+  border-color: var(--chia-white);
+  background: rgb(250 251 252 / 8%);
+  color: var(--chia-white);
+}
+
+@media screen and (max-width: 966px) {
+  .heroBanner {
+    padding: 4rem 0 3.5rem;
+  }
+
+  .heroBanner :global(.hero__title) {
+    font-size: 2.75rem;
+  }
+}

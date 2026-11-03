@@ -3,7 +3,7 @@
 var theme = {
   plain: {
     color: "#F8F8F2",
-    backgroundColor: "#0b1c3f",
+    backgroundColor: "#161e32",
     fontWeight: "bold",
   },
   styles: [{
