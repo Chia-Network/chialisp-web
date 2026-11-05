@@ -1,45 +1,786 @@
-/* stylelint-disable docusaurus/copyright-header */
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+/* ========================================================================== */
+/* CHIALISP CUSTOM CSS                                                       */
+/* ========================================================================== */
+/* Brand: the chia.net palette and type. Chia Navy for text, Chia Green for  */
+/* the logo, Barlow 600 for display headings, Inter for body and headings,    */
+/* JetBrains Mono for code and labels. No pure white: #fafbfc is the white.   */
 
-/* You can override the default Infima variables here. */
+/* Fonts: self-hosted Latin subsets (SIL Open Font License). Other scripts,  */
+/* such as Chinese, fall back to the system font.                            */
+@font-face {
+  font-family: Barlow;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/barlow-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-600-normal.woff2') format('woff2');
+}
+
+/* Brand tokens and Infima mapping */
 :root {
-  --ifm-color-primary: #5ece71;
-  --ifm-color-primary-dark: #349b50;
-  --ifm-color-primary-darker: #31924c;
-  --ifm-color-primary-darkest: #29783e;
-  --ifm-color-primary-light: #40bd62;
-  --ifm-color-primary-lighter: #47c168;
-  --ifm-color-primary-lightest: #61ca7e;
-  --ifm-code-font-size: 95%;
+  --chia-navy: #122957;
+  --chia-blue: #1b397a;
+  --chia-blue-wash: #eff4fa;
+  --chia-blue-tint: #d9eaff;
+  --chia-green: #35a754;
+  --chia-green-light: #4ebc6d;
+  --chia-forest: #20803c;
+  --chia-forest-wash: #eef7f1;
+  --chia-ground: #f6f7f9;
+  --chia-white: #fafbfc;
+  --chia-gray-wash: #eef0f5;
+  --chia-border: #dde1e9;
+  --chia-border-strong: #848b98;
+  --chia-border-soft: #b8bdc9;
+  --chia-muted: #656d7b;
+  --chia-label: #505760;
+  --chia-error: #b42318;
+  --chia-dark-ground: #0e1e3d;
+  --chia-dark-card: #1c2740;
+
+  --chia-font-display: Barlow, ui-sans-serif, system-ui, sans-serif;
+  --chia-font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* The CJK fonts catch Chinese in mono labels, which the generic monospace sends to a serif on Windows. */
+  --chia-font-mono:
+    'JetBrains Mono', ui-monospace, 'Courier New', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC',
+    monospace;
+
+  --chia-radius-button: 999px;
+  --chia-radius-card: 0.375rem;
+  --chia-radius-media: 0.5rem;
+  --chia-shadow: 0 0.25rem 1.5rem rgb(18 41 87 / 7%), 0 0.0625rem 0.25rem rgb(18 41 87 / 4%);
+
+  /* Semantic aliases, remapped for dark mode below. Secondary text sits on the page ground, so it takes
+     label (6.82:1 on paper) rather than muted (4.87:1); cards, on the brighter surface, take muted. */
+  --chia-ink: var(--chia-navy);
+  --chia-ink-soft: var(--chia-label);
+  --chia-card-copy: var(--chia-muted);
+  --chia-label-copy: var(--chia-label);
+  --chia-eyebrow: var(--chia-forest);
+  --chia-mark: var(--chia-forest);
+  --chia-paper: var(--chia-ground);
+  --chia-surface: var(--chia-white);
+  --chia-line: var(--chia-border);
+  --chia-hover: var(--chia-gray-wash);
+  --chia-selected: var(--chia-blue-wash);
+  --chia-field: var(--chia-white);
+  --chia-field-edge: var(--chia-border-strong);
+  /* Lighter than labels and typed text, and never faded: 5.03:1 on the field */
+  --chia-placeholder: var(--chia-muted);
+
+  --ifm-color-primary: #1b397a;
+  --ifm-color-primary-dark: #18336e;
+  --ifm-color-primary-darker: #173068;
+  --ifm-color-primary-darkest: #122957;
+  --ifm-color-primary-light: #1e3f86;
+  --ifm-color-primary-lighter: #20428c;
+  --ifm-color-primary-lightest: #2a4f9e;
+
+  --ifm-background-color: var(--chia-paper);
+  --ifm-background-surface-color: var(--chia-surface);
+  --ifm-font-color-base: var(--chia-ink);
+  --ifm-heading-color: var(--chia-ink);
+  --ifm-color-content: var(--chia-ink);
+  --ifm-color-content-secondary: var(--chia-ink-soft);
+  --ifm-hover-overlay: var(--chia-hover);
+
+  --ifm-font-family-base: var(--chia-font-sans);
+  --ifm-heading-font-family: var(--chia-font-sans);
+  --ifm-font-family-monospace: var(--chia-font-mono);
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-line-height: 1.2;
+  --ifm-heading-font-weight: 600;
+  --ifm-font-weight-bold: 600;
+  --ifm-h1-font-size: 2.75rem;
+  --ifm-h2-font-size: 2rem;
+  --ifm-h3-font-size: 1.5rem;
+  --ifm-h4-font-size: 1.1875rem;
+
+  --ifm-link-color: var(--chia-blue);
+  --ifm-link-hover-color: var(--chia-navy);
+  --ifm-link-decoration: none;
+  --ifm-link-hover-decoration: underline;
+
+  --ifm-global-radius: var(--chia-radius-card);
+  --ifm-button-border-radius: var(--chia-radius-button);
+  --ifm-code-border-radius: var(--chia-radius-card);
+  --ifm-card-border-radius: var(--chia-radius-card);
+  --ifm-global-shadow-lw: var(--chia-shadow);
+  --ifm-global-shadow-md: var(--chia-shadow);
+  --ifm-global-shadow-tl: var(--chia-shadow);
+
+  --ifm-hr-background-color: var(--chia-line);
+  --ifm-toc-border-color: var(--chia-line);
+  --ifm-table-border-color: var(--chia-line);
+  --ifm-table-head-background: var(--chia-gray-wash);
+  --ifm-table-stripe-background: rgb(18 41 87 / 3%);
+  --ifm-code-background: var(--chia-gray-wash);
+  --ifm-code-font-size: 90%;
+  --ifm-blockquote-border-color: var(--chia-green);
+  --ifm-blockquote-color: var(--chia-ink-soft);
+
+  --ifm-navbar-height: 4rem;
+  --ifm-navbar-background-color: var(--chia-paper);
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-link-color: var(--chia-label-copy);
+  --ifm-navbar-link-hover-color: var(--chia-ink);
+  --ifm-navbar-link-active-color: var(--chia-ink);
+  --ifm-navbar-search-input-placeholder-color: var(--chia-placeholder);
+
+  --ifm-menu-color: var(--chia-label-copy);
+  --ifm-menu-color-active: var(--chia-ink);
+  --ifm-menu-color-background-active: var(--chia-selected);
+  --ifm-menu-color-background-hover: var(--chia-hover);
+
+  --ifm-tabs-color: var(--chia-label-copy);
+  --ifm-tabs-color-active: var(--chia-ink);
+  --ifm-tabs-color-active-border: var(--chia-mark);
+
+  --ifm-breadcrumb-item-background-active: var(--chia-selected);
+  --ifm-color-success: var(--chia-forest);
+  --ifm-color-info: var(--chia-blue);
+  --ifm-color-danger: var(--chia-error);
+
+  --docusaurus-highlighted-code-line-bg: rgb(18 41 87 / 8%);
+  --chia-focus: var(--chia-blue);
+}
+
+/* Dark mode: white on a deep navy ground, with cards one step lighter so they read as raised. Chia
+   Navy itself is kept for the hero and footer bands. html[...] outranks Infima's dark defaults. */
+html[data-theme='dark'] {
+  --chia-ink: var(--chia-white);
+  --chia-ink-soft: #c2c6cd;
+  --chia-card-copy: #c2c6cd;
+  --chia-label-copy: #c2c6cd;
+  --chia-eyebrow: var(--chia-green-light);
+  --chia-mark: var(--chia-green-light);
+  --chia-paper: var(--chia-dark-ground);
+  --chia-surface: var(--chia-dark-card);
+  --chia-line: rgb(250 251 252 / 12%);
+  --chia-field: #161e32;
+  --chia-field-edge: #707887;
+  --chia-placeholder: #8b919e;
+  --chia-hover: rgb(250 251 252 / 6%);
+  --chia-selected: rgb(250 251 252 / 10%);
+
+  --ifm-background-color: var(--chia-paper);
+  --ifm-background-surface-color: var(--chia-surface);
+  --ifm-font-color-base: var(--chia-ink);
+  --ifm-heading-color: var(--chia-ink);
+  --ifm-color-content: var(--chia-ink);
+  --ifm-color-content-secondary: var(--chia-ink-soft);
+  --ifm-hover-overlay: var(--chia-hover);
+  --ifm-navbar-background-color: var(--chia-paper);
+  --ifm-menu-color-background-active: var(--chia-selected);
+  --ifm-menu-color-background-hover: var(--chia-hover);
+  --ifm-breadcrumb-item-background-active: var(--chia-selected);
+  --ifm-color-primary: #4ebc6d;
+  --ifm-color-primary-dark: #42b062;
+  --ifm-color-primary-darker: #3ea75d;
+  --ifm-color-primary-darkest: #35a754;
+  --ifm-color-primary-light: #62c47e;
+  --ifm-color-primary-lighter: #6cc886;
+  --ifm-color-primary-lightest: #8bd4a0;
+
+  --ifm-link-color: var(--chia-green-light);
+  --ifm-link-hover-color: var(--chia-white);
+  --ifm-code-background: rgb(250 251 252 / 8%);
+  --ifm-table-head-background: rgb(250 251 252 / 6%);
+  --ifm-table-stripe-background: rgb(250 251 252 / 3%);
+  --ifm-blockquote-border-color: var(--chia-green-light);
+  --ifm-color-success: var(--chia-green-light);
+
+  --docusaurus-highlighted-code-line-bg: rgb(250 251 252 / 10%);
+  --chia-focus: var(--chia-white);
+}
+
+/* Base */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-padding-top: 5rem;
+}
+
+:focus-visible {
+  outline: 0.1875rem solid var(--chia-focus);
+  outline-offset: 0.125rem;
+}
+
+/* Firefox fades placeholder text by default, which would drop it below 4.5:1. */
+::placeholder {
+  opacity: 1;
+}
+
+::selection {
+  background: var(--chia-blue-tint);
+  color: var(--chia-navy);
+}
+
+/* Typography: Barlow on page titles, Inter below */
+h1,
+.markdown h1,
+.hero__title {
+  font-family: var(--chia-font-display);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  letter-spacing: -0.01em;
+}
+
+.markdown h2 {
+  padding-top: 0.5rem;
+}
+
+.markdown > h2:not(:first-child) {
+  border-top: 1px solid var(--chia-line);
+  padding-top: 1.75rem;
+}
+
+/* A page's own --- rule already divides the section; don't draw a second one. */
+.markdown > hr + h2:not(:first-child) {
+  border-top: 0;
+  padding-top: 0.5rem;
+}
+
+.markdown a,
+.theme-admonition a {
+  font-weight: 500;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.markdown strong,
+b {
+  font-weight: 600;
+}
+
+hr {
+  height: 1px;
+}
+
+/* Small JetBrains Mono caption, as on chia.net */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+  color: var(--chia-eyebrow);
+  font-family: var(--chia-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 2rem;
+  height: 2px;
+  background: currentColor;
+}
+
+/* Navbar */
+.navbar {
+  border-bottom: 1px solid var(--chia-line);
+}
+
+.navbar__brand {
+  flex-shrink: 0;
+  margin-right: 1.5rem;
+}
+
+/* The full Chialisp logo stands alone, as the wordmark does on chia.net */
+.navbar__logo {
+  height: 2.3125rem;
+  margin-right: 0;
+}
+
+.navbar__link {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Between the mobile breakpoint and a wide window the full navbar is crowded: tighten the item
+   spacing and the search box so nothing wraps or overlaps. */
+@media (min-width: 997px) and (max-width: 1199px) {
+  .navbar__item {
+    padding-inline: 0.4375rem;
+  }
+
+  .navbar__link {
+    font-size: 0.875rem;
+  }
+
+  .navbar__search-input {
+    width: 9.5rem;
+  }
+
+  .navbar__search [class*='searchHintContainer'] {
+    display: none;
+  }
+}
+
+/* Just above the mobile breakpoint the links still touch: close them up a little more. */
+@media (min-width: 997px) and (max-width: 1049px) {
+  .navbar__brand {
+    margin-right: 0.75rem;
+  }
+
+  .navbar__item {
+    padding-inline: 0.3125rem;
+  }
+}
+
+.navbar__link--active {
+  box-shadow: inset 0 -2px 0 var(--chia-mark);
+}
+
+.navbar__item.dropdown .navbar__link--active,
+.navbar-sidebar .navbar__link--active {
+  box-shadow: none;
+}
+
+.navbar__search-input,
+.navbar [class*='searchBar'] input {
+  border: 1px solid var(--chia-field-edge);
+  border-radius: var(--chia-radius-button);
+  background-color: var(--chia-field);
+  color: var(--chia-ink);
+  font-family: var(--chia-font-sans);
+}
+
+.navbar__search-input::placeholder,
+.navbar [class*='searchBar'] input::placeholder {
+  color: var(--chia-placeholder);
+}
+
+.dropdown__menu {
+  border: 1px solid var(--chia-line);
+  background: var(--chia-surface);
+  box-shadow: var(--chia-shadow);
+}
+
+/* Sidebar */
+.theme-doc-sidebar-container {
+  border-right-color: var(--chia-line) !important;
+}
+
+.menu {
+  font-size: 0.9375rem;
+}
+
+.menu__link {
+  border-radius: var(--chia-radius-card);
+  line-height: 1.4;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  box-shadow: inset 3px 0 0 var(--chia-mark);
+  font-weight: 600;
+}
+
+.menu__list-item-collapsible:hover {
+  background: var(--ifm-menu-color-background-hover);
+}
+
+.menu__caret::before,
+.menu__link--sublist-caret::after {
+  opacity: 0.7;
+}
+
+[data-theme='dark'] .menu__caret::before,
+[data-theme='dark'] .menu__link--sublist-caret::after {
+  filter: invert(1);
+}
+
+/* Table of contents */
+.table-of-contents {
+  font-size: 0.875rem;
+}
+
+.table-of-contents__link {
+  color: var(--chia-ink-soft);
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code {
+  color: var(--chia-ink);
+}
+
+.table-of-contents__link--active {
+  color: var(--chia-eyebrow);
+  font-weight: 600;
+}
+
+/* Breadcrumbs */
+.breadcrumbs__link {
+  border-radius: var(--chia-radius-button);
+  color: var(--chia-ink-soft);
+  font-size: 0.8125rem;
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--chia-ink);
+  font-weight: 600;
+}
+
+/* Buttons: pill, 40px tall */
+.button {
+  border-radius: var(--chia-radius-button);
+  font-family: var(--chia-font-sans);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.button--primary {
+  --ifm-button-background-color: var(--chia-blue);
+  --ifm-button-border-color: var(--chia-blue);
+  color: var(--chia-white);
+}
+
+.button--primary:hover {
+  --ifm-button-background-color: var(--chia-navy);
+  --ifm-button-border-color: var(--chia-navy);
+  color: var(--chia-white);
+}
+
+[data-theme='dark'] .button--primary {
+  --ifm-button-background-color: var(--chia-green-light);
+  --ifm-button-border-color: var(--chia-green-light);
+  color: var(--chia-navy);
+}
+
+[data-theme='dark'] .button--primary:hover {
+  --ifm-button-background-color: var(--chia-white);
+  --ifm-button-border-color: var(--chia-white);
+  color: var(--chia-navy);
+}
+
+.button--secondary {
+  --ifm-button-background-color: transparent;
+  --ifm-button-border-color: var(--chia-ink);
+  color: var(--chia-ink);
+}
+
+.button--secondary:hover {
+  --ifm-button-background-color: var(--chia-selected);
+  color: var(--chia-ink);
+}
+
+/* Pagination and cards */
+.pagination-nav__link,
+.card {
+  --chia-ink-soft: var(--chia-card-copy);
+  border: 1px solid var(--chia-line);
+  border-radius: var(--chia-radius-card);
+  background: var(--chia-surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pagination-nav__link:hover,
+a.card:hover {
+  border-color: var(--chia-border-soft);
+  box-shadow: var(--chia-shadow);
+}
+
+[data-theme='dark'] .pagination-nav__link:hover,
+[data-theme='dark'] a.card:hover {
+  border-color: rgb(250 251 252 / 35%);
+}
+
+.pagination-nav__sublabel {
+  color: var(--chia-label-copy);
+  font-family: var(--chia-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pagination-nav__label {
+  color: var(--chia-ink);
+}
+
+/* Tabs */
+/* The current tab takes a 2px green underline, as on chia.net */
+.tabs__item {
+  border-bottom-width: 2px;
+  border-radius: var(--chia-radius-card) var(--chia-radius-card) 0 0;
+  font-weight: 500;
+}
+
+.tabs__item--active {
+  color: var(--chia-ink);
+  font-weight: 600;
+}
+
+/* Tables */
+.markdown table {
+  border-collapse: collapse;
+}
+
+.markdown table th {
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Code */
+code {
+  border: 0;
+  font-weight: 400;
+}
+
+.markdown :not(pre) > code {
+  padding: 0.1em 0.35em;
+}
+
+pre,
+.theme-code-block {
+  border-radius: var(--chia-radius-card);
+}
+
+.theme-code-block {
+  border: 1px solid var(--chia-line);
+  box-shadow: none;
+}
+
+[class*='codeBlockTitle'] {
+  border-bottom: 1px solid var(--chia-line) !important;
+  font-family: var(--chia-font-mono);
+  font-size: 0.8125rem !important;
 }
 
 .docusaurus-highlight-code-line {
-  background-color: rgb(72, 77, 91);
+  background-color: var(--docusaurus-highlighted-code-line-bg);
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
 }
 
+/* Admonitions: tinted panels with a colored rule and a mono label */
+.theme-admonition {
+  --ifm-alert-border-width: 1px;
+  --ifm-alert-border-left-width: 4px;
+  --ifm-alert-shadow: none;
+  --ifm-alert-foreground-color: var(--chia-ink);
+  --ifm-alert-color: var(--chia-ink);
+  --chia-admonition-rule: var(--chia-border-strong);
+  /* Infima draws an admonition's own tabs in its default alert colors; keep the rule and green mark. */
+  --ifm-alert-border-color: var(--chia-admonition-rule);
+  --ifm-tabs-color-active-border: var(--chia-mark);
+  border-color: var(--chia-line);
+  border-left-color: var(--chia-admonition-rule);
+}
+
+.theme-admonition [class*='admonitionHeading'] {
+  color: var(--chia-admonition-rule);
+  font-family: var(--chia-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.theme-admonition [class*='admonitionIcon'] svg {
+  height: 1.35em;
+  width: 1.35em;
+  fill: var(--chia-admonition-rule);
+}
+
+.theme-admonition a {
+  color: var(--ifm-link-color);
+}
+
+.alert--secondary {
+  --ifm-alert-background-color: var(--chia-gray-wash);
+  --ifm-alert-background-color-highlight: rgb(18 41 87 / 8%);
+  --chia-admonition-rule: var(--chia-label);
+}
+
+.alert--success {
+  --ifm-alert-background-color: var(--chia-forest-wash);
+  --ifm-alert-background-color-highlight: rgb(32 128 60 / 10%);
+  --chia-admonition-rule: var(--chia-forest);
+}
+
+.alert--info {
+  --ifm-alert-background-color: var(--chia-blue-wash);
+  --ifm-alert-background-color-highlight: rgb(27 57 122 / 8%);
+  --chia-admonition-rule: var(--chia-blue);
+}
+
+.alert--warning {
+  --ifm-alert-background-color: #fff8e6;
+  --ifm-alert-background-color-highlight: rgb(154 103 0 / 10%);
+  --chia-admonition-rule: #8a5a00;
+}
+
+.alert--danger {
+  --ifm-alert-background-color: #fdeeec;
+  --ifm-alert-background-color-highlight: rgb(180 35 24 / 8%);
+  --chia-admonition-rule: var(--chia-error);
+}
+
+[data-theme='dark'] .alert--secondary {
+  --ifm-alert-background-color: rgb(250 251 252 / 5%);
+  --chia-admonition-rule: rgb(250 251 252 / 75%);
+}
+
+[data-theme='dark'] .alert--success {
+  --ifm-alert-background-color: rgb(78 188 109 / 10%);
+  --chia-admonition-rule: var(--chia-green-light);
+}
+
+[data-theme='dark'] .alert--info {
+  --ifm-alert-background-color: rgb(111 168 255 / 10%);
+  --chia-admonition-rule: #8fb8ff;
+}
+
+[data-theme='dark'] .alert--warning {
+  --ifm-alert-background-color: rgb(255 196 0 / 10%);
+  --chia-admonition-rule: #ffc94d;
+}
+
+[data-theme='dark'] .alert--danger {
+  --ifm-alert-background-color: rgb(255 107 94 / 10%);
+  --chia-admonition-rule: #ff8a80;
+}
+
+[data-theme='dark'] .theme-admonition {
+  --ifm-alert-background-color-highlight: rgb(250 251 252 / 10%);
+}
+
+/* Footer: Chia Navy band, as on chia.net */
+.footer,
+.footer--dark {
+  --ifm-footer-background-color: var(--chia-navy);
+  --ifm-footer-color: rgb(250 251 252 / 75%);
+  --ifm-footer-link-color: rgb(250 251 252 / 75%);
+  --ifm-footer-link-hover-color: var(--chia-white);
+  --ifm-footer-title-color: var(--chia-green-light);
+  --chia-focus: var(--chia-white);
+  padding-block: 4rem 2rem;
+  border-top: 1px solid var(--chia-line);
+}
+
+.footer__title {
+  font-family: var(--chia-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.footer__link-item {
+  font-size: 0.9375rem;
+  line-height: 2;
+}
+
+.footer__link-item:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.footer__bottom {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgb(250 251 252 / 12%);
+}
+
+.footer__logo {
+  max-width: 10rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Docusaurus dims the footer logo; the brand logo stays at full strength */
+.footer [class*='footerLogoLink'] {
+  opacity: 1;
+}
+
+.footer__copyright {
+  font-size: 0.875rem;
+}
+
+.footer__copyright a {
+  color: var(--chia-white);
+}
+
+/* Search results (local search plugin) */
+[class*='searchResultItem'] mark,
+mark {
+  border-radius: 0.125rem;
+  background: var(--chia-blue-tint);
+  color: var(--chia-navy);
+}
+
+/* Content/layout */
 figure {
   display: block;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-start: 40px;
-  margin-inline-end: 40px;
+  margin-block: 1em;
+  margin-inline: 40px;
+}
+
+.markdown img {
+  border-radius: var(--chia-radius-media);
 }
 
 .video-container {
-  height: 0;
-  margin: 0;
-  margin-bottom: 30px;
-  overflow: hidden;
-  padding-bottom: 56.25%;
-  padding-top: 30px;
   position: relative;
+  height: 0;
+  margin: 0 0 30px;
+  padding-top: 30px;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+  border-radius: var(--chia-radius-media);
 }
 
 .video-container iframe {
@@ -54,18 +795,135 @@ figure {
   scroll-margin-top: var(--ifm-navbar-height);
 }
 
-h4 {
-  font-size: 20px;
+/* Runnable: editable Chialisp and CLVM blocks with run controls */
+.runnable {
+  border: 1px solid var(--chia-line);
+  border-radius: var(--chia-radius-card);
 }
 
-.footer__logo {
-  width:10rem;
+.runnable__divider {
+  margin-block: 0.875rem;
 }
 
+.runnable__controls {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.runnable__flavor {
+  margin-right: 0.5rem;
+  color: var(--chia-label-copy);
+  font-family: var(--chia-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.runnable__output {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem 1.5rem;
+}
+
+.runnable__value {
+  flex: 1 1 16rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.runnable__cost {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.runnable__result {
+  flex-shrink: 0;
+}
+
+.runnable__result--correct {
+  color: var(--chia-forest);
+}
+
+.runnable__result--incorrect {
+  color: var(--chia-error);
+}
+
+[data-theme='dark'] .runnable__result--correct {
+  color: var(--chia-green-light);
+}
+
+[data-theme='dark'] .runnable__result--incorrect {
+  color: #ff8a80;
+}
+
+/* Icon buttons: round pills, blue on light, green on dark */
 .icon-button {
-  transition: 0.5s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--chia-blue);
+  border-radius: var(--chia-radius-button);
+  background: var(--chia-blue);
+  color: var(--chia-white);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .icon-button:hover {
-  color: #888;
+  border-color: var(--chia-navy);
+  background: var(--chia-navy);
+}
+
+.icon-button--secondary {
+  border-color: var(--chia-ink);
+  background: transparent;
+  color: var(--chia-ink);
+}
+
+.icon-button--secondary:hover {
+  border-color: var(--chia-ink);
+  background: var(--chia-selected);
+  color: var(--chia-ink-soft);
+}
+
+[data-theme='dark'] .icon-button:not(.icon-button--secondary) {
+  border-color: var(--chia-green-light);
+  background: var(--chia-green-light);
+  color: var(--chia-navy);
+}
+
+[data-theme='dark'] .icon-button:not(.icon-button--secondary):hover {
+  border-color: var(--chia-white);
+  background: var(--chia-white);
+}
+
+/* Quiz score */
+.quiz-score {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.25rem 0.875rem;
+  border: 1px solid var(--chia-line);
+  border-radius: var(--chia-radius-button);
+  background: var(--chia-surface);
+  color: var(--chia-label-copy);
+  font-family: var(--chia-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.quiz-score--complete {
+  border-color: var(--chia-mark);
+  color: var(--chia-eyebrow);
 }

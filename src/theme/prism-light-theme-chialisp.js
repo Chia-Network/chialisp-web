@@ -2,8 +2,8 @@
 // Converted automatically using ./tools/themeFromVsCode
 var theme = {
   plain: {
-    color: "#383a42",
-    backgroundColor: "#fafafa",
+    color: "#122957",
+    backgroundColor: "#eef0f5",
     fontWeight: "bold"
   },
   styles: [{
@@ -30,7 +30,7 @@ var theme = {
   }, {
     types: ["punctuation", "symbol"],
     style: {
-      color: "#383a42"
+      color: "#122957"
     }
   }, {
     types: ["variable"],
@@ -40,7 +40,7 @@ var theme = {
   }, {
     types: ["comment"],
     style: {
-      color: "#73737D",
+      color: "#656d7b",
       fontWeight: "normal",
     }
   }, {
