@@ -32,6 +32,18 @@ $ npm run serve
 
 This command serves the static content in the `build` directory.
 
+### Dependency audit
+
+```
+$ npm run audit
+```
+
+This runs `npm audit` and fails on any vulnerability that is not covered by a
+time-boxed exception in `scripts/npm-audit.js`. Exceptions require an expiry
+date and a reason, and the script fails once an exception expires or stops
+matching a reported vulnerability. The same exceptions are applied to the
+OSV-Scanner CI job through `.osv-scanner.toml`.
+
 ### Commands run in github CI
 
 These are the commands being run in the github CI, run them all locally in this order to ensure there are no issues building and serving the content prior to submitting a pr:

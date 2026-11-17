@@ -6,6 +6,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "audit": "node scripts/npm-audit.js",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -29,7 +30,10 @@
     "remark-math": "^6.0.0"
   },
   "overrides": {
-    "serialize-javascript": "^7.0.5",
+    "katex": "^0.19.1",
+    "qs": "^6.17.1",
+    "serialize-javascript": "^7.1.4",
+    "tinypool": "^2.2.0",
     "uuid": "^11.1.1"
   },
   "browserslist": {
